@@ -4,6 +4,8 @@ import Footer from "../components/footer";
 import { Helmet } from "react-helmet";
 import { Toaster } from "react-hot-toast";
 import { defaultAppTitle } from "../components/utils/common/common";
+import { useLocation } from "react-router-dom";
+import "./index.scss"
 
 interface ILayoutProps {
     children: React.ReactNode;
@@ -12,18 +14,22 @@ interface ILayoutProps {
 
 const AppLayout: React.FunctionComponent<ILayoutProps> = (props) => {
     const { title = defaultAppTitle, children } = props;
+    const location = useLocation();
+    const authRoute = new Set<string>(["/login", "/register"]);
     return (
         <React.Fragment>
             <Helmet>
                 <meta charSet="utf-8" />
                 <title>{title}</title>
             </Helmet>
-            <Header />
-            <main style={{ minHeight: "80vh" }}>
-                <Toaster />
-                {children}
-            </main>
-            <Footer />
+            <div className="g-app-layout-container">
+                {!authRoute.has(location.pathname) ? <Header /> : <React.Fragment />}
+                <section style={{ minHeight: authRoute.has(location.pathname) ? "100vh" : "80vh" }}>
+                    <Toaster />
+                    {children}
+                </section>
+                {!authRoute.has(location.pathname) ? <Footer /> : <React.Fragment />}
+            </div>
         </React.Fragment>
     );
 };
