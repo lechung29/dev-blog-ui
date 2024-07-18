@@ -1,18 +1,17 @@
 import React, { useEffect, useState } from "react";
 import AppLayout from "../../layout/Layout";
+import { PostService } from "../../services/posts/PostService";
 
-const Home = () => {
+interface IHomeComponentOwnProps {}
+
+const Home: React.FunctionComponent<IHomeComponentOwnProps> = (_props) => {
     const [post, setPost] = useState([]);
     useEffect(() => {
-        fetch("https://technology-blog.onrender.com/api/v1/post/get-all-posts", {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        })
-            .then((response) => response.json())
-            .then((data) => setPost(data.allPosts));
-    },[]);
+        PostService.getPosts({ limit: 3 }).then((data) => {
+            console.log(data);
+            setPost(data.allPosts);
+        });
+    }, []);
     return (
         <AppLayout>
             {post.map((item: any) => (
