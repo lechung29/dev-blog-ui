@@ -1,0 +1,16 @@
+.g-label-container {
+    display: flex;
+    align-items: baseline;
+
+    .g-label {
+        padding: 0.25rem 0;
+    }
+
+    .g-label-bold {
+        font-weight: bold!important;
+    }
+
+    .g-label-italic {
+        font-style: italic;
+    }
+}
