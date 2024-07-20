@@ -3,7 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@fluentui/react": "^8.119.2",
+    "@emotion/react": "^11.13.0",
+    "@emotion/styled": "^11.13.0",
+    "@mui/icons-material": "^5.16.4",
+    "@mui/material": "^5.16.4",
+    "@mui/styled-engine-sc": "^6.0.0-alpha.18",
     "@reduxjs/toolkit": "^2.2.6",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
@@ -30,6 +34,7 @@
     "redux-logger": "^3.0.6",
     "redux-persist": "^6.0.0",
     "sass": "^1.77.8",
+    "styled-components": "^6.1.12",
     "typescript": "^4.9.5",
     "web-vitals": "^2.1.4"
   },

@@ -59,28 +59,52 @@
                 }
             }
 
-            .g-login-section-form-input-field {
-                width: 100%;
+            .g-login-section-form-input-group {
                 display: flex;
                 flex-direction: column;
-                gap: 1.5rem;
+                width: 100%;
 
-                .g-login-section-form-input-item {
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
+                .g-form-outline-textfield {
                     width: 100%;
-                    border: 1px solid $gray-color;
-                    border-radius: 0.25rem;
-                    
-                    .g-login-section-form-input-icon {
-                        color: $gray-color!important;
-                        height: 100%;
+                    padding: 0;
+                    height: 36px;
+                    margin-bottom: 30px;
+
+                    .g-login-section-input-item {
                         width: 100%;
-                        font-size: 30px;
-                        background-color: #ccc;
+                        height: 100%;
+                        box-sizing: border-box;
+                        padding: 0;
+                        display: flex;
+                        font-size: 1rem;
+                        border: 1px solid #dcdfe6;
+                        border-radius: 4px;
+
+                        input {
+                            height: 100%;
+                            padding: 0;
+                            letter-spacing: 0;
+                            font-size: 13px;
+                            border-radius: 4px;
+                            &::placeholder {
+                                font-size: 13px;
+                            }
+                        }
                     }
+
+                    .g-input-error {
+                        border: 1px solid #e68080!important;
+
+                        &:focus {
+                            border: 1px solid #d25454!important;
+                        }
+                    }
+
+                    
+
                 }
+
+                
             }
         }
     }
