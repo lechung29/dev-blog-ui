@@ -1,33 +1,26 @@
 import React from "react";
-import { ITooltipHost, ITooltipHostProps, ITooltipHostStyleProps, ITooltipHostStyles, mergeStyles, TooltipHost } from "@fluentui/react";
-import "./index.scss"
+import { Tooltip, TooltipProps } from "@mui/material";
+import "./index.scss";
 
-interface IITooltipHostProps extends ITooltipHostProps {
-    a?: string;
-    isCustomStyle?: boolean;
+export enum ITooltipHostPlacement {
+    BottomEnd = "bottom-end",
+    BottomStart = "bottom-start",
+    Bottom = "bottom",
+    LeftEnd = "left-end",
+    LeftStart = "left-start",
+    Left = "left",
+    RightEnd = "right-end",
+    RightStart = "right-start",
+    Right = "right",
+    TopEnd = "top-end",
+    TopStart = "top-start",
+    Top = "top",
 }
 
-interface IITooltipHost extends ITooltipHost {}
-
-interface IITooltipHostStyleProps extends ITooltipHostStyleProps {}
-
-interface IITooltipHostStyle extends ITooltipHostStyles {}
+export interface ITooltipHostProps extends TooltipProps {}
 
 const TooltipHostView: React.FunctionComponent<ITooltipHostProps> = (props) => {
-    const className = mergeStyles("g-tooltip-view", props.className);
-    return (
-        <TooltipHost
-            {...props}
-            className={className}
-            calloutProps={{
-                ...props.calloutProps,
-                calloutMaxWidth: 364,
-                style: { maxWidth: "22.75rem", border: "none", ...props.calloutProps?.style },
-            }}
-        />
-    );
+    return <Tooltip {...props}>{props.children}</Tooltip>;
 };
 
 export { TooltipHostView as TooltipHost };
-
-export type { IITooltipHostProps as ITooltipHostProps, IITooltipHost as ITooltipHost, IITooltipHostStyleProps as ITooltipHostStyleProps, IITooltipHostStyle as ITooltipHostStyles };

@@ -1,13 +1,19 @@
-import React from "react";
-import { Image, IImageProps, ImageFit } from "@fluentui/react/lib/Image";
+import React, { AllHTMLAttributes } from "react";
 
-interface IIImageProps extends IImageProps {
+enum ImageFit {
+    CONTAIN = "contain",
+    COVER = "cover",
+}
+export interface IImageProps extends AllHTMLAttributes<HTMLImageElement> {
     objectFit: ImageFit;
 }
 
-const ImageView: React.FunctionComponent<IIImageProps> = (props) => {
+const ImageView: React.FunctionComponent<IImageProps> = (props) => {
     const { objectFit } = props;
-    return <Image {...props} imageFit={objectFit} />;
+    const imageStyle = {
+        objectFit: objectFit
+    }
+    return <img {...props} alt={props.alt || "error"} style={imageStyle}/>;
 };
 
-export { ImageView as Image };
+export { ImageView as Image, ImageFit };

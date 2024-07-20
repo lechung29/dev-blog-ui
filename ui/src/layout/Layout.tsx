@@ -5,7 +5,7 @@ import { Helmet } from "react-helmet";
 import { Toaster } from "react-hot-toast";
 import { defaultAppTitle } from "../components/utils/common/common";
 import { useLocation } from "react-router-dom";
-import "./index.scss"
+import "./index.scss";
 
 interface ILayoutProps {
     children: React.ReactNode;
