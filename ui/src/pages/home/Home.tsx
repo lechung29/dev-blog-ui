@@ -9,7 +9,7 @@ const Home: React.FunctionComponent<IHomeComponentOwnProps> = (_props) => {
     useEffect(() => {
         PostService.getPosts({ limit: 3 }).then((data) => {
             console.log(data);
-            setPost(data.allPosts);
+            setPost(data.data);
         });
     }, []);
     return (
