@@ -11,6 +11,7 @@ export enum FetchMethod {
 export type FetchUrl = string;
 
 export const FetchApi: IFunc3<FetchUrl, FetchMethod, any, Promise<any>> = async (url, method, body) => {
+    try {
         let response: any;
         switch (method) {
             case FetchMethod.GET:
@@ -28,5 +29,8 @@ export const FetchApi: IFunc3<FetchUrl, FetchMethod, any, Promise<any>> = async 
             default:
                 break;
         }
-    return response.data;
+        return response.data;
+    } catch (error: any) {
+        return error.response.data;
+    }
 };

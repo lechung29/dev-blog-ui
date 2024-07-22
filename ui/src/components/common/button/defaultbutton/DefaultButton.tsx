@@ -1,5 +1,6 @@
 import { Button, ButtonProps, CircularProgress } from "@mui/material";
 import React from "react";
+import { IFunc } from "../../../../types/Function";
 
 export interface IDefaultButtonProps extends ButtonProps {
     isLoading?: boolean;
@@ -9,13 +10,16 @@ export interface IDefaultButtonProps extends ButtonProps {
 }
 
 const DefaultButtonView: React.FunctionComponent<IDefaultButtonProps> = (props) => {
-    const { isLoading, title } = props;
+    const { isLoading, title, buttonStyle, iconStyle, ...rest } = props;
+    const onRenderTitle: IFunc<React.ReactNode> = () => {
+        return isLoading ? <CircularProgress style={props.iconStyle} /> : props.children ? props.children : title
+    }   
     return <Button
-        {...props}
+        {...rest}
         style={props.buttonStyle}
         disabled={isLoading || props.disabled}
     >
-        {isLoading ? <CircularProgress style={props.iconStyle} /> : props.children ? props.children : title} 
+        {onRenderTitle()} 
     </Button>
 };
 

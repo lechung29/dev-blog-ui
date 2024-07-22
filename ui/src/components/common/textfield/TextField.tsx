@@ -10,7 +10,7 @@ export interface ITextFieldProps extends OutlinedInputProps {
 }
 
 const TextFieldView: React.FunctionComponent<ITextFieldProps> = (props) => {
-
+    const {bold, helpText, errorMessage, onValueChange, ...rest} = props;
     const onChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const newValue = event.target.value;
         if (props.type === "number") {
@@ -23,8 +23,8 @@ const TextFieldView: React.FunctionComponent<ITextFieldProps> = (props) => {
             }
         }
 
-        if (props.onValueChange) {
-            props.onValueChange(event.target.value || "");
+        if (onValueChange) {
+           onValueChange(event.target.value || "");
         }
 
         if (props.onChange) {
@@ -33,22 +33,22 @@ const TextFieldView: React.FunctionComponent<ITextFieldProps> = (props) => {
     }
 
     const onRenderMessage: JSX.Element = useMemo(() => {
-        return !!props.errorMessage || !!props.helpText
+        return !!errorMessage || !!helpText
             ? <FormHelperText 
-                error={!!props.errorMessage}
-                className={`g-helpText-message ${!!props.errorMessage && "g-helpText-error-message"}`}
+                error={!!errorMessage}
+                className={`g-helpText-message ${!!errorMessage && "g-helpText-error-message"}`}
             >
-                {props.errorMessage || props.helpText}
+                {errorMessage || helpText}
             </FormHelperText>
             : <Fragment></Fragment>
-    }, [props.errorMessage, props.helpText])      
+    }, [errorMessage, helpText])      
     return (
         <div className="g-form-textfield g-form-outline-textfield">
             <OutlinedInput 
-                {...props} 
+                {...rest} 
                 className={`${props.className} ${props.errorMessage && "g-input-error"}`}
                 type={props.type === "number" ? "" : props.type}
-                error={!!props.errorMessage}
+                error={!!errorMessage}
                 onChange={onChange}
             />
             {onRenderMessage}

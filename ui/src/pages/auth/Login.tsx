@@ -4,7 +4,7 @@ import { loginTitle, logoSrc } from "../../components/utils/common/common";
 import { Label } from "../../components/common/label/Label";
 import { Image, ImageFit } from "../../components/common/image/Image";
 import { TextField } from "../../components/common/textfield/TextField";
-import { Box, IconButton, InputAdornment } from "@mui/material";
+import { Box, IconButton, InputAdornment, Link } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import KeyIcon from "@mui/icons-material/Key";
@@ -13,6 +13,9 @@ import { DefaultButton } from "../../components/common/button/defaultbutton/Defa
 import { IFunc } from "../../types/Function";
 import { AuthService } from "../../services/auth/AuthService";
 import { IRequestStatus } from "../../types/IResponse";
+import { useNavigate } from "react-router-dom";
+import { GoogleAuth } from "../../components/Auth/GoogleAuth";
+import { Divider } from "../../components/common/divider/Divider";
 
 interface ILoginOwnProps {}
 
@@ -39,8 +42,9 @@ const Login: React.FunctionComponent<ILoginOwnProps> = (_props) => {
     const logoWidth: Readonly<number> = 350;
     const [state, setState] = useImmerState<ILoginFormState>(inititalState);
     const { email, password, emailError, passwordError, showPassword, isLoading } = state;
-    const emailRef = useRef<HTMLInputElement>()
-    const passwordRef = useRef<HTMLInputElement>()
+    const emailRef = useRef<HTMLInputElement>();
+    const passwordRef = useRef<HTMLInputElement>();
+    const navigate = useNavigate();
 
     const onChange: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> = (event) => {
         switch (event.target.name) {
@@ -63,19 +67,29 @@ const Login: React.FunctionComponent<ILoginOwnProps> = (_props) => {
 
     const validation: IFunc<boolean> = () => {
         let isValid = true;
-        let userNameError = "";
+        let emailError = "";
         let passwordError = "";
 
         if (!email?.trim()) {
-            userNameError = "Tài khoản email là bắt buộc";
-            emailRef.current?.focus()
-            setState({ emailError: userNameError });
+            emailError = "Tài khoản email là bắt buộc";
+            emailRef.current?.focus();
+            setState({ emailError: emailError });
             isValid = false;
-        } else if (!password?.trim()) {
+        }
+
+        if (!password?.trim()) {
             passwordError = "Mật khẩu là bắt buộc";
-            passwordRef.current?.focus()
+            passwordRef.current?.focus();
             setState({ passwordError: passwordError });
             isValid = false;
+        }
+
+        if (emailError || passwordError) {
+            if (emailError) {
+                emailRef.current?.focus();
+            } else if (passwordError) {
+                passwordRef.current?.focus();
+            }
         }
         return isValid;
     };
@@ -88,35 +102,30 @@ const Login: React.FunctionComponent<ILoginOwnProps> = (_props) => {
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        setState({ emailError: "", passwordError: "", isLoading: true });
         if (!validation()) {
+            setState({ isLoading: false });
             return;
+        }
+        const data = await AuthService.loginUser({ email, password });
+        if (data.requestStatus === IRequestStatus.Error) {
+            switch (data.fieldError) {
+                case "email":
+                    setState({ emailError: data.message, passwordError: "", isLoading: false });
+                    emailRef.current?.focus();
+                    break;
+                case "password":
+                    setState({ passwordError: data.message, emailError: "", isLoading: false });
+                    passwordRef.current?.focus();
+                    break;
+                default:
+                    break;
+            }
         } else {
-            setState({ isLoading: true});
-            await AuthService.loginUser({ email, password })
-                .then((data) => {
-                    if (data.requestStatus === IRequestStatus.Error) {
-                        switch (data.fieldError) {
-                            case "email":
-                                setState({ emailError: data.message, passwordError: "", isLoading: false });
-                                emailRef.current?.focus()
-                                break;
-                            case "password":
-                                setState({ passwordError: data.message, emailError: "", isLoading: false });
-                                passwordRef.current?.focus()
-                                break;
-                            default:
-                                break;
-                        }
-                    } else {
-                        setState({ isLoading: false });
-                        setTimeout(() => {
-                            window.location.href = "/";
-                        }, 1000);
-                    }
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
+            setState({ isLoading: false });
+            setTimeout(() => {
+                navigate("/");
+            }, 1000);
         }
     };
     return (
@@ -221,6 +230,21 @@ const Login: React.FunctionComponent<ILoginOwnProps> = (_props) => {
                                 title={"Đăng nhập"}
                             />
                         </Box>
+                        <div className="g-login-section-form-action">
+                            <Link style={{ fontSize: 12.8 }} underline="hover" href="/" variant="body2">
+                                Quên mật khẩu
+                            </Link>
+                            <Link style={{ fontSize: 12.8 }} underline="hover" href="/register" variant="body2">
+                                Tạo tài khoản
+                            </Link>
+                        </div>
+                        <Divider 
+                            title="Đăng nhập bằng" 
+                            textAlign="center" 
+                            textFontSize={16} 
+                            margin="16px 0" 
+                        />
+                        <GoogleAuth />
                     </div>
                 </div>
             </section>

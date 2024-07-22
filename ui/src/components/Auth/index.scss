@@ -1,0 +1,14 @@
+.g-google-auth-button {
+    color: #606266!important;
+    text-transform: none!important;
+    border-color: #dcdfe6!important;
+    font-size: 13px!important;
+    padding: 10px 20px!important;
+    height: 2.25rem;
+    width: 7.75rem;
+    &:hover {
+        color: #409eff!important;
+        border-color: #c6e2ff!important;
+        background-color: #ecf5ff!important;
+    } 
+}
