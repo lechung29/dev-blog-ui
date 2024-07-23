@@ -7,10 +7,14 @@ const getAllPost = "get-all-posts";
 
 //Auth
 const login = "login";
+const register = "register";
+const googleLogin = "google";
 
 export {
     root,
     v1,
     getAllPost,
-    login
+    login,
+    register,
+    googleLogin,
 }

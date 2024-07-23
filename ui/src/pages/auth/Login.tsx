@@ -72,14 +72,14 @@ const Login: React.FunctionComponent<ILoginOwnProps> = (_props) => {
 
         if (!email?.trim()) {
             emailError = "Tài khoản email là bắt buộc";
-            emailRef.current?.focus();
+            // emailRef.current?.focus();
             setState({ emailError: emailError });
             isValid = false;
         }
 
         if (!password?.trim()) {
             passwordError = "Mật khẩu là bắt buộc";
-            passwordRef.current?.focus();
+            // passwordRef.current?.focus();
             setState({ passwordError: passwordError });
             isValid = false;
         }
@@ -130,8 +130,8 @@ const Login: React.FunctionComponent<ILoginOwnProps> = (_props) => {
     };
     return (
         <AppLayout title={loginTitle}>
-            <section className="g-login-section">
-                <div className="g-login-section-row">
+            <section className="g-auth-section">
+                <div className="g-auth-section-row">
                     <div className="g-login-section-form">
                         <div className="g-login-section-form-label">
                             <Image src={logoSrc} objectFit={ImageFit.COVER} width={logoWidth} height={logoHeight} alt={"logo"} />
@@ -148,7 +148,7 @@ const Login: React.FunctionComponent<ILoginOwnProps> = (_props) => {
                                 type="text"
                                 inputRef={emailRef}
                                 errorMessage={emailError}
-                                placeholder="Tên người dùng hoặc email"
+                                placeholder="Địa chỉ email"
                                 onChange={onChange}
                                 startAdornment={
                                     <InputAdornment

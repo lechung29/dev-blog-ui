@@ -4,7 +4,7 @@ export enum IRequestStatus {
     Info
 }
 
-export interface IResponseType<T> {
+export interface IResponseType<T extends any> {
     requestStatus: IRequestStatus,
     message: string;
     fieldError?: string | string[];

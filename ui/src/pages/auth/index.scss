@@ -1,17 +1,20 @@
 @import "../../styles/common.scss";
-.g-login-section {
+.g-auth-section {
     margin: 0 auto;
-    padding: 0 1rem;
+    padding: 1.5rem 1rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
     min-height: 100vh;
 
-    .g-login-section-row {
+    .g-auth-section-row {
         display: flex;
         flex-wrap: wrap;
+        flex-direction: column;
+        align-items: center;
         margin: 0 -1rem;
         justify-content: center;
+        gap: 1rem;
 
         .g-login-section-form {
             max-width: 28.5rem;
@@ -116,5 +119,113 @@
                 justify-content: space-between;
             }
         }
+
+        .g-register-section-form {
+            max-width: 32rem;
+            width: 100%;
+            height: auto;
+            box-sizing: border-box;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: rgba(50, 50, 105, 0.15) 0px 2px 5px 0px, rgba(0, 0, 0, 0.05) 0px 1px 1px 0px;
+            .g-register-section-form-description-label {
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
+                width: 100%;
+                margin-bottom: 12px;
+                .g-register-section-description-label {
+                    font-weight: 400!important;
+                    font-size: 1.375rem;
+                }
+            }
+
+            .g-register-section-form-description-content {
+                width: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: start;
+                margin-bottom: 12px;
+                .g-register-section-description-content {
+                    font-size: 13px;
+                    text-wrap: wrap;
+                    line-height: 1.2rem;
+                    letter-spacing: 0.25px!important;
+                }
+            }
+
+            .g-register-section-form-input-group {
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+
+                .g-register-section-form-input-row {
+                    margin-bottom: 30px;
+                    display: flex;
+                    flex-wrap: wrap;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 1rem;
+                    width: 100%;
+                    padding: 0;
+                    height: auto;
+                    .g-form-outline-textfield {
+                        flex: 1;
+                        width: 100%;
+                        height: 40px;
+
+                        .g-register-section-input-row-item {
+                            width: 100%;
+                            height: 100%;
+                            box-sizing: border-box;
+                            padding: 0;
+                            display: flex;
+                            font-size: 1rem;
+                            border: 1px solid #dcdfe6;
+                            border-radius: 4px;
+
+                            input {
+                                height: 100%;
+                                padding: 0 16px;
+                                letter-spacing: 0;
+                                font-size: 13px;
+                                border-radius: 4px;
+                                &::placeholder {
+                                    font-size: 13px;
+                                }
+                            }
+                        }
+
+                        .g-input-error {
+                            border: 1px solid #e68080!important;
+    
+                            &:focus {
+                                border: 1px solid #d25454!important;
+                            }
+                        }
+                    }
+                    
+                }
+
+                .g-checkbox-policy {
+                    height: 24px;
+                    margin-left: -11px;
+                    margin-bottom: 30px;
+                    .g-checkbox-policy-label {
+                        font-size: 13px;
+
+                        &:hover {
+                            color: #409eff;
+                            cursor: text;
+                        }
+                    }
+                }
+            }
+        }
     }
 }
+
+
