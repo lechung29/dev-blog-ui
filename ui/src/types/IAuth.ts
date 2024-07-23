@@ -3,6 +3,16 @@ export interface ILoginType {
     password: string;
 }
 
+export interface IRegisterType extends ILoginType {
+    displayName: string;
+}
+
+export interface IGoogleLoginType {
+    email?: string;
+    displayName?: string;
+    avatar?: string;
+}
+
 export interface IUserInformation {
     _id: string;
     email: string;
