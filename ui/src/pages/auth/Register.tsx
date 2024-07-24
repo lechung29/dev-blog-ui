@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useMemo, useRef } from "react";
 import "./index.scss";
 import AppLayout from "../../layout/Layout";
 import { useImmerState } from "../../hook/useImmerState";
@@ -28,6 +28,7 @@ interface ISignUpFormState {
     displayNameError: string;
     passwordError: string;
     confirmPasswordError: string;
+    policyCheckboxErrorMessage: string;
     isLoading?: boolean;
 }
 
@@ -46,6 +47,7 @@ const inititalState: ISignUpFormState = {
     displayNameError: "",
     passwordError: "",
     confirmPasswordError: "",
+    policyCheckboxErrorMessage: "",
     isLoading: false,
 };
 
@@ -53,7 +55,7 @@ const SignUpView: React.FunctionComponent<ISignUpOwnProps> = (props) => {
     const logoHeight: Readonly<number> = 75;
     const logoWidth: Readonly<number> = 350;
     const [state, setState] = useImmerState<ISignUpFormState>(inititalState);
-    const { email, displayName, password, confirmPassword, emailError, displayNameError, passwordError, confirmPasswordError, isLoading } = state;
+    const { email, displayName, password, confirmPassword, emailError, displayNameError, passwordError, confirmPasswordError, policyCheckboxErrorMessage, isLoading } = state;
     const emailRef = useRef<HTMLInputElement>();
     const displayNameRef = useRef<HTMLInputElement>();
     const passwordRef = useRef<HTMLInputElement>();
@@ -76,6 +78,9 @@ const SignUpView: React.FunctionComponent<ISignUpOwnProps> = (props) => {
         )
     }
 
+    const disableButton: boolean = useMemo(() => {
+        return !show.checked
+    }, [show.checked])
     const onChange: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> = (event) => {
         switch (event.target.name) {
             case "email":
@@ -322,13 +327,22 @@ const SignUpView: React.FunctionComponent<ISignUpOwnProps> = (props) => {
                             <Checkbox 
                                 className="g-checkbox-policy"
                                 checked={show.checked} 
-                                onChange={(_, checked) => setShow((prev) => ({...prev, checked: checked}))}
-                                control={<CheckboxItem />}  
+                                onChange={(_, checked) => {
+                                    setShow((prev) => ({...prev, checked: checked}))
+                                    if (checked) {
+                                        setState({policyCheckboxErrorMessage: ""})
+                                    } else {
+                                        setState({policyCheckboxErrorMessage: "Vui lòng đồng ý với Điều khoản dịch vụ của chúng tôi"})
+                                    }
+                                }}
+                                control={<CheckboxItem />}
+                                errorMessage={policyCheckboxErrorMessage}
                                 label={onRenderTermsAndConditions()} 
                             />
                             <DefaultButton
                                 variant="contained"
                                 type="submit"
+                                disabled={disableButton}
                                 buttonStyle={{
                                     backgroundColor: "#409eff",
                                     textTransform: "capitalize",

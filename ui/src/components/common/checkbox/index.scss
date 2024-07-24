@@ -1,0 +1,13 @@
+.g-checkbox-container {
+    width: 100%;
+    padding: 0;
+    height: 24px;
+    position: relative;
+    margin-bottom: 30px;
+    .g-helpText-error-message {
+        position: absolute;
+        color: #f56c6c;
+        font-size: 12px;
+        margin-top: 0;
+    }
+}

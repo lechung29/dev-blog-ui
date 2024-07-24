@@ -72,14 +72,12 @@ const Login: React.FunctionComponent<ILoginOwnProps> = (_props) => {
 
         if (!email?.trim()) {
             emailError = "Tài khoản email là bắt buộc";
-            // emailRef.current?.focus();
             setState({ emailError: emailError });
             isValid = false;
         }
 
         if (!password?.trim()) {
             passwordError = "Mật khẩu là bắt buộc";
-            // passwordRef.current?.focus();
             setState({ passwordError: passwordError });
             isValid = false;
         }

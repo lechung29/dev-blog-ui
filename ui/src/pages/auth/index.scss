@@ -6,7 +6,7 @@
     flex-direction: column;
     justify-content: center;
     min-height: 100vh;
-
+    width: 100%;
     .g-auth-section-row {
         display: flex;
         flex-wrap: wrap;
@@ -26,8 +26,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            box-shadow: rgba(50, 50, 105, 0.15) 0px 2px 5px 0px, rgba(0, 0, 0, 0.05) 0px 1px 1px 0px;
-
+            box-shadow: rgba(0, 0, 0, 0.15) 0px 5px 15px 0px;
             .g-login-section-form-label {
                 display: flex;
                 align-items: center;
@@ -130,7 +129,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            box-shadow: rgba(50, 50, 105, 0.15) 0px 2px 5px 0px, rgba(0, 0, 0, 0.05) 0px 1px 1px 0px;
+            box-shadow: rgba(0, 0, 0, 0.15) 0px 5px 15px 0px;
             .g-register-section-form-description-label {
                 display: flex;
                 align-items: center;
@@ -212,8 +211,7 @@
 
                 .g-checkbox-policy {
                     height: 24px;
-                    margin-left: -11px;
-                    margin-bottom: 30px;
+                    width: 100%;
                     .g-checkbox-policy-label {
                         font-size: 13px;
 
