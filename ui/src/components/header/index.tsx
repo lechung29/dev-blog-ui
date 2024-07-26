@@ -1,10 +1,12 @@
 import React from "react";
 import "./index.scss";
 import { Image, ImageFit } from "../common/image/Image";
-import { smaillogSrc } from "../utils/common/common";
-import { NavLink } from "react-router-dom";
+import { engFlag, smallogoSrc, vieFlag } from "../utils/common/common";
+import { Link, NavLink } from "react-router-dom";
 import Search from "../common/searchbox/Search";
 import { useImmerState } from "../../hook/useImmerState";
+import Language from "./Language";
+import LoginIcon from '@mui/icons-material/Login';
 
 export interface IHeaderOwnProps {
     search?: string
@@ -43,7 +45,7 @@ const Header: React.FunctionComponent<IHeaderOwnProps> = (props) => {
         <div className="g-header-main-section">
             <div className="g-header-main-left-section">
                 <div className="g-header-main-left-logo">
-                    <Image src={smaillogSrc} objectFit={ImageFit.COVER} width={logoWidth} height={logoHeight} alt={"logo"} />
+                    <Image src={smallogoSrc} objectFit={ImageFit.COVER} width={logoWidth} height={logoHeight} alt={"logo"} />
                 </div>
                 <div className="g-header-main-left-navbar">
                     {navbarListUrl.map((item, index) => (
@@ -62,6 +64,18 @@ const Header: React.FunctionComponent<IHeaderOwnProps> = (props) => {
                     onChange={onChangeSearch}
                     onSearch={() => alert(search)}
                 />
+                <div className="g-header-main-right-action">
+                    <Language
+                        languages={[
+                            {title: "Vietnamese", name: "vie", image: vieFlag},
+                            {title: "English", name: "eng", image: engFlag},
+                        ]}
+                    />
+                    <Link className="g-header-main-right-link-auth" to={"/login"} >
+                        <LoginIcon fontSize={"small"} />
+                        <span>{"Đăng nhập/Đăng ký"}</span>
+                    </Link>
+                </div>
             </div>
         </div>
     </section>

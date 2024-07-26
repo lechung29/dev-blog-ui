@@ -1,0 +1,21 @@
+.g-choose-language-section {
+    height: 40px;
+    border-radius: 20px !important;
+    border: 2px solid #5488c7;
+    overflow: hidden;
+
+    .g-choose-language-item{
+        &:hover {
+            background-color: transparent!important;
+        }
+
+        &[aria-pressed="true"] {
+            background-color: #5488c7;
+        }
+
+        &[aria-pressed="true"]:hover {
+            background-color: #5488c7!important;
+        }
+    }
+
+}
