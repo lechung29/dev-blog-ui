@@ -1,5 +1,5 @@
 import React from "react";
-import { Tooltip, TooltipProps } from "@mui/material";
+import { styled, Tooltip, tooltipClasses, TooltipProps } from "@mui/material";
 import "./index.scss";
 
 export enum ITooltipHostPlacement {
@@ -20,7 +20,20 @@ export enum ITooltipHostPlacement {
 export interface ITooltipHostProps extends TooltipProps {}
 
 const TooltipHostView: React.FunctionComponent<ITooltipHostProps> = (props) => {
-    return <Tooltip {...props}>{props.children}</Tooltip>;
+    const CustomTooltip = styled(({ className, ...props }: ITooltipHostProps) => <Tooltip {...props} placement="top" arrow classes={{ popper: className }} />)(({ theme }) => ({
+        [`& .${tooltipClasses.tooltip}`]: {
+            backgroundColor: theme.palette.grey[300],
+            color: "rgba(0, 0, 0, 0.87)",
+            boxShadow: theme.shadows[5],
+            maxWidth: 300,
+            padding: "0.75rem 1rem",
+            fontSize: 12,
+        },
+        [`& .${tooltipClasses.arrow}`]: {
+            color: theme.palette.grey[300],
+          },
+    }));
+    return <CustomTooltip title={props.title}>{props.children}</CustomTooltip>;
 };
 
 export { TooltipHostView as TooltipHost };

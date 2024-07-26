@@ -5,7 +5,8 @@
     padding: 1rem 0;
     box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
     top: 0;
-    left: 0;
+    z-index: 1000;
+    background-color: #fff;
 
     .g-header-main-section { 
         margin: 0 3.5rem 0 0;
@@ -13,6 +14,7 @@
         align-items: center;
         justify-content: space-between;
         height: 100%;
+        gap: 5rem;
         .g-header-main-left-section {
             display: flex;
             align-items: center;
@@ -36,6 +38,34 @@
 
                 .g-header-main-left-navbar-item.active {
                     color: #0b1a33;
+                }
+            }
+        }
+
+        .g-header-main-right-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex: 1;
+            gap: 4rem;
+            .g-header-main-right-action {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                flex: 1;
+                .g-header-main-right-link-auth {
+                    font-size: 13px;
+                    text-decoration: none;
+                    color: #5488c7;
+                    font-weight: 600;
+                    gap: 4px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+
+                    &:hover {
+                        color: #76a0d2;
+                    }
                 }
             }
         }
