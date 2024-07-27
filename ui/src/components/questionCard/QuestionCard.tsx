@@ -4,9 +4,10 @@ import { TooltipHost } from "../common/tooltiphost/TooltipHost";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import ModeCommentIcon from "@mui/icons-material/ModeComment";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
+import { Stack } from "@mui/material";
 const QuestionCard = () => {
     return (
-        <div className="g-question-card-section">
+        <Stack className="g-question-card-section">
             <div className="g-question-card-title">
                 <TooltipHost title={"Store Procedure."}> 
                     <span>{"Store Procedure dsdfdsfds dshf lkdsj flkds ídjfl kdskff"}</span>
@@ -35,7 +36,7 @@ const QuestionCard = () => {
             <div className="g-question-card-author">
                 <p className="g-post-card-category-item">{"Nam Do"}</p>
             </div>
-        </div>
+        </Stack>
     );
 };
 

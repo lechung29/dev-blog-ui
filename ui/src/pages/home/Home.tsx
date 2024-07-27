@@ -2,13 +2,15 @@ import React, { useEffect, useState } from "react";
 import AppLayout from "../../layout/Layout";
 import { PostService } from "../../services/posts/PostService";
 import Thumbnail from "../../components/thumbnail/Thumbnail";
-import "./index.scss"
+import "./index.scss";
 import { groupLink } from "../../components/utils/common/common";
 import PostCard from "../../components/postCard/PostCard";
-import { Button } from "@mui/material";
-import FilterAltIcon from '@mui/icons-material/FilterAlt';
+import { Box, Button, Container, Stack } from "@mui/material";
+import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import { Divider } from "../../components/common/divider/Divider";
 import QuestionCard from "../../components/questionCard/QuestionCard";
+import { Link } from "react-router-dom";
+import { FilterPanel } from "../../components/filterPanel/FilterPanel";
 
 interface IHomeComponentOwnProps {}
 
@@ -23,38 +25,55 @@ const Home: React.FunctionComponent<IHomeComponentOwnProps> = (_props) => {
     return (
         <AppLayout>
             <Thumbnail />
-            <div className="g-navbar-link-section">
-                <a href="/" className="g-navbar-link-section-item">{groupLink}</a>
-            </div>
-            <div className="g-homepage-section">
-                <div className="g-homepage-left-section">
-                    <Button 
-                        className="g-homepage-left-section-filter" 
-                        startIcon={<FilterAltIcon/>}
+            <Box 
+                component={"section"} 
+                className="g-navbar-link-section"
+            >
+                <Link to="/" className="g-navbar-link-section-item">
+                    {groupLink}
+                </Link>
+            </Box>
+            <Container className="g-homepage-section">
+                <Box  
+                    className="g-homepage-left-section"
+                    component={"section"}
+                    mx={1}
+
+                >
+                    <Stack className="g-homepage-left-section-action">
+                        <Button className="g-homepage-left-section-filter" startIcon={<FilterAltIcon />}>
+                            Filters
+                        </Button>
+                        <FilterPanel open={true} placement={"right"} onClosePanel={() => alert("helo")} onOpenPanel={() => alert("false")} />
+                    </Stack>
+                    <Stack 
+                        direction={"column"} 
+                        spacing={1} 
+                        width={"100%"}
                     >
-                        Filters
-                    </Button>
-                    <PostCard />
-                    <PostCard />
-                    <PostCard />
-                    <PostCard />
-                    <PostCard />
-                    <PostCard />
-                    <PostCard />
-                    <PostCard />
-                    <PostCard />
-                    <PostCard />
-                </div>
-                <div className="g-homepage-right-section">
-                    <Divider
-                        title="CÂU HỎI MỚI NHẤT" 
-                        textAlign="center" 
-                        textFontSize={16} 
-                        margin="5px 0 10px" 
-                        color="#5488c7"
-                        fontWeight={500}
-                    />
-                    <div className="g-homepage-right-section-question-list">
+                        <PostCard />
+                        <PostCard />
+                        <PostCard />
+                        <PostCard />
+                        <PostCard />
+                        <PostCard />
+                        <PostCard />
+                        <PostCard />
+                        <PostCard />
+                        <PostCard />
+                    </Stack>
+                </Box>
+                <Box 
+                    className="g-homepage-right-section"
+                    component={"section"}
+                    mx={1}
+                >
+                    <Divider title="CÂU HỎI MỚI NHẤT" textAlign="center" textFontSize={16} margin="5px 0 10px" color="#5488c7" fontWeight={500} />
+                    <Stack 
+                        className="g-homepage-right-section-question-list"
+                        direction={"column"}
+                        spacing={1}
+                    >
                         <QuestionCard />
                         <QuestionCard />
                         <QuestionCard />
@@ -66,9 +85,9 @@ const Home: React.FunctionComponent<IHomeComponentOwnProps> = (_props) => {
                         <QuestionCard />
                         <QuestionCard />
                         <QuestionCard />
-                    </div>
-                </div>
-            </div>
+                    </Stack>
+                </Box>
+            </Container>
         </AppLayout>
     );
 };
