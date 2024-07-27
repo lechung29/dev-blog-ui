@@ -1,4 +1,4 @@
-import { Avatar } from "@mui/material";
+import { Avatar, Stack } from "@mui/material";
 import React from "react";
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import ModeCommentIcon from '@mui/icons-material/ModeComment';
@@ -7,7 +7,7 @@ import "./index.scss"
 import { TooltipHost } from "../common/tooltiphost/TooltipHost";
 const PostCard = () => {
     return (
-        <div className="g-post-card-section">
+        <Stack direction={"row"} className="g-post-card-section">
             <div className="g-post-card-user-avatar">
                 <Avatar sx={{ width: 36, height: 36 }}>N</Avatar>
             </div>
@@ -47,7 +47,7 @@ const PostCard = () => {
                     </TooltipHost>
                 </div>
             </div>
-        </div>
+        </Stack>
     );
 };
 

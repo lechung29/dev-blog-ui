@@ -20,7 +20,7 @@
 }
 
 .g-homepage-section {
-    display: flex;
+    display: flex!important;
     align-items: flex-start;
     margin: 2rem 1.5rem;
     padding: 0 1rem;
@@ -31,16 +31,26 @@
         flex: 1;
         display: flex;
         justify-content: center;
-        align-items: flex-end;
+        align-items: center;
         flex-direction: column;
+        gap: 0.5rem;
 
-        .g-homepage-left-section-filter {
-            color: #fff;
-            font-size: 13px;
-            text-transform: none;
-            line-height: 100%;
-            background-color: #5488c7;
+        .g-homepage-left-section-action {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: end;
+            width: 100%;
+
+            .g-homepage-left-section-filter {
+                color: #fff;
+                font-size: 13px;
+                text-transform: none;
+                line-height: 100%;
+                background-color: #5488c7;
+            }
         }
+        
     }
 
     .g-homepage-right-section {
