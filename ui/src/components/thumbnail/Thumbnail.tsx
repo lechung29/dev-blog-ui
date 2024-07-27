@@ -16,8 +16,6 @@ const Thumbnail = () => {
             navigation
             pagination={{ clickable: true }}
             scrollbar={{ draggable: true }}
-            onSwiper={(swiper) => console.log(swiper)}
-            onSlideChange={() => console.log("slide change")}
         >
             <SwiperSlide>
                 <img width={"100%"} height={150} src="/assets/thumbnail.jpg" className="img" alt="thumbnail" />

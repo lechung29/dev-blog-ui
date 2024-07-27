@@ -5,26 +5,34 @@ import ModeCommentIcon from '@mui/icons-material/ModeComment';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import "./index.scss"
 import { TooltipHost } from "../common/tooltiphost/TooltipHost";
-const PostCard = () => {
+
+export interface IPostCardItemProps {
+    postAuthor: string;
+    authorAvatar: string;
+    title: string;
+    postCreatedAt: string;
+    category: string;
+    postComment: any[];
+}
+
+const PostCard: React.FunctionComponent<IPostCardItemProps> = (props) => {
     return (
         <Stack direction={"row"} className="g-post-card-section">
             <div className="g-post-card-user-avatar">
-                <Avatar sx={{ width: 36, height: 36 }}>N</Avatar>
+                <Avatar sx={{ width: 36, height: 36 }} >N</Avatar>
             </div>
             <div className="g-post-card-content">
                 <div className="g-post-card-basic-info">
-                    <span className="g-post-card-author">{"Lâm Phú Cường"}</span>
-                    <span className="g-post-card-time-created">{"Khoảng 8 giờ trước"}</span>
+                    <span className="g-post-card-author">{props.postAuthor}</span>
+                    <span className="g-post-card-time-created">{props.postCreatedAt}</span>
                 </div>
                 <div className="g-post-card-title">
-                    <TooltipHost title={"Chia Sẻ Trực Tiếp Bài Hát Đang Nghe Lên Website Với Spotify API"}>
-                        <span>{"Chia Sẻ Trực Tiếp Bài Hát Đang Nghe Lên Website Với Spotify API"}</span>
+                    <TooltipHost title={props.title}>
+                        <span>{props.title}</span>
                     </TooltipHost>
                 </div>
                 <div className="g-post-card-category">
-                    <p className="g-post-card-category-item">{"Amazon Web Services (AWS)"}</p>
-                    <p className="g-post-card-category-item">{"Amazon Web Services (AWS)"}</p>
-                    <p className="g-post-card-category-item">{"Amazon Web Services (AWS)"}</p>
+                    <p className="g-post-card-category-item">{props.category}</p>
                 </div>
                 <div className="g-post-card-reaction">
                     <TooltipHost title={"Lượt thích: 7"}>
@@ -33,10 +41,10 @@ const PostCard = () => {
                             <span>{7}</span>
                         </div>
                     </TooltipHost>
-                    <TooltipHost title={"Bình luận: 3"}>
+                    <TooltipHost title={`Bình luận: ${props.postComment.length}`}>
                         <div className="g-post-card-reaction-item">
                             <ModeCommentIcon style={{color: "#9b9b9b", fontSize: 14}} />
-                            <span>{3}</span>
+                            <span>{props.postComment.length}</span>
                         </div>
                     </TooltipHost>
                     <TooltipHost title={"Bookmark: 1"}>
