@@ -16,6 +16,8 @@ import { IRequestStatus } from "../../types/IResponse";
 import { useNavigate } from "react-router-dom";
 import { GoogleAuth } from "../../components/Auth/GoogleAuth";
 import { Divider } from "../../components/common/divider/Divider";
+import { useDispatch } from "react-redux";
+import { login } from "../../redux/reducers/users/UserSlice";
 
 interface ILoginOwnProps {}
 
@@ -45,6 +47,7 @@ const Login: React.FunctionComponent<ILoginOwnProps> = (_props) => {
     const emailRef = useRef<HTMLInputElement>();
     const passwordRef = useRef<HTMLInputElement>();
     const navigate = useNavigate();
+    const dispatch = useDispatch()
 
     const onChange: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> = (event) => {
         switch (event.target.name) {
@@ -122,6 +125,7 @@ const Login: React.FunctionComponent<ILoginOwnProps> = (_props) => {
         } else {
             setState({ isLoading: false });
             setTimeout(() => {
+                dispatch(login(data.data))
                 navigate("/");
             }, 1000);
         }

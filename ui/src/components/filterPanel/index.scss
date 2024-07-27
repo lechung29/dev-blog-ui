@@ -6,7 +6,7 @@
     }
 
     .g-filter-panel-title {
-        font-weight: 400!important;
+        font-weight: 600!important;
         font-size: 20px;
     }
 
@@ -32,7 +32,7 @@
         text-transform: none !important;
         background-color: #5488c7;
         color: #fff;
-        width: 70px;
+        width: auto;
         font-size: 13px;
     }
 
@@ -43,6 +43,7 @@
         font-size: 13px;
         height: 100%;
         min-width: 40px;
+        width: auto;
         padding: 0.5rem 0.75rem;
         text-transform: none !important;
     }

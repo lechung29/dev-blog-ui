@@ -3,6 +3,7 @@ import { persistReducer, persistStore } from "redux-persist";
 import { createLogger } from "redux-logger";
 import autoMergeLevel2 from "redux-persist/lib/stateReconciler/autoMergeLevel2";
 import session from "redux-persist/lib/storage/session";
+import UserSlice from "../reducers/users/UserSlice";
 
 const persistConfig: any = {
     key: "root",
@@ -11,13 +12,15 @@ const persistConfig: any = {
     blacklist: [],
 };
 
-const rootReducer = combineReducers({});
+const rootReducer = combineReducers({
+    user: UserSlice,
+});
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 const logger = createLogger();
 
-const store = configureStore({
+export const store = configureStore({
     reducer: persistedReducer,
     middleware: (getDefaultMiddleware) => getDefaultMiddleware({ serializableCheck: false }).concat(logger),
 });

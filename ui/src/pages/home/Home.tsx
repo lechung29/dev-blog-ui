@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React from "react";
 import AppLayout from "../../layout/Layout";
 import { PostService } from "../../services/posts/PostService";
 import Thumbnail from "../../components/thumbnail/Thumbnail";
@@ -11,17 +12,27 @@ import { Divider } from "../../components/common/divider/Divider";
 import QuestionCard from "../../components/questionCard/QuestionCard";
 import { Link } from "react-router-dom";
 import { FilterPanel } from "../../components/filterPanel/FilterPanel";
+import { useImmerState } from "../../hook/useImmerState";
 
-interface IHomeComponentOwnProps {}
+interface IHomePageOwnProps {
 
-const Home: React.FunctionComponent<IHomeComponentOwnProps> = (_props) => {
-    const [post, setPost] = useState([]);
-    useEffect(() => {
-        PostService.getPosts({ limit: 3 }).then((data) => {
-            console.log(data);
-            setPost(data.data);
-        });
-    }, []);
+}
+interface IHomePageState {
+    isFilterPanelOpen: boolean;
+    posts?: any[]
+}
+
+const initialState: IHomePageState = {
+    isFilterPanelOpen: false,
+}
+
+const Home: React.FunctionComponent<IHomePageOwnProps> = (_props) => {
+    const [state, setState] = useImmerState<IHomePageState>(initialState)
+    const { isFilterPanelOpen, posts} = state;
+
+    React.useEffect(() => {
+        PostService.getPosts({limit: 10}).then((data) => setState({posts: data.data}))
+    }, [])
     return (
         <AppLayout>
             <Thumbnail />
@@ -38,29 +49,38 @@ const Home: React.FunctionComponent<IHomeComponentOwnProps> = (_props) => {
                     className="g-homepage-left-section"
                     component={"section"}
                     mx={1}
-
                 >
                     <Stack className="g-homepage-left-section-action">
-                        <Button className="g-homepage-left-section-filter" startIcon={<FilterAltIcon />}>
-                            Filters
+                        <Button 
+                            className="g-homepage-left-section-filter" 
+                            startIcon={<FilterAltIcon />}
+                            onClick={() => setState({ isFilterPanelOpen: true})} 
+                        >
+                            Bộ lọc
                         </Button>
-                        <FilterPanel open={true} placement={"right"} onClosePanel={() => alert("helo")} onOpenPanel={() => alert("false")} />
+                        <FilterPanel 
+                            open={isFilterPanelOpen} 
+                            placement={"right"} 
+                            onClosePanel={() => setState({ isFilterPanelOpen: false})} 
+                            onOpenPanel={() => setState({ isFilterPanelOpen: true})} 
+                        />
                     </Stack>
                     <Stack 
                         direction={"column"} 
                         spacing={1} 
                         width={"100%"}
                     >
-                        <PostCard />
-                        <PostCard />
-                        <PostCard />
-                        <PostCard />
-                        <PostCard />
-                        <PostCard />
-                        <PostCard />
-                        <PostCard />
-                        <PostCard />
-                        <PostCard />
+                        {posts?.map((post: any) => (
+                            <PostCard 
+                                authorAvatar={post.author.avatar}
+                                category={post.category}
+                                postAuthor={post.author.displayName}
+                                postComment={post.comments}
+                                postCreatedAt={post.createdAt}
+                                title={post.title}
+                                key={post._id}
+                            />
+                        ))}
                     </Stack>
                 </Box>
                 <Box 
@@ -68,7 +88,14 @@ const Home: React.FunctionComponent<IHomeComponentOwnProps> = (_props) => {
                     component={"section"}
                     mx={1}
                 >
-                    <Divider title="CÂU HỎI MỚI NHẤT" textAlign="center" textFontSize={16} margin="5px 0 10px" color="#5488c7" fontWeight={500} />
+                    <Divider 
+                        title="CÂU HỎI MỚI NHẤT" 
+                        textAlign="center" 
+                        textFontSize={16} 
+                        margin="5px 0 10px" 
+                        color="#5488c7" 
+                        fontWeight={500} 
+                    />
                     <Stack 
                         className="g-homepage-right-section-question-list"
                         direction={"column"}
