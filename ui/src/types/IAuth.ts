@@ -20,5 +20,6 @@ export interface IUserInformation {
     createdAt: string;
     updatedAt: string;
     role: "user" | "admin";
-    avatar: string
+    avatar: string;
+    accessToken: string;
 }
