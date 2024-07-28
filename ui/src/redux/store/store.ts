@@ -2,14 +2,14 @@ import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
 import { createLogger } from "redux-logger";
 import autoMergeLevel2 from "redux-persist/lib/stateReconciler/autoMergeLevel2";
-import session from "redux-persist/lib/storage/session";
 import UserSlice from "../reducers/users/UserSlice";
+import storage from "redux-persist/lib/storage";
 
 const persistConfig: any = {
     key: "root",
-    storage: session,
+    storage: storage,
     stateReconciler: autoMergeLevel2,
-    blacklist: [],
+    whitelist: [],
 };
 
 const rootReducer = combineReducers({

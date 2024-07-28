@@ -108,15 +108,16 @@ const Login: React.FunctionComponent<ILoginOwnProps> = (_props) => {
             setState({ isLoading: false });
             return;
         }
-        const data = await AuthService.loginUser({ email, password });
-        if (data.requestStatus === IRequestStatus.Error) {
-            switch (data.fieldError) {
+        const response = await AuthService.loginUser({ email, password });
+
+        if (response.requestStatus === IRequestStatus.Error) {
+            switch (response.fieldError) {
                 case "email":
-                    setState({ emailError: data.message, passwordError: "", isLoading: false });
+                    setState({ emailError: response.message, passwordError: "", isLoading: false });
                     emailRef.current?.focus();
                     break;
                 case "password":
-                    setState({ passwordError: data.message, emailError: "", isLoading: false });
+                    setState({ passwordError: response.message, emailError: "", isLoading: false });
                     passwordRef.current?.focus();
                     break;
                 default:
@@ -125,7 +126,8 @@ const Login: React.FunctionComponent<ILoginOwnProps> = (_props) => {
         } else {
             setState({ isLoading: false });
             setTimeout(() => {
-                dispatch(login(data.data))
+                localStorage.setItem("access_token", response.data?.accessToken!)
+                dispatch(login(response.data))
                 navigate("/");
             }, 1000);
         }
