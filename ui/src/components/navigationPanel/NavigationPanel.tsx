@@ -43,7 +43,7 @@ const NavigationPanel: React.FunctionComponent<INavigatePanelOwnProps> = (props)
     const userPageList: IPageRoute[] = [
         {
             title: "Thông tin cá nhân",
-            route: "/update-information",
+            route: `/profile/${user?._id}`,
             icon: <PersonIcon style={{color: "#5488c7"}} />
         },
         {
