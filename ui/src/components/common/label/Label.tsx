@@ -16,11 +16,11 @@ interface ILabelProps extends HTMLAttributes<HTMLLabelElement> {
 }
 
 const LabelView: React.FunctionComponent<ILabelProps> = (props) => {
-    const { bold, italic, tooltipProps, subTitle, subTitleStyle, ...rest } = props;
-    const className = `${props.className} ${bold ? "g-label-bold" : ""}${italic ? "g-label-italic" : ""} g-label`;
+    const { bold, italic, tooltipProps, subTitle, subTitleStyle, title,  ...rest } = props;
+    const className = `${props.className ?? ""} ${bold ? "g-label-bold" : ""}${italic ? "g-label-italic" : ""} g-label`;
     const onRenderTitle = () => {
         if (subTitle) {
-            const parts = props.title.split(subTitle);
+            const parts = title.split(subTitle);
             return (
                 <>
                     {parts.map((part, index) => (
@@ -34,7 +34,7 @@ const LabelView: React.FunctionComponent<ILabelProps> = (props) => {
                 </>
             );
         }
-        return props.title;
+        return title;
     };
 
     if (!!tooltipProps) {
@@ -52,7 +52,7 @@ const LabelView: React.FunctionComponent<ILabelProps> = (props) => {
         );
     } else {
         return (
-            <label className={className}>
+            <label {...rest} className={className}>
                 {onRenderTitle()}
             </label>
         );

@@ -15,7 +15,7 @@ function App() {
                 <Routes>
                   <Route key={"blog-home"} path="/" element={<Home />} />
                   <Route key={"blog-login"} path="/login" element={isLoggedIn ? <Navigate to={"/"} /> : <Login />} />
-                  <Route key={"blog-register"} path="/register" element={<SignUp />} />
+                  <Route key={"blog-register"} path="/register" element={isLoggedIn ? <Navigate to={"/"} /> : <SignUp />} />
                   <Route key={"blog-user-profile"} path="/profile/:userId" element={<Profile />} />
                 </Routes>
             </BrowserRouter>
