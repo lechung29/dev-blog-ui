@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import { Anchor } from "../filterPanel/FilterPanel";
 import { Box, Button, Stack, SwipeableDrawer } from "@mui/material";
 import { IFunc } from "../../types/Function";
@@ -10,14 +10,11 @@ import { Divider } from "../common/divider/Divider";
 import { ThemeSwitch } from "../themeSwitch/ThemeSwitch";
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import PersonIcon from '@mui/icons-material/Person';
-import HomeIcon from '@mui/icons-material/Home';
-import FavoriteIcon from '@mui/icons-material/Favorite';
 import LogoutIcon from '@mui/icons-material/Logout';
-import GridViewRoundedIcon from '@mui/icons-material/GridViewRounded';
+import SpaceDashboardIcon from '@mui/icons-material/SpaceDashboard';
 import { Link } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { logout } from "../../redux/reducers/users/UserSlice";
-import { RootState } from "../../redux/store/store";
 
 interface INavigatePanelOwnProps {
     placement: Anchor;
@@ -37,24 +34,18 @@ interface IPageRoute {
 const NavigationPanel: React.FunctionComponent<INavigatePanelOwnProps> = (props) => {
     const { open, placement, onClosePanel, onOpenPanel } = props;
     const [isDarkTheme, setIsDarkTheme] = useState<boolean>(false)
-    const {user} = useSelector((state: RootState) => state.user)
     const dispatch = useDispatch();
 
-    const userPageList: IPageRoute[] = [
+    const pageList: IPageRoute[] = [
         {
             title: "Thông tin cá nhân",
-            route: `/profile/${user?._id}`,
+            route: "/profile",
             icon: <PersonIcon style={{color: "#5488c7"}} />
         },
         {
-            title: "Tường",
-            route: "/my-wall",
-            icon: <HomeIcon style={{color: "#5488c7"}}/>
-        },
-        {
-            title: "Yêu thích",
-            route: "/favourites",
-            icon: <FavoriteIcon style={{color: "#5488c7"}}/>
+            title: "Quản lý hoạt động",
+            route: "/Dashboard",
+            icon: <SpaceDashboardIcon style={{color: "#5488c7"}}/>
         },
         {
             title: "Đăng xuất",
@@ -65,18 +56,6 @@ const NavigationPanel: React.FunctionComponent<INavigatePanelOwnProps> = (props)
             }
         }
     ]
-
-    const adminPageList: IPageRoute[] = [{
-        title: "Quản lý",
-        route: "/dashboard",
-        icon: <GridViewRoundedIcon style={{color: "#5488c7"}}/>
-    }, 
-    ...userPageList
-    ]
-
-    const pageList: IPageRoute[] = useMemo(() => {
-        return user?.role === "admin" ? adminPageList : userPageList;
-    }, [user?.role])
 
 
     const onRenderTitle: IFunc<JSX.Element> = () => {

@@ -1,19 +1,23 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useRef } from "react";
 import AppLayout from "../../layout/Layout";
-import { Avatar, Box, Container, Stack, TextField } from "@mui/material";
+import { Avatar, Box, Container, Grid, Stack, TextField } from "@mui/material";
 import "./index.scss";
 import { Label } from "../../components/common/label/Label";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
 import { useImmerState } from "../../hook/useImmerState";
+import { DefaultButton } from "../../components/common/button/defaultbutton/DefaultButton";
+import ChangePasswordDialog from "../../components/changePassword/ChangePasswordDialog";
 interface IProfilePageOwnProps {}
 
 
 interface IProfilePageState {
+  isUpdating: boolean;
 	imageFileUrl?: string;
   displayName?: string;
   email?: string;
+  isOpenChangePassword?: boolean;
 }
 
 
@@ -24,6 +28,8 @@ const Profile: React.FunctionComponent<IProfilePageOwnProps> = (_props) => {
     imageFileUrl: user?.avatar,
     displayName: user?.displayName,
     email: user?.email,
+    isUpdating: false,
+    isOpenChangePassword: false,
   };
 	const [state, setState] = useImmerState<IProfilePageState>(initialState);
 	const avatarPickerRef = useRef<HTMLInputElement | null>(null);
@@ -34,7 +40,6 @@ const Profile: React.FunctionComponent<IProfilePageOwnProps> = (_props) => {
 			setState({ imageFileUrl: URL.createObjectURL(file) });
 		}
 	};
-
 
 	return (
 		<AppLayout>
@@ -56,13 +61,67 @@ const Profile: React.FunctionComponent<IProfilePageOwnProps> = (_props) => {
                   />
 								</div>
 							</Stack>
-              <TextField
-                id="outlined-size-small"
-                className="g-update-section-input-item"
-                label="Tên hiển thị"
-                size="small"
-                value={user?.displayName}
-              />
+              <Grid className="g-update-field-container" container rowSpacing={2} columnSpacing={2}>
+                <Grid className="g-update-field-label" item xs={4} md={3}>
+                  <Label title={"ID của bạn"} />
+                </Grid>
+                <Grid className="g-update-field-input" item xs={8} md={9}>
+                  <TextField
+                    id="g-update-field-id"
+                    className="g-update-section-input-item"
+                    size="small"
+                    disabled
+                    value={user?._id}
+                  />
+                </Grid>
+                <Grid className="g-update-field-label" item xs={4} md={3}>
+                  <Label title={"Tên hiển thị"} />
+                </Grid>
+                <Grid className="g-update-field-input" item xs={8} md={9}>
+                    <TextField
+                    id="g-update-field-displayname"
+                    className="g-update-section-input-item"
+                    name="displayName"
+                    size="small"
+                    value={state.displayName}
+                  />
+                </Grid>
+                <Grid className="g-update-field-label" item xs={4} md={3}>
+                  <Label title={"Email"} />
+                </Grid>
+                <Grid className="g-update-field-input" item xs={8} md={9}>
+                    <TextField
+                    id="g-update-field-email"
+                    className="g-update-section-input-item"
+                    size="small"
+                    value={state.email}
+                  />
+                </Grid>
+              </Grid>
+              <Stack className="g-update-button-container">
+                <DefaultButton 
+                  disabled={state.isUpdating}
+                  className="g-change-password-button"
+                  title="Đổi mật khẩu"
+                  onClick={() => setState({isOpenChangePassword: true})}
+                />
+                {state.isOpenChangePassword && <ChangePasswordDialog 
+                  open={state.isOpenChangePassword}
+                  onClose={() => setState({isOpenChangePassword: false})}
+                />}
+                <DefaultButton 
+                  disabled={state.isUpdating}
+                  isLoading={state.isUpdating}
+                  className="g-update-button"
+                  title="Cập nhật"
+                  iconStyle={{
+                    width: 20,
+                    height: 20,
+                    color: "#fff",
+                  }}
+                  onClick={() => setState({isUpdating: !state.isUpdating})}
+                />
+              </Stack>
 						</Box>
 					</Stack>
 				</Box>
