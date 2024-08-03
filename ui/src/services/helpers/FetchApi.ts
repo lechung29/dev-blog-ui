@@ -40,6 +40,7 @@ export const FetchApi: IFunc3<FetchUrl, FetchMethod, any, Promise<any>> = async 
         }).then((response) => response.json())
         return response;
     } catch (error: any) {
+        console.log(error)
         return error.response.json();
     }
 };

@@ -17,7 +17,7 @@ const DefaultButtonView: React.FunctionComponent<IDefaultButtonProps> = (props) 
     }   
     return <Button
         {...rest}
-        className={`${className} ${props.disabled && "g-disable-button"}`}
+        className={`${className ?? ""} ${props.disabled ? "g-disable-button" : ""}`}
         style={props.buttonStyle}
     >
         {onRenderTitle()} 

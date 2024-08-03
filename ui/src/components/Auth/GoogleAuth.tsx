@@ -7,9 +7,12 @@ import { firebaseApp } from "../../firebase";
 import { AuthService } from "../../services/auth/AuthService";
 import { IRequestStatus } from "../../types/IResponse";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { login } from "../../redux/reducers/users/UserSlice";
 
 const GoogleAuth: React.FunctionComponent = () => {
     const auth = getAuth(firebaseApp)
+    const dispatch = useDispatch()
     const navigate = useNavigate()
     const handleGoogleLogin = async () => {
         const googleProvider = new GoogleAuthProvider()
@@ -22,6 +25,8 @@ const GoogleAuth: React.FunctionComponent = () => {
                 avatar: result.user.photoURL!,
             })
             if (data.requestStatus === IRequestStatus.Success) {
+                localStorage.setItem("access_token", data.data?.accessToken!)
+                dispatch(login(data.data))
                 navigate("/")
             }
         } catch (error) {
