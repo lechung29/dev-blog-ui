@@ -6,21 +6,24 @@ import { SignUp } from "./pages/auth/Register";
 import { useSelector } from "react-redux";
 import { RootState } from "./redux/store/store";
 import Profile from "./pages/profile/Profile";
+import CommonRoute from "./components/PrivateRoute/CommonRoute";
 
 function App() {
-    const isLoggedIn = useSelector((state: RootState) => state.user.isLoggedIn)
-    return (
-        <React.Fragment>
-            <BrowserRouter>
-                <Routes>
-                  <Route key={"blog-home"} path="/" element={<Home />} />
-                  <Route key={"blog-login"} path="/login" element={isLoggedIn ? <Navigate to={"/"} /> : <Login />} />
-                  <Route key={"blog-register"} path="/register" element={isLoggedIn ? <Navigate to={"/"} /> : <SignUp />} />
-                  <Route key={"blog-user-profile"} path="/profile" element={<Profile />} />
-                </Routes>
-            </BrowserRouter>
-        </React.Fragment>
-    );
+	const isLoggedIn = useSelector((state: RootState) => state.user.isLoggedIn);
+	return (
+		<React.Fragment>
+			<BrowserRouter>
+				<Routes>
+					<Route key={"blog-home"} path="/" element={<Home />} />
+					<Route key={"blog-login"} path="/login" element={isLoggedIn ? <Navigate to={"/"} /> : <Login />} />
+					<Route key={"blog-register"} path="/register" element={isLoggedIn ? <Navigate to={"/"} /> : <SignUp />} />
+					<Route element={<CommonRoute />}>
+						<Route key={"blog-user-profile"} path="/profile" element={<Profile />} />
+					</Route>
+				</Routes>
+			</BrowserRouter>
+		</React.Fragment>
+	);
 }
 
 export default App;
