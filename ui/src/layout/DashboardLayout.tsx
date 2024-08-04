@@ -3,6 +3,7 @@ import { Helmet } from "react-helmet";
 import "./index.scss";
 import DashboardHeader from "../components/header/DashboardHeader";
 import DashboardPanel from "../components/dashboardPanel/DashboardPanel";
+import { Toaster } from "react-hot-toast";
 
 interface IDashboardLayoutProps {
 	children: React.ReactNode;
@@ -22,6 +23,11 @@ const DashboardLayout: React.FunctionComponent<IDashboardLayoutProps> = (props) 
 				<div className="g-dashboard-main">
 					<DashboardHeader />
 					<section style={{flex: 1}}>
+						<Toaster 
+							containerClassName="g-toaster-container"
+							position="bottom-right"
+							reverseOrder={false}
+						/>
 						{children}
 					</section>
 				</div>
