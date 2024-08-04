@@ -1,7 +1,18 @@
-.g-app-layout-container {
+.g-app-layout-container  {
     position: relative;
     max-width: 100vw;
     min-height: 100vh;
     margin: 0 auto;
     box-sizing: border-box;
+}
+
+.g-dashboard-layout-container {
+    @extend .g-app-layout-container;
+    display: flex;
+    .g-dashboard-main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+    }
 }

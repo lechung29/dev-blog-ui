@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "./Language.scss";
 import { Stack, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { TooltipHost } from "../common/tooltiphost/TooltipHost";

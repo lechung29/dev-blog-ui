@@ -73,3 +73,33 @@
         }
     }
 }
+
+.g-dashboard-header-section {
+    height: 90px;
+    padding: 0 28px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .g-dashboard-header-searchbox {
+        max-width: 400px;
+        width: 100%;
+        display: flex;
+        .g-searchbox-input-group {
+            flex: 1;
+            width: 100%;
+            display: flex;
+            .g-searchbox-input {
+                flex: 1;
+                max-width: 356px;
+            }
+        }
+    }
+    .g-dashboard-header-info {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 36px;
+    }
+}
