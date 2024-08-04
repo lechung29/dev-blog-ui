@@ -25,7 +25,11 @@ const AppLayout: React.FunctionComponent<ILayoutProps> = (props) => {
             <div className="g-app-layout-container">
                 {!authRoute.has(location.pathname) ? <Header /> : <React.Fragment />}
                 <section style={{ minHeight: authRoute.has(location.pathname) ? "100vh" : "80vh" }}>
-                    <Toaster />
+                    <Toaster 
+						containerClassName="g-toaster-container"
+						position="bottom-right"
+						reverseOrder={false}
+					/>
                     {children}
                 </section>
                 {!authRoute.has(location.pathname) ? <Footer /> : <React.Fragment />}

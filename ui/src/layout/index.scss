@@ -12,7 +12,48 @@
     .g-dashboard-main {
         flex: 1;
         display: flex;
+        padding: 0 1.75rem;
         flex-direction: column;
-        gap: 30px;
+
+        .g-dashboard-content-section {
+            background-color: rgb(245, 245, 247);
+            height: calc(100% - 48px);
+            margin: 8px 0 40px;
+            padding: 8px 24px;
+            border-radius: 12px;
+            overflow-y: auto;
+            overflow-x: auto;
+        }
+    }
+}
+
+
+.g-toaster-container {
+    .go2072408551 {
+        color: #141522;
+        padding: 0 10px;
+        max-width: 400px;
+        width: 100%;
+
+        .go3958317564 {
+            margin: 4px;
+            width: 100%;
+
+            .g-toaster-content {
+                width: 100%;
+                display: flex;
+                align-items: center;
+                gap:4px;
+                justify-content: center;
+
+                .g-toaster-message {
+                    width: 100%;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    font-size: 14px;
+                }
+            }
+        }
     }
 }

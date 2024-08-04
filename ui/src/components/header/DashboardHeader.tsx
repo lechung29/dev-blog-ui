@@ -150,7 +150,7 @@ const DashboardHeader: React.FunctionComponent = () => {
 					</MenuItem>
 					<Divider />
 					{avatarMenuList.map((item, index) => (
-						<MenuItem style={{ display: "flex", gap: "8px" }} onClick={item.onClick}>
+						<MenuItem key={index} style={{ display: "flex", gap: "8px" }} onClick={item.onClick}>
 							{item.icon}
 							<p>{item.title}</p>
 						</MenuItem>
