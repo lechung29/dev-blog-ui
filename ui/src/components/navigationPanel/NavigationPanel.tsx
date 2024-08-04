@@ -13,8 +13,9 @@ import PersonIcon from '@mui/icons-material/Person';
 import LogoutIcon from '@mui/icons-material/Logout';
 import SpaceDashboardIcon from '@mui/icons-material/SpaceDashboard';
 import { Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/reducers/users/UserSlice";
+import { RootState } from "../../redux/store/store";
 
 interface INavigatePanelOwnProps {
     placement: Anchor;
@@ -23,7 +24,7 @@ interface INavigatePanelOwnProps {
     onOpenPanel: () => void;
 }
 
-interface IPageRoute {
+export interface IPageRoute {
     title: string;
     route: string;
     icon: JSX.Element;
@@ -34,6 +35,7 @@ interface IPageRoute {
 const NavigationPanel: React.FunctionComponent<INavigatePanelOwnProps> = (props) => {
     const { open, placement, onClosePanel, onOpenPanel } = props;
     const [isDarkTheme, setIsDarkTheme] = useState<boolean>(false)
+    const user = useSelector((state: RootState) => state.user.user)
     const dispatch = useDispatch();
 
     const pageList: IPageRoute[] = [
@@ -44,7 +46,7 @@ const NavigationPanel: React.FunctionComponent<INavigatePanelOwnProps> = (props)
         },
         {
             title: "Quản lý hoạt động",
-            route: "/Dashboard",
+            route: user?.role === "admin" ? "/admin-dashboard/create-post" : "/user-dashboard/create-post",
             icon: <SpaceDashboardIcon style={{color: "#5488c7"}}/>
         },
         {

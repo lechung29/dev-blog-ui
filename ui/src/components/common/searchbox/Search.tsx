@@ -18,7 +18,7 @@ const Search: React.FunctionComponent<ISearchBoxProps> = (props) => {
     const { className, id, name, placeholder, autoComplete, type, searchIconProps, value, onSearch, ...rest } = props;
     return (
         <div className="g-searchbox-input-group">
-            <input {...rest} type={type} className={`${className} g-searchbox-input`} value={value} id={id} name={name} placeholder={placeholder} autoComplete={autoComplete} />
+            <input {...rest} type={type} className={`${className ?? ""} g-searchbox-input`} value={value} id={id} name={name} placeholder={placeholder} autoComplete={autoComplete} />
             <IconButton onSubmit={() => onSearch()} className="g-searchbox-button" onClick={() => onSearch()} aria-label={searchIconProps?.ariaLabel} size={searchIconProps?.size}>
                 <SearchIcon fontSize={searchIconProps?.fontSize} />
             </IconButton>

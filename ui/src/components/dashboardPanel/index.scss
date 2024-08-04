@@ -1,0 +1,57 @@
+.g-dashboard-panel {
+    padding: 0 1.75rem;
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    .g-dashboard-panel-logo {
+        margin-top: 12px;
+        padding: 20px 0;
+        height: auto;
+    }
+
+    .g-dashboard-panel-content {
+        flex: 1;
+        margin-top: 8px;
+        margin-bottom: 40px;
+        padding: 8px 0;
+        width: 100%;
+        background-color: rgb(245, 245, 247);
+        border-radius: 12px;
+
+        .g-dashboard-list-item {
+            display: flex;
+            align-items: center;
+            justify-self: center;
+            margin: 0 16px 20px;
+            padding: 8px;
+            text-decoration: none;
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: 600;
+            gap: 12px;
+            border-radius: 12px;
+            color: rgb(20, 21, 34);
+        }
+
+        .g-dashboard-list-item.active {
+            background-color: #5488c7;
+            color: #fff;
+
+            svg {
+                color: #fff!important;
+            }
+        }
+
+        .g-dashboard-list-item:hover {
+            background-color: #5488c7;
+            color: #fff;
+
+            svg {
+                color: #fff!important;
+            }
+        }
+    }
+}   

@@ -7,6 +7,9 @@ import { useSelector } from "react-redux";
 import { RootState } from "./redux/store/store";
 import Profile from "./pages/profile/Profile";
 import CommonRoute from "./components/PrivateRoute/CommonRoute";
+import AdminRoute from "./components/PrivateRoute/AdminRoute";
+import UserRoute from "./components/PrivateRoute/UserRoute";
+import CreatePost from "./pages/dashboard/CreatePost";
 
 function App() {
 	const isLoggedIn = useSelector((state: RootState) => state.user.isLoggedIn);
@@ -19,6 +22,12 @@ function App() {
 					<Route key={"blog-register"} path="/register" element={isLoggedIn ? <Navigate to={"/"} /> : <SignUp />} />
 					<Route element={<CommonRoute />}>
 						<Route key={"blog-user-profile"} path="/profile" element={<Profile />} />
+					</Route>
+					<Route path="/admin-dashboard" element={<AdminRoute />}>
+						<Route key={"create-post"} path="create-post" element={<CreatePost />} />
+					</Route>
+					<Route path="/user-dashboard" element={<UserRoute />}>
+						<Route key={"create-post"} path="create-post" element={<CreatePost />} />
 					</Route>
 				</Routes>
 			</BrowserRouter>
