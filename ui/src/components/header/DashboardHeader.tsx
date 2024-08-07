@@ -14,6 +14,8 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import HomeIcon from "@mui/icons-material/Home";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../redux/reducers/users/UserSlice";
+import { Image, ImageFit } from "../common/image/Image";
+import { smallogoSrc } from "../utils/common/common";
 
 export interface IDashboardHeaderState {
 	search?: string;
@@ -29,6 +31,8 @@ const DashboardHeader: React.FunctionComponent = () => {
 	const [isDarkTheme, setIsDarkTheme] = useState<boolean>(false);
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
+	const logoHeight: Readonly<number> = 34;
+	const logoWidth: Readonly<number> = 250;
 	const [state, setState] = useImmerState<IDashboardHeaderState>(initialState);
 	const { user } = useSelector((state: RootState) => state.user);
 	const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -83,6 +87,9 @@ const DashboardHeader: React.FunctionComponent = () => {
 
 	return (
 		<div className="g-dashboard-header-section">
+			<div className="g-dashboard-panel-logo">
+				<Image src={smallogoSrc} objectFit={ImageFit.COVER} width={logoWidth} height={logoHeight} alt={"logo"} />
+			</div>
 			<div className="g-dashboard-header-searchbox">
 				<Search
 					id="id-g-searchbox-devblog"

@@ -1,19 +1,14 @@
 import React from "react";
 import "./index.scss";
-import { Image, ImageFit } from "../common/image/Image";
-import { smallogoSrc } from "../utils/common/common";
+// import { Image, ImageFit } from "../common/image/Image";
+// import { smallogoSrc } from "../utils/common/common";
 import { List, ListItemIcon } from "@mui/material";
 import { NavLink } from "react-router-dom";
 import { userPanelList } from "./index";
 
 const DashboardPanel: React.FunctionComponent = () => {
-	const logoHeight: Readonly<number> = 34;
-	const logoWidth: Readonly<number> = 250;
 	return (
 		<div className="g-dashboard-panel">
-			<div className="g-dashboard-panel-logo">
-				<Image src={smallogoSrc} objectFit={ImageFit.COVER} width={logoWidth} height={logoHeight} alt={"logo"} />
-			</div>
 			<div className="g-dashboard-panel-content">
 				<List sx={{ width: "100%", maxWidth: 360 }} component="nav" aria-labelledby="nested-list-subheader">
 					{userPanelList.map((item, index) => (

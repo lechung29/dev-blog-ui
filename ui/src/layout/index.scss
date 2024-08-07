@@ -10,19 +10,17 @@
     @extend .g-app-layout-container;
     display: flex;
     .g-dashboard-main {
-        flex: 1;
-        display: flex;
-        padding: 0 1.75rem;
-        flex-direction: column;
+        padding-right: 1.75rem;
 
         .g-dashboard-content-section {
             background-color: rgb(245, 245, 247);
             height: calc(100% - 48px);
             margin: 8px 0 40px;
-            padding: 8px 24px;
+            padding: 24px;
             border-radius: 12px;
             overflow-y: auto;
             overflow-x: auto;
+            flex: 1;
         }
     }
 }

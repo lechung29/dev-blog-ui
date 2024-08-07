@@ -19,15 +19,11 @@ const DashboardLayout: React.FunctionComponent<IDashboardLayoutProps> = (props) 
 				<title>{title}</title>
 			</Helmet>
 			<div className="g-dashboard-layout-container">
-				<DashboardPanel />
 				<div className="g-dashboard-main">
 					<DashboardHeader />
-					<section style={{flex: 1}}>
-						<Toaster 
-							containerClassName="g-toaster-container"
-							position="bottom-right"
-							reverseOrder={false}
-						/>
+					<section style={{ display: "flex", height: 'calc(100vh - 90px)' }}>
+						<Toaster containerClassName="g-toaster-container" position="bottom-right" reverseOrder={false} />
+						<DashboardPanel />
 						{children}
 					</section>
 				</div>
