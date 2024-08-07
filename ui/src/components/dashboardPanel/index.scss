@@ -1,26 +1,17 @@
 .g-dashboard-panel {
     padding: 0 1.75rem;
     width: 250px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-
-    .g-dashboard-panel-logo {
-        margin-top: 12px;
-        padding: 20px 0;
-        height: auto;
-    }
+    margin-top: 8px;
+    margin-bottom: 40px;
 
     .g-dashboard-panel-content {
         flex: 1;
-        margin-top: 8px;
-        margin-bottom: 40px;
+        height: 100%;
         padding: 8px 0;
         width: 100%;
         background-color: rgb(245, 245, 247);
         border-radius: 12px;
-
+        overflow-y: auto;
         .g-dashboard-list-item {
             display: flex;
             align-items: center;

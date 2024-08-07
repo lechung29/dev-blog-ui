@@ -32,7 +32,7 @@ const DashboardHeader: React.FunctionComponent = () => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const logoHeight: Readonly<number> = 34;
-	const logoWidth: Readonly<number> = 250;
+	const logoWidth: Readonly<number> = 240;
 	const [state, setState] = useImmerState<IDashboardHeaderState>(initialState);
 	const { user } = useSelector((state: RootState) => state.user);
 	const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);

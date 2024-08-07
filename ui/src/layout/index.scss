@@ -11,7 +11,9 @@
     display: flex;
     .g-dashboard-main {
         padding-right: 1.75rem;
-
+        width: 100%;
+        display: flex;
+        flex-direction: column;
         .g-dashboard-content-section {
             background-color: rgb(245, 245, 247);
             height: calc(100% - 48px);

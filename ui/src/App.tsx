@@ -10,6 +10,7 @@ import CommonRoute from "./components/PrivateRoute/CommonRoute";
 import AdminRoute from "./components/PrivateRoute/AdminRoute";
 import UserRoute from "./components/PrivateRoute/UserRoute";
 import CreatePost from "./pages/dashboard/createpost/CreatePost";
+import UserPostManagement from "./pages/dashboard/postmanagement/user/UserPostManagement";
 
 function App() {
 	const isLoggedIn = useSelector((state: RootState) => state.user.isLoggedIn);
@@ -28,6 +29,7 @@ function App() {
 					</Route>
 					<Route path="/user-dashboard" element={<UserRoute />}>
 						<Route key={"create-post"} path="create-post" element={<CreatePost />} />
+						<Route key={"user-post-management"} path="post-management" element={<UserPostManagement />} />
 					</Route>
 				</Routes>
 			</BrowserRouter>

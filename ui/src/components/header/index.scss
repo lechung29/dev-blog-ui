@@ -80,18 +80,19 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-
+    gap: 1rem;
     .g-dashboard-header-searchbox {
-        max-width: 400px;
         width: 100%;
         display: flex;
+        flex: 1;
         .g-searchbox-input-group {
-            flex: 1;
             width: 100%;
             display: flex;
+            justify-content: center;
             .g-searchbox-input {
                 flex: 1;
-                max-width: 356px;
+                max-width: 500px;
+                min-width: 180px;
             }
         }
     }
@@ -99,6 +100,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        gap: 36px;
+        gap: 1.5rem;
+        width: 240px;
     }
 }
