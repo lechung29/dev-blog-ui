@@ -1,7 +1,7 @@
 import { useCallback, useRef, useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import { htmlToMarkdown, markdownToHtml } from "../../pages/dashboard/Parse";
+import { htmlToMarkdown, markdownToHtml } from "../../pages/dashboard/createpost/Parse";
 import uploadToCloudinary from "../../services/helpers/upload";
 import "./index.scss";
 
