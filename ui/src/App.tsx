@@ -9,7 +9,7 @@ import Profile from "./pages/profile/Profile";
 import CommonRoute from "./components/PrivateRoute/CommonRoute";
 import AdminRoute from "./components/PrivateRoute/AdminRoute";
 import UserRoute from "./components/PrivateRoute/UserRoute";
-import CreatePost from "./pages/dashboard/CreatePost";
+import CreatePost from "./pages/dashboard/createpost/CreatePost";
 
 function App() {
 	const isLoggedIn = useSelector((state: RootState) => state.user.isLoggedIn);
