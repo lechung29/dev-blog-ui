@@ -6,21 +6,32 @@ import { Autocomplete, Chip, Grid, ListItem, Paper, Stack, TextField } from "@mu
 import { useImmerState } from "../../hook/useImmerState";
 import { IPostCategoryValue, PostCategoryList } from "./util";
 import { renderToast } from "../../utils/utils";
+import "react-quill/dist/quill.snow.css";
+import Editor from "../../components/posteditor/Editor";
 
 interface ICreatePostOwnProps {}
+
+export interface EditorContentChanged {
+	html: string;
+	markdown: string;
+}
 
 interface ICreatePostState {
 	categoryInput: string;
 	categoryValue: IPostCategoryValue | null;
 	postTitle: string;
 	tags: string[];
+	postContent: string;
+	postThumbnails: string | null;
 }
 
 const initialState: ICreatePostState = {
 	categoryInput: "",
 	categoryValue: null,
 	postTitle: "",
-	tags: ["All", "React"],
+	tags: [],
+	postContent: "",
+	postThumbnails: null,
 };
 
 const CreatePost: React.FunctionComponent<ICreatePostOwnProps> = (props) => {
@@ -36,13 +47,21 @@ const CreatePost: React.FunctionComponent<ICreatePostOwnProps> = (props) => {
 			renderToast("error", "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddđ");
 		}
 	};
+
+	const handlePostThumbailsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const file = e.target.files?.[0];
+		if (file) {
+			setState({ postThumbnails: URL.createObjectURL(file) });
+		}
+	};
+
 	return (
 		<DashboardLayout>
 			<div className="g-dashboard-content-section">
 				<Stack display={"flex"} width={"100%"} justifyContent={"center"} alignItems={"center"}>
 					<Label className="g-dashboard-content-title" title="Tạo bài post" bold />
 				</Stack>
-				<Grid container spacing={1}>
+				<Grid container spacing={2}>
 					<Grid style={{ display: "flex", flexDirection: "column" }} item sm={4} xs={12} md={4}>
 						<Label className="g-create-post-title" title="Danh mục" />
 						<Autocomplete
@@ -76,19 +95,31 @@ const CreatePost: React.FunctionComponent<ICreatePostOwnProps> = (props) => {
 								display: "flex",
 								justifyContent: "center",
 								listStyle: "none",
-								p: 0.5,
 								m: 0,
 							}}
 							component="ul"
+							className="g-create-post-tag-list"
 						>
 							{state.tags.map((data) => {
 								return (
-									<ListItem key={`${data}-key`}>
-										<Chip label={data} onDelete={data === "All" ? undefined : handleDeleteTags(data)} />
+									<ListItem className="g-create-post-tag-list-item" key={`${data}-key`}>
+										<Chip className="g-create-post-tag-list-chip" label={data} onDelete={data === "All" ? undefined : handleDeleteTags(data)} />
 									</ListItem>
 								);
 							})}
 						</Paper>
+					</Grid>
+					<Grid style={{ display: "flex", flexDirection: "column" }} item sm={12} xs={12} md={12}>
+						<form className="form">
+							<span className="form-title">Tải ảnh thumbnail</span>
+							<label htmlFor="file-input" className="drop-container">
+								<input type="file" accept="image/*" id="file-input" onChange={handlePostThumbailsChange} />
+							</label>
+						</form>
+					</Grid>
+					<Grid style={{ display: "flex", flexDirection: "column" }} item sm={12} xs={12} md={12}>
+						<Editor onChange={(e) => setState({ postContent: e.html })} />
+						{/* <div dangerouslySetInnerHTML={{__html: state.postContent}}></div> */}
 					</Grid>
 				</Grid>
 			</div>
