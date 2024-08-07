@@ -12,6 +12,8 @@
 	.g-create-post-tag-list-item {
 		padding-top: 4px !important;
 		padding-bottom: 4px !important;
+		padding-left: 8px!important;
+		padding-right: 8px!important;
 		width: auto;
 		.g-create-post-tag-list-chip {
 			height: 100%;
@@ -93,4 +95,8 @@
 
 #file-input::file-selector-button:hover {
 	background: #0d45a5;
+}
+
+.g-create-post-submit-btn:hover {
+	background: #0d45a5!important;
 }

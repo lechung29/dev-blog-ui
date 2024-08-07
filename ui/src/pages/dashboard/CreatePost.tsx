@@ -8,6 +8,7 @@ import { IPostCategoryValue, PostCategoryList } from "./util";
 import { renderToast } from "../../utils/utils";
 import "react-quill/dist/quill.snow.css";
 import Editor from "../../components/posteditor/Editor";
+import { DefaultButton } from "../../components/common/button/defaultbutton/DefaultButton";
 
 interface ICreatePostOwnProps {}
 
@@ -43,7 +44,7 @@ const CreatePost: React.FunctionComponent<ICreatePostOwnProps> = (props) => {
 
 	const handleKeyDown = (event) => {
 		if (event.key === "Enter") {
-			setState({ tags: [...state.tags, "vuejs"] });
+			setState({ tags: [...state.tags, "Machine learning 111"] });
 			renderToast("error", "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddđ");
 		}
 	};
@@ -117,9 +118,29 @@ const CreatePost: React.FunctionComponent<ICreatePostOwnProps> = (props) => {
 							</label>
 						</form>
 					</Grid>
-					<Grid style={{ display: "flex", flexDirection: "column" }} item sm={12} xs={12} md={12}>
+					<Grid style={{ display: "flex", flexDirection: "column", marginBottom: "4rem" }} item sm={12} xs={12} md={12}>
 						<Editor onChange={(e) => setState({ postContent: e.html })} />
 						{/* <div dangerouslySetInnerHTML={{__html: state.postContent}}></div> */}
+					</Grid>
+					<Grid style={{ display: "flex", flexDirection: "row", justifyContent: "flex-end", paddingBottom: 16 }} item sm={12} xs={12} md={12}>
+						<DefaultButton
+							className="g-create-post-submit-btn"
+							title="Xác nhận"
+							variant="contained"
+							buttonStyle={{
+								backgroundColor: "#5488c7",
+								textTransform: "capitalize",
+								fontSize: 13,
+								height: 36,
+								width: 120
+							}}
+							iconStyle={{
+								width: 20,
+								height: 20,
+								color: "#fff",
+							}}
+							isLoading={false}
+						/>
 					</Grid>
 				</Grid>
 			</div>
