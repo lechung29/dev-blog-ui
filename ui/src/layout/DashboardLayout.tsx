@@ -21,7 +21,7 @@ const DashboardLayout: React.FunctionComponent<IDashboardLayoutProps> = (props) 
 			<div className="g-dashboard-layout-container">
 				<div className="g-dashboard-main">
 					<DashboardHeader />
-					<section style={{ display: "flex", height: 'calc(100vh - 90px)' }}>
+					<section style={{ display: "flex", height: "calc(100vh - 90px)" }}>
 						<Toaster containerClassName="g-toaster-container" position="bottom-right" reverseOrder={false} />
 						<DashboardPanel />
 						{children}
