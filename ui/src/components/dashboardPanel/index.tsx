@@ -22,7 +22,7 @@ export const userPanelList: IPageRoute[] = [
     },
     {
         title: "Yêu thích",
-        route: "/user-dashboard/favorite-management",
+        route: "/user-dashboard/favourite-management",
         icon: <FavoriteIcon style={{color: "rgb(20, 21, 34)"}} />
     }
 ]
