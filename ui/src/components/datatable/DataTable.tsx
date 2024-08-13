@@ -43,6 +43,7 @@ const DataTable = React.forwardRef((props: IDataTabelProps, ref) => {
                 pageSizeOptions={[5,10]}
 				checkboxSelection
 				onRowSelectionModelChange={onSelection}
+				disableRowSelectionOnClick
                 disableColumnMenu
                 rowHeight={48}
 				columnVisibilityModel={{
