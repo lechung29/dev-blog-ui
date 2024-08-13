@@ -10,6 +10,8 @@ import EditIcon from "@mui/icons-material/Edit";
 import { IconButton } from "../../../../components/common/button/iconbutton/IconButton";
 import "./index.scss";
 import ConfirmDialog from "../../../../components/common/confirmDialog/ConfirmDialog";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../../redux/store/store";
 
 interface IPostManagementState {
 	items: any[];
@@ -30,6 +32,7 @@ const initialState: IPostManagementState = {
 };
 
 const UserPostManagement = () => {
+	const isAdmin = useSelector((state: RootState) => state.user.user?.role)
 	const [state, setState] = useImmerState<IPostManagementState>(initialState);
 	const dataTableRef = useRef<IDataTabelRef>(null);
 
@@ -74,7 +77,7 @@ const UserPostManagement = () => {
 		<DashboardLayout>
 			<div className="g-dashboard-content-section">
 				<Stack marginBottom={"0.5rem"} flexDirection={"row"} display={"flex"} alignItems={"center"} justifyContent={"flex-end"} gap={3}>
-					{state.selectedItems.length === 1 && <IconButton size="small" className="g-edit-action-button" icon={<EditIcon />} onClick={() => setState({ isOpenUpdateDialog: true })} />}
+					{isAdmin === "admin" && state.selectedItems.length === 1 && <IconButton size="small" className="g-edit-action-button" icon={<EditIcon />} onClick={() => setState({ isOpenUpdateDialog: true })} />}
 					{state.selectedItems.length > 0 && <IconButton size="small" className="g-delete-action-button" icon={<DeleteIcon />} onClick={() => setState({ isOpenDeleteDialog: true })} />}
 					<IconButton size="small" isReloadButton rotate={state.isLoading} className="g-reload-action-button" onClick={handleReload} />
 				</Stack>
