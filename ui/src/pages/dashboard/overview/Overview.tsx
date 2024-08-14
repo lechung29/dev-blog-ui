@@ -1,17 +1,36 @@
 import React from "react";
 import DashboardLayout from "../../../layout/DashboardLayout";
-import { Stack } from "@mui/material";
+import { Skeleton, Stack } from "@mui/material";
 import "./index.scss";
-import { PieChart } from "@mui/x-charts/PieChart";
+import { PieChart } from "../../../components/common/chart/piechart/PieChart";
+import { BarChart } from "../../../components/common/chart/barchart/BarChart";
 
 const Overview: React.FunctionComponent = () => {
+	const dataSet = [
+		{ month: "Jan", post: 120 },
+		{ month: "Feb", post: 200 },
+		{ month: "Mar", post: 90 },
+		{ month: "Apr", post: 18 },
+		{ month: "May", post: 323 },
+		{ month: "Jun", post: 123 },
+		{ month: "Jul", post: 102 },
+		{ month: "Aug", post: 300 },
+		{ month: "Sep", post: 123 },
+		{ month: "Oct", post: 11 },
+		{ month: "Nov", post: 150 },
+		{ month: "Dec", post: 50 },
+	];
 	return (
 		<DashboardLayout>
 			<div className="g-dashboard-content-section">
-				<Stack display={"flex"} marginBottom={3} flexDirection={"row"} alignItems={"center"} justifyContent={"space-between"} gap={4} flexWrap={"wrap"}>
+				<Stack display={"flex"} marginBottom={5} flexDirection={"row"} alignItems={"center"} justifyContent={"space-between"} gap={4} flexWrap={"wrap"}>
 					<div className="g-overview-card g-overview-all-post">
-						<h4>Tổng bài viết của bạn</h4>
-						<p>123</p>
+						<h4>
+							<Skeleton />
+						</h4>
+						<p>
+							<Skeleton />
+						</p>
 					</div>
 					<div className="g-overview-card g-overview-month-post">
 						<h4>Bài viết trong tháng</h4>
@@ -24,17 +43,17 @@ const Overview: React.FunctionComponent = () => {
 				</Stack>
 				<Stack display={"flex"} flexDirection={"row"} alignItems={"center"} justifyContent={"space-between"} gap={3}>
 					<PieChart
-						series={[
-							{
-								data: [
-									{ id: 0, value: 10, label: "series A" },
-									{ id: 1, value: 15, label: "series B" },
-									{ id: 2, value: 20, label: "series C" },
-								],
-							},
+						chartTitle={"Biểu đồ số bài viết theo thể loại"}
+						data={[
+							{ id: 0, value: 100, label: "reactjs" },
+							{ id: 1, value: 50, label: "node" },
 						]}
-						width={400}
-						height={200}
+					/>
+					<BarChart
+						chartTitle="Biểu đồ bài viết của bạn qua các tháng"
+						chartCategoryLabel="Số lượng"
+						dataColumns={[{ dataKey: "post", label: "All post" }]}
+						dataSet={dataSet}
 					/>
 				</Stack>
 			</div>
