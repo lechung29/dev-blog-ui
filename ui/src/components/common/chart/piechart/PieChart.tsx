@@ -13,6 +13,8 @@ interface IPieChartDataProps {
 interface IPieChartProps {
 	data: IPieChartDataProps[];
     chartTitle: string;
+	width: number;
+	height: number;
 }
 
 const PieChartView: React.FunctionComponent<IPieChartProps> = (props) => {
@@ -37,8 +39,8 @@ const PieChartView: React.FunctionComponent<IPieChartProps> = (props) => {
 						data: props.data,
 					},
 				]}
-				width={400}
-				height={200}
+				width={props.width}
+				height={props.height}
 			/>
 		</Stack>
 	);
