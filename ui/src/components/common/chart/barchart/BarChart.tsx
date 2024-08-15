@@ -13,6 +13,8 @@ interface IBarChartDataProps {
 interface IBarChartProps {
 	chartTitle: string;
 	chartCategoryLabel: string;
+	width: number;
+	height: number;
 	dataColumns: IBarChartDataProps[],
     dataSet: any[]
 }
@@ -24,8 +26,8 @@ const BarChartView: React.FunctionComponent<IBarChartProps> = (props) => {
 				label: props.chartCategoryLabel,
 			},
 		],
-		width: 500,
-		height: 200,
+		width: props.width,
+		height: props.height,
 		sx: {
 			[`.${axisClasses.left} .${axisClasses.label}`]: {
 				transform: "translate(-20px, 0)",

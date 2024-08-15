@@ -44,6 +44,8 @@ const Overview: React.FunctionComponent = () => {
 				<Stack display={"flex"} flexDirection={"row"} alignItems={"center"} justifyContent={"space-between"} gap={3}>
 					<PieChart
 						chartTitle={"Biểu đồ số bài viết theo thể loại"}
+						width={400}
+						height={280}
 						data={[
 							{ id: 0, value: 100, label: "reactjs" },
 							{ id: 1, value: 50, label: "node" },
@@ -52,6 +54,8 @@ const Overview: React.FunctionComponent = () => {
 					<BarChart
 						chartTitle="Biểu đồ bài viết của bạn qua các tháng"
 						chartCategoryLabel="Số lượng"
+						height={280}
+						width={500}
 						dataColumns={[{ dataKey: "post", label: "All post" }]}
 						dataSet={dataSet}
 					/>
