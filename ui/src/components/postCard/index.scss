@@ -21,6 +21,7 @@
             display: flex;
             align-items: center;
             justify-content: flex-start;
+            height: 18px;
             .g-post-card-author {
                 font-size: 12px;
                 color: #5488c7;
@@ -46,7 +47,8 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-
+            flex: 1;
+            font-size: 16px;
             span {
                 color: #1b1b1b;
                 font-weight: 500;
@@ -63,7 +65,7 @@
             align-items: center;
             justify-content: start;
             gap: 4px;
-
+            height: 20px;
             .g-post-card-category-item {
                 padding: 4px;
                 max-width: 200px;
@@ -87,7 +89,7 @@
             align-items: center;
             justify-content: flex-start;
             gap: 10px;
-
+            height: 20px;
             .g-post-card-reaction-item {
                 display: flex;
                 align-items: center;

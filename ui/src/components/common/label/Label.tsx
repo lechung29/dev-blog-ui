@@ -13,19 +13,21 @@ interface ILabelProps extends HTMLAttributes<HTMLLabelElement> {
     title: string;
     subTitle?: string;
     subTitleStyle?: React.CSSProperties;
+    startIcon?: JSX.Element;
+    endIcon?: JSX.Element;
 }
 
 const LabelView: React.FunctionComponent<ILabelProps> = (props) => {
     const { bold, italic, tooltipProps, subTitle, subTitleStyle, title,  ...rest } = props;
     const className = `${props.className ?? ""} ${bold ? "g-label-bold" : ""}${italic ? "g-label-italic" : ""} g-label`;
     const onRenderTitle = () => {
-        if (subTitle) {
+        if (subTitle && (title.includes(subTitle) || title.includes(subTitle.toLocaleLowerCase()))) {
             const parts = title.split(subTitle);
             return (
                 <>
                     {parts.map((part, index) => (
                         <React.Fragment key={index}>
-                            {part}
+                            <span>{part}</span>
                             {index < parts.length - 1 && (
                                 <span style={subTitleStyle}>{subTitle}</span>
                             )}
@@ -46,14 +48,18 @@ const LabelView: React.FunctionComponent<ILabelProps> = (props) => {
                 placement={props.tooltipProps?.placement}
             >
                 <label {...rest}  className={className}>
+                    {props.startIcon ?? <></>}
                     {onRenderTitle()}
+                    {props.endIcon ?? <></>}
                 </label>
             </TooltipHost>
         );
     } else {
         return (
             <label {...rest} className={className}>
+                {props.startIcon ?? <></>}
                 {onRenderTitle()}
+                {props.endIcon ?? <></>}
             </label>
         );
     }
