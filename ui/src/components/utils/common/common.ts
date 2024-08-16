@@ -1,4 +1,4 @@
-const defaultAppTitle: string = "DEVBLOG - Dev bàn luận";
+const defaultAppTitle: string = "DEVBLOG";
 const loginTitle: string = "DEVBLOG - Đăng nhập";
 const signUpTitle: string = "DEVBLOG - Đăng ký"
 const AppName = "DEVBLOG";

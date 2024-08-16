@@ -4,7 +4,13 @@
     padding: 2rem 4.5rem;
     display: flex;
     flex-direction: row;
-    align-items: center;
+    align-items: start;
     justify-content: center;
     flex-wrap: wrap;
+}
+
+.MuiTabs-flexContainer {
+    display: flex;
+    width: 100%;
+    align-items: center;
 }

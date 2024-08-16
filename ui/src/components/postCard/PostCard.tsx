@@ -4,12 +4,14 @@ import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import ModeCommentIcon from '@mui/icons-material/ModeComment';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import "./index.scss"
-import { TooltipHost } from "../common/tooltiphost/TooltipHost";
+import { ITooltipHostPlacement, TooltipHost } from "../common/tooltiphost/TooltipHost";
+import { Label } from "../common/label/Label";
 
 export interface IPostCardItemProps {
     postAuthor: string;
     authorAvatar: string;
     title: string;
+    subTitle?: string;
     postCreatedAt: string;
     category: string;
     postComment: any[];
@@ -27,9 +29,21 @@ const PostCard: React.FunctionComponent<IPostCardItemProps> = (props) => {
                     <span className="g-post-card-time-created">{props.postCreatedAt}</span>
                 </div>
                 <div className="g-post-card-title">
-                    <TooltipHost title={props.title}>
-                        <span>{props.title}</span>
-                    </TooltipHost>
+                    <Label
+                        title={props.title}
+                        subTitle={props.subTitle}
+                        subTitleStyle={{
+                            color: "#5488c7",
+                            fontWeight: 600,
+                        }}
+                        tooltipProps={{
+                            arrow: true,
+                            placement: ITooltipHostPlacement.Top
+                        }}
+                        style={{
+                            cursor: "pointer",
+                        }}
+                    />
                 </div>
                 <div className="g-post-card-category">
                     <p className="g-post-card-category-item">{props.category}</p>
@@ -37,19 +51,19 @@ const PostCard: React.FunctionComponent<IPostCardItemProps> = (props) => {
                 <div className="g-post-card-reaction">
                     <TooltipHost title={"Lượt thích: 7"}>
                         <div className="g-post-card-reaction-item">
-                            <RemoveRedEyeIcon style={{color: "#9b9b9b",  fontSize: 14}} />
+                            <RemoveRedEyeIcon style={{ color: "#9b9b9b", fontSize: 14 }} />
                             <span>{7}</span>
                         </div>
                     </TooltipHost>
                     <TooltipHost title={`Bình luận: ${props.postComment.length}`}>
                         <div className="g-post-card-reaction-item">
-                            <ModeCommentIcon style={{color: "#9b9b9b", fontSize: 14}} />
+                            <ModeCommentIcon style={{ color: "#9b9b9b", fontSize: 14 }} />
                             <span>{props.postComment.length}</span>
                         </div>
                     </TooltipHost>
                     <TooltipHost title={"Bookmark: 1"}>
                         <div className="g-post-card-reaction-item">
-                            <BookmarkIcon style={{color: "#9b9b9b", fontSize: 14}} />
+                            <BookmarkIcon style={{ color: "#9b9b9b", fontSize: 14 }} />
                             <span>{1}</span>
                         </div>
                     </TooltipHost>
