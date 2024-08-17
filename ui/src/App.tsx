@@ -14,6 +14,7 @@ import UserPostManagement from "./pages/dashboard/postmanagement/user/UserPostMa
 import FavouritePost from "./pages/dashboard/favouritepost/FavouritePost";
 import Overview from "./pages/dashboard/overview/Overview";
 import SearchPage from "./pages/search/SearchPage";
+import PostPage from "./pages/post/PostPage";
 
 function App() {
 	const isLoggedIn = useSelector((state: RootState) => state.user.isLoggedIn);
@@ -25,6 +26,7 @@ function App() {
 					<Route key={"blog-login"} path="/login" element={isLoggedIn ? <Navigate to={"/"} /> : <Login />} />
 					<Route key={"blog-register"} path="/register" element={isLoggedIn ? <Navigate to={"/"} /> : <SignUp />} />
 					<Route key={"blog-search"} path="/search/:searchText" element={<SearchPage />}/>
+					<Route key={"blog-post"} path="/post/:postId" element={<PostPage />} />
 					<Route element={<CommonRoute />}>
 						<Route key={"blog-user-profile"} path="/profile" element={<Profile />} />
 					</Route>
