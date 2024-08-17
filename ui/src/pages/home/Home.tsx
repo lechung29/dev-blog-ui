@@ -13,6 +13,7 @@ import QuestionCard from "../../components/questionCard/QuestionCard";
 import { Link } from "react-router-dom";
 import { FilterPanel } from "../../components/filterPanel/FilterPanel";
 import { useImmerState } from "../../hook/useImmerState";
+import { Pagination } from "../../components/pagination/Pagination";
 
 interface IHomePageOwnProps {
 
@@ -20,10 +21,12 @@ interface IHomePageOwnProps {
 interface IHomePageState {
     isFilterPanelOpen: boolean;
     posts?: any[]
+    currentPage: number
 }
 
 const initialState: IHomePageState = {
     isFilterPanelOpen: false,
+    currentPage: 1
 }
 
 const Home: React.FunctionComponent<IHomePageOwnProps> = (_props) => {
@@ -81,6 +84,19 @@ const Home: React.FunctionComponent<IHomePageOwnProps> = (_props) => {
                                 key={post._id}
                             />
                         ))}
+                    </Stack>
+                    <Stack 
+                        display={"flex"}
+                        justifyContent={"center"}
+                        alignItems={"center"}
+                        flexDirection={"row"}
+                        marginTop={4}
+                    >
+                        <Pagination 
+                            maxPages={10}
+                            currentPage={state.currentPage}
+                            onChangePage={(page) => setState({currentPage: page})}
+                        />
                     </Stack>
                 </Box>
                 <Box 
