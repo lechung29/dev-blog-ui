@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useState } from 'react'
 import AppLayout from '../../layout/Layout'
 import "./index.scss"
 import { Button, ButtonGroup, Chip, Stack, Typography } from '@mui/material'
@@ -7,6 +7,7 @@ import ModeCommentOutlinedIcon from '@mui/icons-material/ModeCommentOutlined';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import Comment from '../../components/postcomment/Comment';
 import ModeCommentIcon from '@mui/icons-material/ModeComment';
+import CommentItem from '../../components/postcomment/CommentItem';
 interface IPostPageProps {
 
 }
@@ -15,7 +16,6 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
     const [isLike, setIsLike] = useState(false)
     const [showComment, setShowComment] = useState(false)
     const [commentValue, setCommentValue] = useState("")
-    const commentRef = useRef<HTMLTextAreaElement | null>(null)
     return (
         <AppLayout>
             <div className='g-post-page-content-section'>
@@ -133,10 +133,11 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
                 </Stack>
                 {showComment && <Stack
                     display={"flex"}
-                    alignItems={"center"}
-                    justifyContent={"flex-start"}
+                    alignItems={"flex-start"}
+                    justifyContent={"center"}
                     width={"100%"}
-                    flexDirection={"row"}
+                    flexDirection={"column"}
+                    gap={2}
                 >
                     <Comment
                         className='g-post-comment-textarea'
@@ -144,12 +145,60 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
                         minRows={4}
                         maxRows={4}
                         value={commentValue}
-                        ref={commentRef}
                         onChange={(e) => {
                             setCommentValue(e.target.value)
                         }}
                     />
+                    <Stack
+                        display={"flex"}
+                        alignItems={"center"}
+                        justifyContent={"flex-end"}
+                        flexDirection={"row"}
+                        width={"70%"}
+                        gap={2}
+                    >
+                        <Button
+                            variant="outlined"
+                            size="small"
+                            style={{
+                                backgroundColor: "transparent",
+                                color: "#9b9b9b",
+                                textTransform: "none",
+                                borderColor: "#9b9b9b"
+                            }}
+                            onClick={() => {
+                                setShowComment(false)
+                                setCommentValue("")
+                            }}
+                        >
+                            Hủy bỏ
+                        </Button>
+                        <Button
+                            variant="contained"
+                            size="small"
+                            style={{
+                                backgroundColor: "#5488c7",
+                                color: "#fff",
+                                textTransform: "none",
+                            }}
+                        >
+                            Đăng
+                        </Button>
+                    </Stack>
                 </Stack>}
+                <Stack
+                    display={"flex"}
+                    alignItems={"flex-start"}
+                    flexDirection={"column"}
+                    justifyContent={"center"}
+                    gap={2}
+                    width={"100%"}
+                    marginTop={"1rem"}
+                >
+                    <CommentItem />
+                    <CommentItem />
+                    <CommentItem />
+                </Stack>
             </div>
         </AppLayout>
     )
