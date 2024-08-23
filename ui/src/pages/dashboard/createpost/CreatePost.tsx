@@ -67,11 +67,11 @@ const CreatePost: React.FunctionComponent<ICreatePostOwnProps> = (props) => {
 						<Label className="g-create-post-title" title="Danh mục" />
 						<Autocomplete
 							value={state.categoryValue}
-							onChange={(event: any, newValue: IPostCategoryValue | null) => {
+							onChange={(_event: any, newValue: IPostCategoryValue | null) => {
 								setState({ categoryValue: newValue });
 							}}
 							inputValue={state.categoryInput}
-							onInputChange={(event, newInputValue) => {
+							onInputChange={(_event, newInputValue) => {
 								setState({ categoryInput: newInputValue });
 							}}
 							id="controllable-states-demo"
