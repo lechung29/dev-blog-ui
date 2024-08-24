@@ -3,13 +3,15 @@ import ClearIcon from "@mui/icons-material/Clear";
 import { IconButton } from "@mui/material";
 import ErrorIcon from "@mui/icons-material/Error";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-export type IToastProps = "success" | "error";
-
+export enum IToastProps {
+	success = "success",
+	error = "error"
+} 
 export const renderToast = (type: IToastProps, message: string) => {
 	toast(
 		(t) => (
 			<div className="g-toaster-content">
-				{type === "success" ? <CheckCircleIcon color="success" /> : <ErrorIcon color="error" />}
+				{type === IToastProps.success ? <CheckCircleIcon color="success" /> : <ErrorIcon color="error" />}
 				<p className="g-toaster-message">{message}</p>
 				<IconButton onClick={() => toast.dismiss(t.id)}>
 					<ClearIcon />
@@ -17,7 +19,7 @@ export const renderToast = (type: IToastProps, message: string) => {
 			</div>
 		),
 		{
-			duration: 6000,
+			duration: 3000,
 		}
 	);
 };

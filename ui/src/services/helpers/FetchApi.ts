@@ -1,4 +1,3 @@
-// import axios from "axios";
 import { IFunc3 } from "../../types/Function";
 
 export enum FetchMethod {
@@ -8,9 +7,7 @@ export enum FetchMethod {
     DELETE = "DELETE",
 }
 
-export type FetchUrl = string;
-
-export const FetchApi: IFunc3<FetchUrl, FetchMethod, any, Promise<any>> = async (url, method, body) => {
+export const FetchApi: IFunc3<string, FetchMethod, any, Promise<any>> = async (url, method, body) => {
     try {
         const access_token = localStorage.getItem('access_token');
 
@@ -40,7 +37,6 @@ export const FetchApi: IFunc3<FetchUrl, FetchMethod, any, Promise<any>> = async 
         }).then((response) => response.json())
         return response;
     } catch (error: any) {
-        console.log(error)
         return error.response.json();
     }
 };
