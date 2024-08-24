@@ -15,6 +15,7 @@ import FavouritePost from "./pages/dashboard/favouritepost/FavouritePost";
 import Overview from "./pages/dashboard/overview/Overview";
 import SearchPage from "./pages/search/SearchPage";
 import PostPage from "./pages/post/PostPage";
+import UserManagement from "./pages/dashboard/usermanagement/UserManagement";
 
 function App() {
 	const isLoggedIn = useSelector((state: RootState) => state.user.isLoggedIn);
@@ -31,13 +32,17 @@ function App() {
 						<Route key={"blog-user-profile"} path="/profile" element={<Profile />} />
 					</Route>
 					<Route path="/admin-dashboard" element={<AdminRoute />}>
-						<Route key={"create-post"} path="create-post" element={<CreatePost />} />
+						<Route key={"admin-overview"} path="overview" element={<Overview />}/>
+						<Route key={"admin-create-post"} path="create-post" element={<CreatePost />} />
+						<Route key={"admin-post-management"} path="post-management" element={<UserPostManagement />} />
+						<Route key={"admin-user-management"} path="user-management" element={<UserManagement />}/>
+						<Route key={"admin-favorite-management"} path="favourite-management" element={<FavouritePost />} />
 					</Route>
 					<Route path="/user-dashboard" element={<UserRoute />}>
-						<Route key={"overview"} path="overview" element={<Overview />} />
-						<Route key={"create-post"} path="create-post" element={<CreatePost />} />
+						<Route key={"user-overview"} path="overview" element={<Overview />} />
+						<Route key={"user-create-post"} path="create-post" element={<CreatePost />} />
 						<Route key={"user-post-management"} path="post-management" element={<UserPostManagement />} />
-						<Route key={"favorite-management"} path="favourite-management" element={<FavouritePost />} />
+						<Route key={"user-favorite-management"} path="favourite-management" element={<FavouritePost />} />
 					</Route>
 				</Routes>
 			</BrowserRouter>

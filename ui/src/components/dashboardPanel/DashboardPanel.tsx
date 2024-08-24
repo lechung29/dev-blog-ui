@@ -4,14 +4,18 @@ import "./index.scss";
 // import { smallogoSrc } from "../utils/common/common";
 import { List, ListItemIcon } from "@mui/material";
 import { NavLink } from "react-router-dom";
-import { userPanelList } from "./index";
+import { adminPanelList, userPanelList } from "./index";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store/store";
 
 const DashboardPanel: React.FunctionComponent = () => {
+	const role = useSelector((state: RootState) => state.user.user?.role)
+	const panelList = role === "admin" ? adminPanelList : userPanelList
 	return (
 		<div className="g-dashboard-panel">
 			<div className="g-dashboard-panel-content">
 				<List sx={{ width: "100%", maxWidth: 360 }} component="nav" aria-labelledby="nested-list-subheader">
-					{userPanelList.map((item, index) => (
+					{panelList.map((item, index) => (
                         <NavLink className={"g-dashboard-list-item"} key={index} to={item.route}>
                             <ListItemIcon style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "32px", minWidth: "unset" }}>
                                 {item.icon}

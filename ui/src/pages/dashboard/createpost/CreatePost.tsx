@@ -120,7 +120,6 @@ const CreatePost: React.FunctionComponent<ICreatePostOwnProps> = (props) => {
 					</Grid>
 					<Grid style={{ display: "flex", flexDirection: "column", marginBottom: "4rem" }} item sm={12} xs={12} md={12}>
 						<Editor onChange={(e) => setState({ postContent: e.html })} />
-						{/* <div dangerouslySetInnerHTML={{__html: state.postContent}}></div> */}
 					</Grid>
 					<Grid style={{ display: "flex", flexDirection: "row", justifyContent: "flex-end", paddingBottom: 16 }} item sm={12} xs={12} md={12}>
 						<DefaultButton
