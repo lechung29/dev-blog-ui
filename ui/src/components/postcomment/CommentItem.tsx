@@ -120,6 +120,9 @@ const CommentItem: React.FunctionComponent<ICommentItemProps> = (props) => {
                             Thích
                         </span>
                         <span
+                            style={{
+                                cursor: "pointer"
+                            }}
                             onClick={() => setIsUpdateComment(true)}
                         >
                             Chỉnh sửa
