@@ -6,3 +6,7 @@
   scrollbar-width: thin;
   scrollbar-color: #888;
 }
+
+.MuiFormHelperText-root {
+  font-weight: 500!important;
+}
