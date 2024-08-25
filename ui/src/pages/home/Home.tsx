@@ -34,7 +34,7 @@ const Home: React.FunctionComponent<IHomePageOwnProps> = (_props) => {
     const { isFilterPanelOpen, posts} = state;
 
     React.useEffect(() => {
-        PostService.getPosts({limit: 10}).then((data) => setState({posts: data.data}))
+        PostService.getAllPosts().then((data) => setState({posts: data.data}))
     }, [])
     return (
         <AppLayout>

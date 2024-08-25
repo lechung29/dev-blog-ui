@@ -9,15 +9,16 @@ export interface IDataTabelRef {
 interface IDataTabelProps {
 	columns: GridColDef[];
 	items: any[];
+	tableWidth: number | string;
+	tableHeight: number | string;
 	getData: () => Promise<any>;
 	ref: React.ForwardedRef<IDataTabelRef>;
 	onSelection?: (selection: GridRowSelectionModel) => void;
-    selectedItems: any[]
 	isLoading: boolean
 }
 
 const DataTable = React.forwardRef((props: IDataTabelProps, ref) => {
-	const { columns, items, getData, onSelection, isLoading } = props;
+	const { columns, items, getData, onSelection, isLoading, tableHeight, tableWidth } = props;
 
 	React.useEffect(() => {
 		getData()
@@ -31,7 +32,7 @@ const DataTable = React.forwardRef((props: IDataTabelProps, ref) => {
 
 
 	return (
-		<div style={{ height: 350, width: "100%" }}>
+		<div style={{ height: tableHeight, width: tableWidth }}>
 			<DataGrid
 				rows={items}
 				columns={columns}
@@ -40,22 +41,22 @@ const DataTable = React.forwardRef((props: IDataTabelProps, ref) => {
 						paginationModel: { page: 0, pageSize: 5 },
 					},
 				}}
-                pageSizeOptions={[5,10]}
+				pageSizeOptions={[5, 10]}
 				checkboxSelection
 				onRowSelectionModelChange={onSelection}
 				disableRowSelectionOnClick
-                disableColumnMenu
-                rowHeight={48}
+				disableColumnMenu
+				rowHeight={48}
 				columnVisibilityModel={{
 					id: false
 				}}
 				loading={isLoading}
 				slotProps={{
 					loadingOverlay: {
-					  variant: 'skeleton',
-					  noRowsVariant: 'skeleton',
+						variant: 'skeleton',
+						noRowsVariant: 'skeleton',
 					},
-				  }}
+				}}
 			/>
 		</div>
 	);

@@ -3,37 +3,36 @@ import DashboardLayout from "../../../../layout/DashboardLayout";
 import DataTable, { IDataTabelRef } from "../../../../components/datatable/DataTable";
 import { postManagementColumn } from "../../../../components/datatable/utils";
 import { useImmerState } from "../../../../hook/useImmerState";
-import { PostService } from "../../../../services/posts/PostService";
 import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Stack } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { IconButton } from "../../../../components/common/button/iconbutton/IconButton";
 import "./index.scss";
 import ConfirmDialog from "../../../../components/common/confirmDialog/ConfirmDialog";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../../redux/store/store";
+import { useAppDispatch, useAppSelector } from "../../../../redux/store/store";
+import { getAllPosts, IPostWithId, postState } from "../../../../redux/reducers/posts/PostSlice";
+import { userState } from "../../../../redux/reducers/users/UserSlice";
 
 interface IPostManagementState {
-	items: any[];
 	itemStatus: string
-	selectedItems: any[];
-	isLoading: boolean;
+	selectedItems: IPostWithId[];
 	isOpenDeleteDialog: boolean;
 	isOpenUpdateDialog: boolean;
 }
 
 const initialState: IPostManagementState = {
-	items: [],
 	selectedItems: [],
-	isLoading: false,
 	isOpenDeleteDialog: false,
 	isOpenUpdateDialog: false,
 	itemStatus: ""
 };
 
 const UserPostManagement = () => {
-	const isAdmin = useSelector((state: RootState) => state.user.user?.role)
 	const [state, setState] = useImmerState<IPostManagementState>(initialState);
+	const {isOpenDeleteDialog, isOpenUpdateDialog, itemStatus, selectedItems} = state
+	const {user} = useAppSelector(userState)
+	const { multiplePosts, isLoading } = useAppSelector(postState)
+	const dispatch = useAppDispatch()
 	const dataTableRef = useRef<IDataTabelRef>(null);
 
 	const handleChange = (event: SelectChangeEvent) => {
@@ -41,12 +40,7 @@ const UserPostManagement = () => {
 	};
 
 	const getData = () => {
-		setState({ isLoading: true });
-		return PostService.getPosts({ limit: 10 }).then((data) => {
-			const rowItems = data.data.map((item) => ({ ...item, id: item._id, author: item.author.displayName }));
-			console.log(rowItems);
-			setState({ items: rowItems, isLoading: false });
-		});
+		return dispatch(getAllPosts())
 	};
 
 	const handleChangeSelection = (selection) => {
@@ -58,14 +52,14 @@ const UserPostManagement = () => {
 	};
 
 	const deleteItemText = useMemo(() => {
-		return `Bạn chắc chắn muốn xóa ${state.selectedItems.length > 1 ? state.selectedItems.length : ""} bài viết đã chọn?`
-	}, [state.selectedItems])
+		return `Bạn chắc chắn muốn xóa ${selectedItems.length > 1 ? selectedItems.length : ""} bài viết đã chọn?`
+	}, [selectedItems])
 
 	const renderChangeStatus = () => {
 		return (
 			<FormControl sx={{ m: 1, width: "100%" }} size="small">
 				<InputLabel id="demo-select-small-label">Status</InputLabel>
-				<Select labelId="demo-select-small-label" id="status-select-small" value={state.itemStatus} label="Status" onChange={handleChange}>
+				<Select labelId="demo-select-small-label" id="status-select-small" value={itemStatus} label="Status" onChange={handleChange}>
 					<MenuItem value={"Publish"}>Publish</MenuItem>
 					<MenuItem value={"Hide"}>Hide</MenuItem>
 				</Select>
@@ -74,29 +68,47 @@ const UserPostManagement = () => {
 	};
 
 	return (
-		<DashboardLayout>
+		<DashboardLayout title="Devblog - Quản lý post">
 			<div className="g-dashboard-content-section">
-				<Stack marginBottom={"0.5rem"} flexDirection={"row"} display={"flex"} alignItems={"center"} justifyContent={"flex-end"} gap={3}>
-					{isAdmin === "admin" && state.selectedItems.length === 1 && <IconButton size="small" className="g-edit-action-button" icon={<EditIcon />} onClick={() => setState({ isOpenUpdateDialog: true })} />}
-					{state.selectedItems.length > 0 && <IconButton size="small" className="g-delete-action-button" icon={<DeleteIcon />} onClick={() => setState({ isOpenDeleteDialog: true })} />}
-					<IconButton size="small" isReloadButton rotate={state.isLoading} className="g-reload-action-button" onClick={handleReload} />
+				<Stack className="g-management-post-section-action-button">
+					{user?.role === "admin" 
+					&& selectedItems.length === 1 
+					&& <IconButton 
+						size="small" 
+						className="g-edit-action-button" 
+						icon={<EditIcon />} 
+						onClick={() => setState({ isOpenUpdateDialog: true })} 
+					/>}
+					{selectedItems.length > 0 && <IconButton 
+						size="small" 
+						className="g-delete-action-button" 
+						icon={<DeleteIcon />} 
+						onClick={() => setState({ isOpenDeleteDialog: true })} 
+					/>}
+					<IconButton 
+						size="small"
+						isReloadButton 
+						rotate={isLoading} 
+						className="g-reload-action-button" 
+						onClick={handleReload} 
+					/>
 				</Stack>
 				<DataTable
-					isLoading={state.isLoading}
+					isLoading={isLoading}
 					onSelection={handleChangeSelection}
-					selectedItems={state.selectedItems}
 					ref={dataTableRef}
 					columns={postManagementColumn}
-					items={state.items}
-					getData={getData}
+					items={multiplePosts}
+					getData={() => getData()}
+					tableWidth={"100%"}
+					tableHeight={380}
 				/>
 				{state.isOpenDeleteDialog && (
 					<ConfirmDialog
-						open={state.isOpenDeleteDialog}
+						open={isOpenDeleteDialog}
 						title="Xác nhận xóa bài viết"
 						content={deleteItemText}
 						handleConfirm={() => {
-							// Xử lý xóa bài viết
 							setState({ isOpenDeleteDialog: false });
 							dataTableRef.current?.reload();
 						}}
@@ -105,11 +117,10 @@ const UserPostManagement = () => {
 				)}
 				{state.isOpenUpdateDialog && (
 					<ConfirmDialog
-						open={state.isOpenUpdateDialog}
+						open={isOpenUpdateDialog}
 						title="Chỉnh sửa trạng thái"
 						content={renderChangeStatus()}
 						handleConfirm={() => {
-							// Xử lý cập nhật trạng thái
 							setState({ isOpenUpdateDialog: false });
 							dataTableRef.current?.reload();
 						}}

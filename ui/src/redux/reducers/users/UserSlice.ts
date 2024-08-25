@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { IUserInformation } from "../../../types/IAuth";
+import { RootState } from "../../store/store";
 
 export interface IAuthenticationState {
     isLoggedIn: boolean;
@@ -25,6 +26,8 @@ const userSlice = createSlice({
         },
     },
 })
+
+export const userState = (state: RootState) => state.user
 
 export const { login, logout } = userSlice.actions;
 export default userSlice.reducer;

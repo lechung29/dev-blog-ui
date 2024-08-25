@@ -29,7 +29,7 @@ const SearchPage: React.FunctionComponent<ISearchPageProps> = (props) => {
     const [state, setState] = useImmerState<ISearchPageState>(initialState)
 
     useEffect(() => {
-        PostService.getPosts({ limit: 10 }).then((data) => setState({ posts: data.data }))
+        PostService.getFilterPosts({ limit: 10 }).then((data) => setState({ posts: data.data }))
     }, [])
 
     const handleChange = (_event: React.SyntheticEvent, newValue: string) => {
