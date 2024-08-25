@@ -23,3 +23,10 @@ export interface IUserInformation {
     avatar: string;
     accessToken: string;
 }
+
+
+export interface IReferenceUser {
+    _id: string;
+    displayName: string;
+    email: string;
+}

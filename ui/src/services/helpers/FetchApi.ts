@@ -27,7 +27,7 @@ export const FetchApi: IFunc3<string, FetchMethod, any, Promise<any>> = async (u
         //     default:
         //         break;
         // }
-        const response = await fetch(url, {
+        return await fetch(url, {
             method: method,
             headers: {
                 'Content-Type': 'application/json',
@@ -35,7 +35,6 @@ export const FetchApi: IFunc3<string, FetchMethod, any, Promise<any>> = async (u
             },
             body: JSON.stringify(body)
         }).then((response) => response.json())
-        return response;
     } catch (error: any) {
         return error.response.json();
     }

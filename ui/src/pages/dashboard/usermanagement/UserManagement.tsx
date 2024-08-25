@@ -32,8 +32,8 @@ const UserManagement: React.FunctionComponent<IUserManagementProps> = (props) =>
 
     const getData = () => {
         setState({ loading: true });
-        return PostService.getPosts({ limit: 10 }).then((data) => {
-            const rowItems = data.data.map((item) => ({ ...item, id: item._id, author: item.author.displayName }));
+        return PostService.getFilterPosts({ limit: 10 }).then((data) => {
+            const rowItems = data.data?.map((item) => ({ ...item, author: item.author.displayName }));
             console.log(rowItems);
             setState({ users: rowItems, loading: false });
         });
@@ -61,11 +61,12 @@ const UserManagement: React.FunctionComponent<IUserManagementProps> = (props) =>
                 <DataTable
                     isLoading={state.loading}
                     onSelection={handleChangeSelection}
-                    selectedItems={state.selectedUsers}
                     ref={dataTableRef}
                     columns={postManagementColumn}
                     items={state.users}
                     getData={getData}
+                    tableHeight={400}
+                    tableWidth={"100%"}
                 />
                 {state.isOpenDeleteDialog && (
                     <ConfirmDialog
