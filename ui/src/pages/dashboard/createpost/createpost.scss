@@ -1,102 +1,131 @@
-.g-dashboard-content-title {
-	width: 100%;
-	text-align: center;
-	font-size: 20px;
-	margin-bottom: 1.5rem;
+.g-dashboard-content-section-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+
+    .g-dashboard-content-title {
+        width: 100%;
+        text-align: center;
+        font-size: 20px;
+        margin-bottom: 1.5rem;
+    }
 }
 
-.g-create-post-tag-list {
-	padding: 0 !important;
-	height: 32px;
-	justify-content: flex-start !important;
-	.g-create-post-tag-list-item {
-		padding-top: 4px !important;
-		padding-bottom: 4px !important;
-		padding-left: 8px!important;
-		padding-right: 8px!important;
-		width: auto;
-		.g-create-post-tag-list-chip {
-			height: 100%;
-		}
-	}
+.g-create-post-section-basic-info {
+    display: flex;
+    flex-direction: column !important;
+
+    .g-create-post-info-title {
+        font-weight: 600;
+    }
+    .g-create-post-tag-list {
+        padding: 0;
+        height: 32px;
+        margin: 0;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        list-style: none;
+        .g-create-post-tag-list-item {
+            padding-top: 4px !important;
+            padding-bottom: 4px !important;
+            padding-left: 8px !important;
+            padding-right: 8px !important;
+            width: auto;
+            .g-create-post-tag-list-chip {
+                height: 100%;
+            }
+        }
+    }
+
+    .g-upload-image-form {
+        background-color: #fff;
+        box-shadow: 0 10px 60px rgb(218, 229, 255);
+        border: 1px solid rgb(159, 159, 160);
+        border-radius: 20px;
+        padding: 1rem 0.7rem 0.7rem 0.7rem;
+        text-align: center;
+        font-size: 1.125rem;
+        max-width: 100%;
+
+        .g-upload-image-form-title {
+            color: #000000;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .g-upload-image-form-drop-container {
+            background-color: #fff;
+            position: relative;
+            display: flex;
+            gap: 10px;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            margin-top: 1rem;
+            border-radius: 10px;
+            border: 2px dashed rgb(171, 202, 255);
+            color: #444;
+            cursor: pointer;
+            transition: background 0.2s ease-in-out, border 0.2s ease-in-out;
+
+            &:hover {
+                background: rgba(0, 140, 255, 0.164);
+                border-color: rgba(17, 17, 17, 0.616);
+            }
+
+            #file-input {
+                width: 100%;
+                max-width: 100%;
+                color: #444;
+                padding: 2px;
+                background: #fff;
+                border-radius: 10px;
+                border: 1px solid rgba(8, 8, 8, 0.288);
+            }
+
+            #file-input::file-selector-button {
+                margin-right: 20px;
+                border: none;
+                background: #5488c7;
+                padding: 10px 20px;
+                border-radius: 10px;
+                color: #fff;
+                cursor: pointer;
+                transition: background 0.2s ease-in-out;
+            }
+
+            #file-input::file-selector-button:hover {
+                background: #0d45a5;
+            }
+        }
+    }
 }
 
-.form {
-	background-color: #fff;
-	box-shadow: 0 10px 60px rgb(218, 229, 255);
-	border: 1px solid rgb(159, 159, 160);
-	border-radius: 20px;
-	padding: 1rem 0.7rem 0.7rem 0.7rem;
-	text-align: center;
-	font-size: 1.125rem;
-	max-width: 100%;
+.g-create-post-section-content {
+    display: flex;
+    gap: 2.75rem;
+    flex-direction: column!important;
+    margin-bottom: 4rem;
 }
 
-.form-title {
-	color: #000000;
-	font-size: 1.25rem;
-	font-weight: 600;
-}
+.g-create-post-section-action-button {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    padding-bottom: 1rem;
 
-.drop-container {
-	background-color: #fff;
-	position: relative;
-	display: flex;
-	gap: 10px;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
-	padding: 10px;
-	margin-top: 1rem;
-	border-radius: 10px;
-	border: 2px dashed rgb(171, 202, 255);
-	color: #444;
-	cursor: pointer;
-	transition: background 0.2s ease-in-out, border 0.2s ease-in-out;
-}
+    .g-create-post-submit-btn {
+        background-color: #5488c7;
+        text-transform: capitalize;
+        font-size: 13px;
+        height: 2rem;
+        width: 120px;
 
-.drop-container:hover {
-	background: rgba(0, 140, 255, 0.164);
-	border-color: rgba(17, 17, 17, 0.616);
-}
-
-.drop-container:hover .drop-title {
-	color: #222;
-}
-
-.drop-title {
-	color: #444;
-	font-size: 20px;
-	font-weight: bold;
-	text-align: center;
-	transition: color 0.2s ease-in-out;
-}
-
-#file-input {
-	width: 100%;
-	max-width: 100%;
-	color: #444;
-	padding: 2px;
-	background: #fff;
-	border-radius: 10px;
-	border: 1px solid rgba(8, 8, 8, 0.288);
-}
-
-#file-input::file-selector-button {
-	margin-right: 20px;
-	border: none;
-	background: #5488c7;
-	padding: 10px 20px;
-	border-radius: 10px;
-	color: #fff;
-	cursor: pointer;
-	transition: background 0.2s ease-in-out;
-}
-
-#file-input::file-selector-button:hover {
-	background: #0d45a5;
-}
-
-.g-create-post-submit-btn:hover {
-	background: #0d45a5!important;
+        &:hover {
+            background: #0d45a5 !important;
+        }
+    }
 }

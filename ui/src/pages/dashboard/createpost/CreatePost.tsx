@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import DashboardLayout from "../../../layout/DashboardLayout";
 import "./createpost.scss";
 import { Label } from "../../../components/common/label/Label";
@@ -64,6 +64,9 @@ const CreatePost: React.FunctionComponent<ICreatePostOwnProps> = (props) => {
 		contentError,
 		isLoading
 	} = state
+	const categoryRef = useRef<HTMLInputElement>()
+	const titleRef = useRef<HTMLInputElement>()
+	const tagRef = useRef<HTMLInputElement>()
 	const navigate = useNavigate()
 	const role = useSelector((state: RootState) => state.user.user?.role)
 
@@ -126,6 +129,16 @@ const CreatePost: React.FunctionComponent<ICreatePostOwnProps> = (props) => {
 			isValid = false;
 		}
 
+		if (categoryError || titleError || tagError) {
+			if (categoryError) {
+				categoryRef.current?.focus()
+			} else if (titleError) {
+				titleRef.current?.focus()
+			} else if (tagError) {
+				tagRef.current?.focus()
+			}
+		}
+
 		return isValid
 	}
 
@@ -161,14 +174,14 @@ const CreatePost: React.FunctionComponent<ICreatePostOwnProps> = (props) => {
 	}
 
 	return (
-		<DashboardLayout>
+		<DashboardLayout title="Devblog - Tạo post">
 			<div className="g-dashboard-content-section">
-				<Stack display={"flex"} width={"100%"} justifyContent={"center"} alignItems={"center"}>
+				<Stack className="g-dashboard-content-section-title">
 					<Label className="g-dashboard-content-title" title="Tạo bài post" bold />
 				</Stack>
 				<Grid container spacing={2}>
-					<Grid style={{ display: "flex", flexDirection: "column" }} item sm={4} xs={12} md={4}>
-						<Label className="g-create-post-title" title="Danh mục" />
+					<Grid className="g-create-post-section-basic-info" item sm={4} xs={12} md={4}>
+						<Label className="g-create-post-info-title" title="Danh mục" />
 						<Autocomplete
 							value={categoryValue}
 							onChange={(_event, newValue: IPostCategoryValue | null) => {
@@ -178,12 +191,13 @@ const CreatePost: React.FunctionComponent<ICreatePostOwnProps> = (props) => {
 							onInputChange={(_event, newInputValue) => {
 								setState({ categoryInput: newInputValue });
 							}}
-							id="controllable-states-demo"
+							id="g-category-data"
 							options={PostCategoryList}
 							sx={{ width: "100%" }}
 							renderInput={(params) =>
 								<TextField
 									error={!!categoryError}
+									inputRef={categoryRef}
 									helperText={categoryError}
 									variant="standard"
 									{...params}
@@ -191,78 +205,67 @@ const CreatePost: React.FunctionComponent<ICreatePostOwnProps> = (props) => {
 							}
 						/>
 					</Grid>
-					<Grid style={{ display: "flex", flexDirection: "column" }} item sm={8} xs={12} md={8}>
-						<Label className="g-create-post-title" title="Tên bài post" />
+					<Grid className="g-create-post-section-basic-info" item sm={8} xs={12} md={8}>
+						<Label className="g-create-post-info-title" title="Tên bài post" />
 						<TextField
 							error={!!titleError}
 							helperText={titleError}
 							variant="standard"
 							value={postTitle}
+							inputRef={titleRef}
 							onChange={(event) => {
 								setState({ postTitle: event.target.value, titleError: "" });
 							}}
 						/>
 					</Grid>
 
-					<Grid style={{ display: "flex", flexDirection: "column" }} item sm={4} xs={12} md={4}>
-						<Label className="g-create-post-title" title="Tên thẻ" />
+					<Grid className="g-create-post-section-basic-info" item sm={4} xs={12} md={4}>
+						<Label className="g-create-post-info-title" title="Tên thẻ" />
 						<TextField
 							onKeyDown={handleKeyDown}
 							value={tagValue}
 							onChange={(event) => {
 								setState({ tagValue: event.target.value });
 							}}
+							inputRef={tagRef}
 							error={!!tagError}
 							id="standard-error-helper-text"
 							helperText={tagError}
 							variant="standard"
 						/>
 					</Grid>
-					<Grid style={{ display: "flex", flexDirection: "column" }} item sm={8} xs={12} md={8}>
-						<Label className="g-create-post-title" title="Danh sách thẻ" />
+					<Grid className="g-create-post-section-basic-info" item sm={8} xs={12} md={8}>
+						<Label className="g-create-post-info-title" title="Danh sách thẻ" />
 						<Paper
-							sx={{
-								display: "flex",
-								justifyContent: "center",
-								listStyle: "none",
-								m: 0,
-							}}
 							component="ul"
 							className="g-create-post-tag-list"
 						>
 							{tags.map((data) => {
 								return (
 									<ListItem className="g-create-post-tag-list-item" key={`${data}-key`}>
-										<Chip className="g-create-post-tag-list-chip" label={data} onDelete={data === "All" ? undefined : handleDeleteTags(data)} />
+										<Chip className="g-create-post-tag-list-chip" label={data} onDelete={handleDeleteTags(data)} />
 									</ListItem>
 								);
 							})}
 						</Paper>
 					</Grid>
-					<Grid style={{ display: "flex", flexDirection: "column" }} item sm={12} xs={12} md={12}>
-						<form className="form">
-							<span className="form-title">Tải ảnh thumbnail</span>
-							<label htmlFor="file-input" className="drop-container">
+					<Grid className="g-create-post-section-basic-info" item sm={12} xs={12} md={12}>
+						<form className="g-upload-image-form">
+							<span className="g-upload-image-form-title">Tải ảnh thumbnail</span>
+							<label htmlFor="file-input" className="g-upload-image-form-drop-container">
 								<input type="file" accept="image/*" id="file-input" onChange={handlePostThumbailsChange} />
 							</label>
 						</form>
 					</Grid>
-					<Grid style={{ display: "flex", gap: "2.75rem", flexDirection: "column", marginBottom: "4rem" }} item sm={12} xs={12} md={12}>
+					<Grid className="g-create-post-section-content" item sm={12} xs={12} md={12}>
 						<Editor value={postContent} onChange={(e) => setState({ postContent: e.html, contentError: "" })} />
 						<FormHelperText error={!!contentError} id="post-content-error">{contentError}</FormHelperText>
 					</Grid>
-					<Grid style={{ display: "flex", flexDirection: "row", justifyContent: "flex-end", paddingBottom: 16 }} item sm={12} xs={12} md={12}>
+					<Grid className="g-create-post-section-action-button" item sm={12} xs={12} md={12}>
 						<DefaultButton
 							className="g-create-post-submit-btn"
 							title="Xác nhận"
 							variant="contained"
-							buttonStyle={{
-								backgroundColor: "#5488c7",
-								textTransform: "capitalize",
-								fontSize: 13,
-								height: 36,
-								width: 120
-							}}
 							onClick={handleSubmit}
 							iconStyle={{
 								width: 20,
