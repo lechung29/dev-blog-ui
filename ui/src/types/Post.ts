@@ -8,6 +8,11 @@ export interface ICreatePost {
     content: string;
 }
 
+export interface ISingleDeletePost {
+    userId: string;
+    postId: string
+}
+
 export interface IPostDataProps {
     _id: string;
     title: string;

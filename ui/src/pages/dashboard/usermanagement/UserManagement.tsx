@@ -73,6 +73,7 @@ const UserManagement: React.FunctionComponent<IUserManagementProps> = (props) =>
                         open={state.isOpenDeleteDialog}
                         title="Xác nhận xóa bài viết"
                         content={deleteItemText}
+                        isLoading
                         handleConfirm={() => {
                             // Xử lý xóa bài viết
                             setState({ isOpenDeleteDialog: false });

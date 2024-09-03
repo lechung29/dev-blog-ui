@@ -6,22 +6,24 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import "./index.scss"
+import { DefaultButton } from "../button/defaultbutton/DefaultButton";
 
 interface IConfirmDialogProps {
 	open: boolean;
 	onClose: () => void;
 	handleConfirm: () => void;
-    title: string;
-    content: React.ReactNode
+	title: string;
+	content: React.ReactNode
+	isLoading: boolean;
 }
 
 const ConfirmDialog: React.FunctionComponent<IConfirmDialogProps> = (props) => {
 	return (
-		<Dialog 
-            open={props.open} 
-            aria-labelledby="alert-dialog-title" 
-            aria-describedby="alert-dialog-description"
-        >
+		<Dialog
+			open={props.open}
+			aria-labelledby="alert-dialog-title"
+			aria-describedby="alert-dialog-description"
+		>
 			<DialogTitle id="alert-dialog-title">{props.title}</DialogTitle>
 			<DialogContent>
 				<DialogContentText id="alert-dialog-description">
@@ -29,10 +31,26 @@ const ConfirmDialog: React.FunctionComponent<IConfirmDialogProps> = (props) => {
 				</DialogContentText>
 			</DialogContent>
 			<DialogActions>
-				<Button style={{textTransform: "none"}} onClick={props.onClose}>Close</Button>
-				<Button style={{textTransform: "none"}} onClick={props.handleConfirm} autoFocus>
-					Confirm
-				</Button>
+				<Button style={{ textTransform: "none" }} onClick={props.onClose}>Hủy</Button>
+				<DefaultButton
+					variant="contained"
+					onClick={props.handleConfirm}
+					autoFocus
+					buttonStyle={{
+						backgroundColor: "#409eff",
+						textTransform: "capitalize",
+						fontSize: 13,
+						height: 36,
+						width: 100
+					}}
+					iconStyle={{
+						width: 20,
+						height: 20,
+						color: "#fff",
+					}}
+					isLoading={props.isLoading}
+					title={"Xác nhận"}
+				/>
 			</DialogActions>
 		</Dialog>
 	);
