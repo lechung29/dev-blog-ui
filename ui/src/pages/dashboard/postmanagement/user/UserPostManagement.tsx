@@ -10,12 +10,17 @@ import { IconButton } from "../../../../components/common/button/iconbutton/Icon
 import "./index.scss";
 import ConfirmDialog from "../../../../components/common/confirmDialog/ConfirmDialog";
 import { useAppDispatch, useAppSelector } from "../../../../redux/store/store";
-import { getAllPosts, IPostWithId, postState } from "../../../../redux/reducers/posts/PostSlice";
+import { deletePost, getAllPosts, postState, stopLoading } from "../../../../redux/reducers/posts/PostSlice";
 import { userState } from "../../../../redux/reducers/users/UserSlice";
+import { IAction, IFunc } from "../../../../types/Function";
+
+interface IPostManagementProps {
+
+}
 
 interface IPostManagementState {
 	itemStatus: string
-	selectedItems: IPostWithId[];
+	selectedItems: string[];
 	isOpenDeleteDialog: boolean;
 	isOpenUpdateDialog: boolean;
 }
@@ -27,16 +32,16 @@ const initialState: IPostManagementState = {
 	itemStatus: ""
 };
 
-const UserPostManagement = () => {
+const UserPostManagement: React.FunctionComponent<IPostManagementProps> = (props) => {
 	const [state, setState] = useImmerState<IPostManagementState>(initialState);
-	const {isOpenDeleteDialog, isOpenUpdateDialog, itemStatus, selectedItems} = state
-	const {user} = useAppSelector(userState)
-	const { multiplePosts, isLoading } = useAppSelector(postState)
+	const { isOpenDeleteDialog, isOpenUpdateDialog, itemStatus, selectedItems } = state
+	const { user } = useAppSelector(userState)
+	const { allPosts, isLoading, isDeleteLoading } = useAppSelector(postState)
 	const dispatch = useAppDispatch()
 	const dataTableRef = useRef<IDataTabelRef>(null);
 
 	const handleChange = (event: SelectChangeEvent) => {
-		setState({ itemStatus: event.target.value});
+		setState({ itemStatus: event.target.value });
 	};
 
 	const getData = () => {
@@ -47,7 +52,7 @@ const UserPostManagement = () => {
 		setState({ selectedItems: selection });
 	};
 
-	const handleReload = () => {
+	const handleReload: IAction = () => {
 		dataTableRef.current?.reload();
 	};
 
@@ -55,7 +60,11 @@ const UserPostManagement = () => {
 		return `Bạn chắc chắn muốn xóa ${selectedItems.length > 1 ? selectedItems.length : ""} bài viết đã chọn?`
 	}, [selectedItems])
 
-	const renderChangeStatus = () => {
+	const allPostsItem = useMemo(() => {
+		return user?.role === "admin" ? allPosts : allPosts.filter((item) => item.author === user?.displayName)
+	}, [allPosts, user?.role, user?.displayName])
+
+	const renderChangeStatus: IFunc<JSX.Element> = () => {
 		return (
 			<FormControl sx={{ m: 1, width: "100%" }} size="small">
 				<InputLabel id="demo-select-small-label">Status</InputLabel>
@@ -71,26 +80,26 @@ const UserPostManagement = () => {
 		<DashboardLayout title="Devblog - Quản lý post">
 			<div className="g-dashboard-content-section">
 				<Stack className="g-management-post-section-action-button">
-					{user?.role === "admin" 
-					&& selectedItems.length === 1 
-					&& <IconButton 
-						size="small" 
-						className="g-edit-action-button" 
-						icon={<EditIcon />} 
-						onClick={() => setState({ isOpenUpdateDialog: true })} 
-					/>}
-					{selectedItems.length > 0 && <IconButton 
-						size="small" 
-						className="g-delete-action-button" 
-						icon={<DeleteIcon />} 
-						onClick={() => setState({ isOpenDeleteDialog: true })} 
-					/>}
-					<IconButton 
+					{user?.role === "admin"
+						&& selectedItems.length === 1
+						&& <IconButton
+							size="small"
+							className="g-edit-action-button"
+							icon={<EditIcon />}
+							onClick={() => setState({ isOpenUpdateDialog: true })}
+						/>}
+					{selectedItems.length > 0 && <IconButton
 						size="small"
-						isReloadButton 
-						rotate={isLoading} 
-						className="g-reload-action-button" 
-						onClick={handleReload} 
+						className="g-delete-action-button"
+						icon={<DeleteIcon />}
+						onClick={() => setState({ isOpenDeleteDialog: true })}
+					/>}
+					<IconButton
+						size="small"
+						isReloadButton
+						rotate={isLoading}
+						className="g-reload-action-button"
+						onClick={handleReload}
 					/>
 				</Stack>
 				<DataTable
@@ -98,7 +107,7 @@ const UserPostManagement = () => {
 					onSelection={handleChangeSelection}
 					ref={dataTableRef}
 					columns={postManagementColumn}
-					items={multiplePosts}
+					items={allPostsItem}
 					getData={() => getData()}
 					tableWidth={"100%"}
 					tableHeight={380}
@@ -108,9 +117,14 @@ const UserPostManagement = () => {
 						open={isOpenDeleteDialog}
 						title="Xác nhận xóa bài viết"
 						content={deleteItemText}
+						isLoading={isDeleteLoading}
 						handleConfirm={() => {
-							setState({ isOpenDeleteDialog: false });
-							dataTableRef.current?.reload();
+							dispatch(deletePost(selectedItems)).then(() => {
+								setState({ isOpenDeleteDialog: false });
+								setTimeout(() => {
+									dispatch(stopLoading())
+								}, 2000)
+							})
 						}}
 						onClose={() => setState({ isOpenDeleteDialog: false })}
 					/>
@@ -120,6 +134,7 @@ const UserPostManagement = () => {
 						open={isOpenUpdateDialog}
 						title="Chỉnh sửa trạng thái"
 						content={renderChangeStatus()}
+						isLoading={isDeleteLoading}
 						handleConfirm={() => {
 							setState({ isOpenUpdateDialog: false });
 							dataTableRef.current?.reload();
