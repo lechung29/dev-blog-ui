@@ -67,6 +67,7 @@ const UserManagement: React.FunctionComponent<IUserManagementProps> = (props) =>
                     getData={getData}
                     tableHeight={400}
                     tableWidth={"100%"}
+                    selectionItems={[]}
                 />
                 {state.isOpenDeleteDialog && (
                     <ConfirmDialog

@@ -15,6 +15,7 @@ interface IDataTabelProps {
 	ref: React.ForwardedRef<IDataTabelRef>;
 	onSelection?: (selection: GridRowSelectionModel) => void;
 	isLoading: boolean
+	selectionItems: string[]
 }
 
 const DataTable = React.forwardRef((props: IDataTabelProps, ref) => {
@@ -47,6 +48,7 @@ const DataTable = React.forwardRef((props: IDataTabelProps, ref) => {
 				disableRowSelectionOnClick
 				disableColumnMenu
 				rowHeight={48}
+				rowSelectionModel={props.selectionItems}
 				columnVisibilityModel={{
 					id: false
 				}}

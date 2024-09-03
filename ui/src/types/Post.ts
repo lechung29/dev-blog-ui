@@ -13,6 +13,11 @@ export interface ISingleDeletePost {
     postId: string
 }
 
+export interface IUpdatePostStatus {
+    status: IPostStatus;
+    postId: string;
+}
+
 export interface IPostDataProps {
     _id: string;
     title: string;
@@ -38,11 +43,17 @@ export interface IPostProps {
     author: string;
     tags: string[];
     comment: string[]
-    status: string;
+    status: IPostStatus;
     createdAt: Date;
     updatedAt: Date;
 }
 
 export interface IIdentityProps {
     id: string;
+}
+
+export enum IPostStatus {
+    Public = "Public",
+    Pending = "Pending",
+    Hide = "Hide",
 }
