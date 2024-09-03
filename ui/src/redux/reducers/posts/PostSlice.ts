@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { IIdentityProps, IPostProps } from "../../../types/Post";
+import { IIdentityProps, IPostProps, IUpdatePostStatus } from "../../../types/Post";
 import { PostService } from "../../../services/posts/PostService";
 import { RootState } from "../../store/store";
 import { IToastProps, renderToast } from "../../../utils/utils";
@@ -9,13 +9,13 @@ export type IPostWithId = IPostProps & IIdentityProps;
 
 export interface IPostState {
     isLoading: boolean;
-    isDeleteLoading: boolean;
+    isUpdateAndDeleteLoading: boolean;
     allPosts: IPostWithId[];
 }
 
 const initialState: IPostState = {
     isLoading: false,
-    isDeleteLoading: false,
+    isUpdateAndDeleteLoading: false,
     allPosts: [],
 };
 
@@ -27,13 +27,17 @@ export const deletePost = createAsyncThunk("posts/deletePost", async (postIds: s
     return await PostService.deleteMultiPost(postIds);
 });
 
+export const updatePost = createAsyncThunk("posts/updatePostStatus", async (data: IUpdatePostStatus) => {
+    return await PostService.adminUpdatePostStatus(data.status, data.postId);
+});
+
 const postSlice = createSlice({
     name: "post",
     initialState,
     reducers: {
         stopLoading: (state) => {
             state.isLoading = false;
-        }
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -51,10 +55,10 @@ const postSlice = createSlice({
                 }) as IPostWithId[];
             })
             .addCase(deletePost.pending, (state) => {
-                state.isDeleteLoading = true;
+                state.isUpdateAndDeleteLoading = true;
             })
             .addCase(deletePost.fulfilled, (state, action) => {
-                state.isDeleteLoading = false;
+                state.isUpdateAndDeleteLoading = false;
                 state.isLoading = true;
                 state.allPosts = action.payload.data?.map((item) => {
                     return {
@@ -64,15 +68,31 @@ const postSlice = createSlice({
                     };
                 }) as IPostWithId[];
                 renderToast(
-                    action.payload.requestStatus === IRequestStatus.Success 
-                        ? IToastProps.success 
-                        : IToastProps.error
-                    , action.payload.message
+                    action.payload.requestStatus === IRequestStatus.Success ? IToastProps.success : IToastProps.error,
+                    action.payload.message
+                );
+            })
+            .addCase(updatePost.pending, (state) => {
+                state.isUpdateAndDeleteLoading = true;
+            })
+            .addCase(updatePost.fulfilled, (state, action) => {
+                state.isUpdateAndDeleteLoading = false;
+                state.isLoading = true;
+                state.allPosts = action.payload.data?.map((item) => {
+                    return {
+                        ...item,
+                        id: item._id,
+                        author: item.author.displayName,
+                    };
+                }) as IPostWithId[];
+                renderToast(
+                    action.payload.requestStatus === IRequestStatus.Success ? IToastProps.success : IToastProps.error,
+                    action.payload.message
                 );
             });
     },
 });
 
 export const postState = (state: RootState) => state.post;
-export const { stopLoading } = postSlice.actions
+export const { stopLoading } = postSlice.actions;
 export default postSlice.reducer;

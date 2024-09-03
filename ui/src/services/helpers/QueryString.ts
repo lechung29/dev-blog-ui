@@ -6,6 +6,7 @@ const v1 = "api/v1";
 const getAllPost = "get-all-posts";
 const createPost = "create-post";
 const deletePost = "delete-post";
+const updatePost = "update-post";
 const multiDeletePosts = "multi-delete-post"
 
 //Auth
@@ -23,5 +24,5 @@ export {
     googleLogin,
     deletePost,
     multiDeletePosts,
- 
+    updatePost
 }
