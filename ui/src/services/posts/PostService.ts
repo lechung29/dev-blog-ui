@@ -1,7 +1,8 @@
 import { IResponseType } from "../../types/IResponse";
 import { ICreatePost, IPostDataProps, IPostStatus } from "../../types/Post";
+import { IQueryObject, ObjectToQuery } from "../../utils/helper";
 import { FetchApi, FetchMethod } from "../helpers/FetchApi";
-import { createPost, getAllPost, multiDeletePosts, root, updatePost, v1 } from "../helpers/QueryString";
+import { createPost, getAllPost, getFilterPosts, getMaxPages, getPublicPosts, multiDeletePosts, root, updatePost, v1 } from "../helpers/QueryString";
 
 class PostService {
     public static createPost(data: ICreatePost): Promise<IResponseType<ICreatePost>> {
@@ -11,8 +12,18 @@ class PostService {
         return FetchApi(`${root}/${v1}/post/${getAllPost}`, FetchMethod.GET);
     }
 
-    public static getFilterPosts(data: any): Promise<IResponseType<IPostDataProps[]>> {
-        return FetchApi(`${root}/${v1}/post/${getAllPost}?limit=${data.limit}&skip=${data.skip}&category=${data.category}`, FetchMethod.GET);
+    public static getFilterPosts(selector: IQueryObject): Promise<IResponseType<IPostDataProps[]>> {
+        const query: string = ObjectToQuery(selector)
+        return FetchApi(`${root}/${v1}/post/${getFilterPosts}${query}`, FetchMethod.GET);
+    }
+
+    public static getPublicPosts(selector: IQueryObject): Promise<IResponseType<IPostDataProps[]>> {
+        const query: string = ObjectToQuery(selector)
+        return FetchApi(`${root}/${v1}/post/${getPublicPosts}${query}`, FetchMethod.GET);
+    }
+
+    public static getMaxPages(): Promise<IResponseType<number>> {
+        return FetchApi(`${root}/${v1}/post/${getMaxPages}`, FetchMethod.GET);
     }
 
     public static adminUpdatePostStatus(status: IPostStatus, postId: string): Promise<IResponseType<IPostDataProps[]>> {

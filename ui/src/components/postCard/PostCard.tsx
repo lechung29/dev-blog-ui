@@ -6,32 +6,29 @@ import BookmarkIcon from '@mui/icons-material/Bookmark';
 import "./index.scss"
 import { ITooltipHostPlacement, TooltipHost } from "../common/tooltiphost/TooltipHost";
 import { Label } from "../common/label/Label";
+import { IPostDataProps } from "../../types/Post";
 
 export interface IPostCardItemProps {
-    postAuthor: string;
-    authorAvatar: string;
-    title: string;
+    item: IPostDataProps;
     subTitle?: string;
-    postCreatedAt: string;
-    category: string;
-    postComment: any[];
 }
 
 const PostCard: React.FunctionComponent<IPostCardItemProps> = (props) => {
+    const { item, subTitle } = props
     return (
         <Stack direction={"row"} className="g-post-card-section">
             <div className="g-post-card-user-avatar">
-                <Avatar sx={{ width: 36, height: 36 }} >N</Avatar>
+                <Avatar sx={{ width: 36, height: 36 }} src={item.author.avatar} />
             </div>
             <div className="g-post-card-content">
                 <div className="g-post-card-basic-info">
-                    <span className="g-post-card-author">{props.postAuthor}</span>
-                    <span className="g-post-card-time-created">{props.postCreatedAt}</span>
+                    <span className="g-post-card-author">{item.author.displayName}</span>
+                    <span className="g-post-card-time-created">{new Date(item.createdAt).toLocaleString()}</span>
                 </div>
                 <div className="g-post-card-title">
                     <Label
-                        title={props.title}
-                        subTitle={props.subTitle}
+                        title={item.title}
+                        subTitle={subTitle ?? ""}
                         subTitleStyle={{
                             color: "#5488c7",
                             fontWeight: 600,
@@ -45,8 +42,10 @@ const PostCard: React.FunctionComponent<IPostCardItemProps> = (props) => {
                         }}
                     />
                 </div>
-                <div className="g-post-card-category">
-                    <p className="g-post-card-category-item">{props.category}</p>
+                <div className="g-post-card-tags">
+                    {item.tags.map((tag) => (
+                        <p className="g-post-card-tag-item">{tag}</p>
+                    ))}
                 </div>
                 <div className="g-post-card-reaction">
                     <TooltipHost title={"Lượt thích: 7"}>
@@ -55,10 +54,10 @@ const PostCard: React.FunctionComponent<IPostCardItemProps> = (props) => {
                             <span>{7}</span>
                         </div>
                     </TooltipHost>
-                    <TooltipHost title={`Bình luận: ${props.postComment.length}`}>
+                    <TooltipHost title={`Bình luận: 7`}>
                         <div className="g-post-card-reaction-item">
                             <ModeCommentIcon style={{ color: "#9b9b9b", fontSize: 14 }} />
-                            <span>{props.postComment.length}</span>
+                            <span>{7}</span>
                         </div>
                     </TooltipHost>
                     <TooltipHost title={"Bookmark: 1"}>

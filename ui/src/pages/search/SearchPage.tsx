@@ -9,9 +9,10 @@ import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import { useImmerState } from '../../hook/useImmerState';
 import { SearchTabList } from './util';
-import { PostService } from '../../services/posts/PostService';
+// import { PostService } from '../../services/posts/PostService';
 import PostCard from '../../components/postCard/PostCard';
 import SearchSort from '../../components/searchsort/SearchSort';
+import { IPostDataProps } from '../../types/Post';
 
 interface ISearchPageProps { }
 
@@ -29,7 +30,7 @@ const SearchPage: React.FunctionComponent<ISearchPageProps> = (props) => {
     const [state, setState] = useImmerState<ISearchPageState>(initialState)
 
     useEffect(() => {
-        PostService.getFilterPosts({ limit: 10 }).then((data) => setState({ posts: data.data }))
+        // PostService.getFilterPosts({ limit: 10 }).then((data) => setState({ posts: data.data }))
     }, [])
 
     const handleChange = (_event: React.SyntheticEvent, newValue: string) => {
@@ -63,45 +64,18 @@ const SearchPage: React.FunctionComponent<ISearchPageProps> = (props) => {
                             </TabList>
                         </Box>
                         <TabPanel value="newest">
-                            {state.posts?.map((post: any) => (
-                                <PostCard
-                                    authorAvatar={post.author.avatar}
-                                    category={post.category}
-                                    postAuthor={post.author.displayName}
-                                    postComment={post.comments}
-                                    postCreatedAt={post.createdAt}
-                                    title={post.title}
-                                    subTitle='React'
-                                    key={post._id}
-                                />
+                            {state.posts?.map((post: IPostDataProps) => (
+                                <PostCard item={post} />
                             ))}
                         </TabPanel>
                         <TabPanel value="question">
-                            {state.posts?.map((post: any) => (
-                                <PostCard
-                                    authorAvatar={post.author.avatar}
-                                    category={post.category}
-                                    postAuthor={post.author.displayName}
-                                    postComment={post.comments}
-                                    postCreatedAt={post.createdAt}
-                                    title={post.title}
-                                    subTitle='React'
-                                    key={post._id}
-                                />
+                            {state.posts?.map((post: IPostDataProps) => (
+                                <PostCard item={post} />
                             ))}
                         </TabPanel>
                         <TabPanel value="discussion">
-                            {state.posts?.map((post: any) => (
-                                <PostCard
-                                    authorAvatar={post.author.avatar}
-                                    category={post.category}
-                                    postAuthor={post.author.displayName}
-                                    postComment={post.comments}
-                                    postCreatedAt={post.createdAt}
-                                    title={post.title}
-                                    subTitle='React'
-                                    key={post._id}
-                                />
+                            {state.posts?.map((post: IPostDataProps) => (
+                                <PostCard item={post} />
                             ))}
                         </TabPanel>
                     </TabContext>

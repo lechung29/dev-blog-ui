@@ -29,8 +29,8 @@ export interface IPostDataProps {
     tags: string[];
     comment: string[]
     status: string;
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt: string;
+    updatedAt: string;
 }
 
 export interface IPostProps {
@@ -44,8 +44,8 @@ export interface IPostProps {
     tags: string[];
     comment: string[]
     status: IPostStatus;
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt: string;
+    updatedAt: string;
 }
 
 export interface IIdentityProps {

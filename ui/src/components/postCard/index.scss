@@ -60,13 +60,13 @@
             }
         }
 
-        .g-post-card-category {
+        .g-post-card-tags {
             display: flex;
             align-items: center;
             justify-content: start;
-            gap: 4px;
+            gap: 8px;
             height: 20px;
-            .g-post-card-category-item {
+            .g-post-card-tag-item {
                 padding: 4px;
                 max-width: 200px;
                 color: #909399;
