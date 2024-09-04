@@ -32,8 +32,9 @@ const PostShimmer: React.FunctionComponent = () => {
                     />
                 </div>
                 <div className="g-post-card-tags">
-                    {Array(3).fill("").map((_item) => (
+                    {Array(3).fill("").map((_item, id) => (
                         <Skeleton
+                            key={id}
                             animation="wave"
                             height={shimmerHeight}
                             width="80px"

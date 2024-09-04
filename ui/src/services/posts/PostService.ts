@@ -2,7 +2,7 @@ import { IResponseType } from "../../types/IResponse";
 import { ICreatePost, IPostDataProps, IPostStatus } from "../../types/Post";
 import { IQueryObject, ObjectToQuery } from "../../utils/helper";
 import { FetchApi, FetchMethod } from "../helpers/FetchApi";
-import { createPost, getAllPost, getFilterPosts, getMaxPages, getPublicPosts, multiDeletePosts, root, updatePost, v1 } from "../helpers/QueryString";
+import { createPost, getAllPost, getFilterPosts, getMaxPages, getPublicPosts, getSinglePost, multiDeletePosts, root, updatePost, v1 } from "../helpers/QueryString";
 
 class PostService {
     public static createPost(data: ICreatePost): Promise<IResponseType<ICreatePost>> {
@@ -20,6 +20,10 @@ class PostService {
     public static getPublicPosts(selector: IQueryObject): Promise<IResponseType<IPostDataProps[]>> {
         const query: string = ObjectToQuery(selector)
         return FetchApi(`${root}/${v1}/post/${getPublicPosts}${query}`, FetchMethod.GET);
+    }
+
+    public static getSinglePost(postId: string): Promise<IResponseType<IPostDataProps>> {
+        return FetchApi(`${root}/${v1}/post/${getSinglePost}/${postId}`, FetchMethod.GET);
     }
 
     public static getMaxPages(): Promise<IResponseType<number>> {
