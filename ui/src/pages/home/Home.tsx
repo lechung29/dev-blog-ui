@@ -14,33 +14,68 @@ import { Link } from "react-router-dom";
 import { FilterPanel } from "../../components/filterPanel/FilterPanel";
 import { useImmerState } from "../../hook/useImmerState";
 import { Pagination } from "../../components/pagination/Pagination";
+import { IPostDataProps } from "../../types/Post";
+import PostShimmer from "../../components/postCardShimmer/PostShimmer";
 
 interface IHomePageOwnProps {
 
 }
 interface IHomePageState {
     isFilterPanelOpen: boolean;
-    posts?: any[]
-    currentPage: number
+    posts: IPostDataProps[];
+    currentPage: number;
+    maxPages?: number;
+    loading: boolean;
+    isFirstRender: boolean;
 }
 
 const initialState: IHomePageState = {
     isFilterPanelOpen: false,
-    currentPage: 1
+    currentPage: 1,
+    posts: [],
+    loading: false,
+    isFirstRender: true,
 }
 
 const Home: React.FunctionComponent<IHomePageOwnProps> = (_props) => {
     const [state, setState] = useImmerState<IHomePageState>(initialState)
-    const { isFilterPanelOpen, posts} = state;
-
+    const { isFilterPanelOpen, posts, currentPage, isFirstRender, loading, maxPages } = state;
+    const limit: number = 5;
+    const shimmerArray = Array(5).fill('');
     React.useEffect(() => {
-        PostService.getAllPosts().then((data) => setState({posts: data.data}))
-    }, [])
+        setState({ loading: true })
+        const getPosts = () => {
+            return PostService.getFilterPosts({
+                limit: limit,
+                page: currentPage
+            }).then((data) => {
+                setState((draft) => {
+                    draft.posts = data.data ?? []
+                })
+            })
+        }
+
+        const getMaxPages = () => {
+            return PostService.getMaxPages().then((data) => {
+                setState({ maxPages: data.data })
+            })
+        }
+
+        if (isFirstRender) {
+            Promise.all([getPosts(), getMaxPages()]).then(() => {
+                setState({ loading: false, isFirstRender: false })
+            })
+        } else {
+            getPosts().then(() => {
+                setState({ loading: false })
+            })
+        }
+    }, [currentPage])
     return (
         <AppLayout>
             <Thumbnail />
-            <Box 
-                component={"section"} 
+            <Box
+                component={"section"}
                 className="g-navbar-link-section"
             >
                 <Link to="/" className="g-navbar-link-section-item">
@@ -48,71 +83,66 @@ const Home: React.FunctionComponent<IHomePageOwnProps> = (_props) => {
                 </Link>
             </Box>
             <Container className="g-homepage-section">
-                <Box  
+                <Box
                     className="g-homepage-left-section"
                     component={"section"}
                     mx={1}
                 >
                     <Stack className="g-homepage-left-section-action">
-                        <Button 
-                            className="g-homepage-left-section-filter" 
+                        <Button
+                            className="g-homepage-left-section-filter"
                             startIcon={<FilterAltIcon />}
-                            onClick={() => setState({ isFilterPanelOpen: true})} 
+                            onClick={() => setState({ isFilterPanelOpen: true })}
                         >
                             Bộ lọc
                         </Button>
-                        <FilterPanel 
-                            open={isFilterPanelOpen} 
-                            placement={"right"} 
-                            onClosePanel={() => setState({ isFilterPanelOpen: false})} 
-                            onOpenPanel={() => setState({ isFilterPanelOpen: true})} 
+                        <FilterPanel
+                            open={isFilterPanelOpen}
+                            placement={"right"}
+                            onClosePanel={() => setState({ isFilterPanelOpen: false })}
+                            onOpenPanel={() => setState({ isFilterPanelOpen: true })}
                         />
                     </Stack>
-                    <Stack 
-                        direction={"column"} 
-                        spacing={1} 
+                    <Stack
+                        direction={"column"}
+                        spacing={1}
                         width={"100%"}
                     >
-                        {posts?.map((post: any) => (
-                            <PostCard 
-                                authorAvatar={post.author.avatar}
-                                category={post.category}
-                                postAuthor={post.author.displayName}
-                                postComment={post.comments}
-                                postCreatedAt={post.createdAt}
-                                title={post.title}
-                                key={post._id}
-                            />
+                        {loading ? shimmerArray.map((_item) => (
+                            <PostShimmer />
+                        )) : posts?.map((post: IPostDataProps) => (
+                            <PostCard item={post} />
                         ))}
                     </Stack>
-                    <Stack 
+                    <Stack
                         display={"flex"}
                         justifyContent={"center"}
                         alignItems={"center"}
                         flexDirection={"row"}
                         marginTop={4}
                     >
-                        <Pagination 
-                            maxPages={10}
+                        <Pagination
+                            loading={loading}
+                            maxPages={maxPages ?? 0}
                             currentPage={state.currentPage}
-                            onChangePage={(page) => setState({currentPage: page})}
+                            onChangePage={(page) => setState({ currentPage: page })}
                         />
                     </Stack>
                 </Box>
-                <Box 
+                <Box
                     className="g-homepage-right-section"
                     component={"section"}
                     mx={1}
                 >
-                    <Divider 
-                        title="CÂU HỎI MỚI NHẤT" 
-                        textAlign="center" 
-                        textFontSize={16} 
-                        margin="5px 0 10px" 
-                        color="#5488c7" 
-                        fontWeight={500} 
+                    <Divider
+                        title="CÂU HỎI MỚI NHẤT"
+                        textAlign="center"
+                        textFontSize={16}
+                        margin="5px 0 10px"
+                        color="#5488c7"
+                        fontWeight={500}
                     />
-                    <Stack 
+                    <Stack
                         className="g-homepage-right-section-question-list"
                         direction={"column"}
                         spacing={1}

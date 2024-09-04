@@ -1,5 +1,5 @@
 import { IFunc3 } from "../../types/Function";
-
+// import axios from "axios"
 export enum FetchMethod {
     GET = "GET",
     POST = "POST",
@@ -10,7 +10,6 @@ export enum FetchMethod {
 export const FetchApi: IFunc3<string, FetchMethod, any, Promise<any>> = async (url, method, body) => {
     try {
         const access_token = localStorage.getItem('access_token');
-
         // switch (method) {
         //     case FetchMethod.GET:
         //         response = await axios.get(url, headers);
@@ -36,6 +35,6 @@ export const FetchApi: IFunc3<string, FetchMethod, any, Promise<any>> = async (u
             body: JSON.stringify(body)
         }).then((response) => response.json())
     } catch (error: any) {
-        return error.response.json();
+        return error
     }
 };

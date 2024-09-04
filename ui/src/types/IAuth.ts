@@ -29,4 +29,5 @@ export interface IReferenceUser {
     _id: string;
     displayName: string;
     email: string;
+    avatar: string;
 }

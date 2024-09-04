@@ -5,7 +5,7 @@ import { IconButton } from '../../../components/common/button/iconbutton/IconBut
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useImmerState } from '../../../hook/useImmerState';
 import DataTable, { IDataTabelRef } from '../../../components/datatable/DataTable';
-import { PostService } from '../../../services/posts/PostService';
+// import { PostService } from '../../../services/posts/PostService';
 import { postManagementColumn } from '../../../components/datatable/utils';
 import ConfirmDialog from '../../../components/common/confirmDialog/ConfirmDialog';
 
@@ -32,11 +32,12 @@ const UserManagement: React.FunctionComponent<IUserManagementProps> = (props) =>
 
     const getData = () => {
         setState({ loading: true });
-        return PostService.getFilterPosts({ limit: 10 }).then((data) => {
-            const rowItems = data.data?.map((item) => ({ ...item, author: item.author.displayName }));
-            console.log(rowItems);
-            setState({ users: rowItems, loading: false });
-        });
+        // return PostService.getFilterPosts({ limit: 10 }).then((data) => {
+        //     const rowItems = data.data?.map((item) => ({ ...item, author: item.author.displayName }));
+        //     console.log(rowItems);
+        //     setState({ users: rowItems, loading: false });
+        // });
+        return Promise.resolve([])
     };
 
     const handleChangeSelection = (selection) => {
