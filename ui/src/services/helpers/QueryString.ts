@@ -11,11 +11,15 @@ const deletePost = "delete-post";
 const updatePost = "update-post";
 const multiDeletePosts = "multi-delete-post";
 const getMaxPages = "get-max-pages";
+const getSinglePost = "get-single-post";
 
 //Auth
 const login = "login";
 const register = "register";
 const googleLogin = "google";
+
+//Comment
+const createComment = "create-comment";
 
 export {
     root,
@@ -30,5 +34,7 @@ export {
     updatePost,
     getFilterPosts,
     getPublicPosts,
-    getMaxPages
+    getMaxPages,
+    getSinglePost,
+    createComment
 }

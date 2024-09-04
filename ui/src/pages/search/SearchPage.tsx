@@ -13,6 +13,7 @@ import { SearchTabList } from './util';
 import PostCard from '../../components/postCard/PostCard';
 import SearchSort from '../../components/searchsort/SearchSort';
 import { IPostDataProps } from '../../types/Post';
+import { useNavigate } from 'react-router-dom';
 
 interface ISearchPageProps { }
 
@@ -28,7 +29,7 @@ const initialState: ISearchPageState = {
 
 const SearchPage: React.FunctionComponent<ISearchPageProps> = (props) => {
     const [state, setState] = useImmerState<ISearchPageState>(initialState)
-
+    const navigate = useNavigate()
     useEffect(() => {
         // PostService.getFilterPosts({ limit: 10 }).then((data) => setState({ posts: data.data }))
     }, [])
@@ -65,17 +66,26 @@ const SearchPage: React.FunctionComponent<ISearchPageProps> = (props) => {
                         </Box>
                         <TabPanel value="newest">
                             {state.posts?.map((post: IPostDataProps) => (
-                                <PostCard item={post} />
+                                <PostCard 
+                                    item={post}
+                                    onClick={() => navigate(`/post/${post._id}`)} 
+                                />
                             ))}
                         </TabPanel>
                         <TabPanel value="question">
                             {state.posts?.map((post: IPostDataProps) => (
-                                <PostCard item={post} />
+                                <PostCard 
+                                    item={post} 
+                                    onClick={() => navigate(`/post/${post._id}`)}
+                                />
                             ))}
                         </TabPanel>
                         <TabPanel value="discussion">
                             {state.posts?.map((post: IPostDataProps) => (
-                                <PostCard item={post} />
+                                <PostCard 
+                                    item={post} 
+                                    onClick={() => navigate(`/post/${post._id}`)}
+                                />
                             ))}
                         </TabPanel>
                     </TabContext>

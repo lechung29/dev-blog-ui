@@ -1,21 +1,72 @@
-import React, { useState } from 'react'
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { Fragment, useEffect, useState } from 'react'
 import AppLayout from '../../layout/Layout'
 import "./index.scss"
-import { Button, ButtonGroup, Chip, Stack, Typography } from '@mui/material'
+import { Button, ButtonGroup, Chip, Skeleton, Stack, Typography } from '@mui/material'
 import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
 import ModeCommentOutlinedIcon from '@mui/icons-material/ModeCommentOutlined';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import Comment from '../../components/postcomment/Comment';
 import ModeCommentIcon from '@mui/icons-material/ModeComment';
 import CommentItem from '../../components/postcomment/CommentItem';
+import { useParams } from 'react-router-dom';
+import { PostService } from '../../services/posts/PostService';
+import { IPostDataProps } from '../../types/Post';
+import { CommentService } from '../../services/comments/CommentService';
+import { useAppSelector } from '../../redux/store/store';
+import { userState } from '../../redux/reducers/users/UserSlice';
+import { IToastProps, renderToast } from '../../utils/utils';
+import { IRequestStatus } from '../../types/IResponse';
 interface IPostPageProps {
 
 }
 
 const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
+    const params = useParams()
+    const { postId } = params
+    const user = useAppSelector(userState)
     const [isLike, setIsLike] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
     const [showComment, setShowComment] = useState(false)
     const [commentValue, setCommentValue] = useState("")
+    const [post, setPost] = useState<IPostDataProps>()
+
+    useEffect(() => {
+        setIsLoading(true)
+        PostService.getSinglePost(postId as string).then((data) => {
+            if (data.data) {
+                setPost(data.data)
+                setTimeout(() => {
+                    setIsLoading(false)
+                }, 2000)
+            }
+        })
+    }, [])
+
+    const onSubmitComment = () => {
+        return CommentService.createComment({
+            post: postId!,
+            content: commentValue,
+            commentator: user.user?._id!
+        }).then((data) => {
+            setShowComment(false)
+            setCommentValue("")
+            if (data.requestStatus === IRequestStatus.Success) {
+                renderToast(IToastProps.success, data.message);
+                setIsLoading(true)
+                PostService.getSinglePost(postId as string).then((data) => {
+                    if (data.data) {
+                        setPost(data.data)
+                        setTimeout(() => {
+                            setIsLoading(false)
+                        }, 2000)
+                    }
+                })
+            } else {
+                renderToast(IToastProps.error, data.message);
+            }
+        })
+    }
     return (
         <AppLayout>
             <div className='g-post-page-content-section'>
@@ -26,14 +77,19 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
                     flexDirection={"row"}
                     width={"75%"}
                 >
-                    <Typography
+                    {isLoading ? <Skeleton
+                        animation="wave"
+                        height={60}
+                        width="50%"
+                        style={{ borderRadius: 16, marginBottom: "0.35em" }}
+                    /> : <Typography
                         textAlign={"center"}
                         variant="h4"
                         gutterBottom
                         fontWeight={500}
                     >
-                        Hello 123
-                    </Typography>
+                        {post?.title}
+                    </Typography>}
                 </Stack>
                 <Stack
                     display={"flex"}
@@ -42,14 +98,20 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
                     flexDirection={"row"}
                     width={"75%"}
                 >
-                    <Typography
+                    {isLoading ? <Skeleton
+                        animation="wave"
+                        height={30}
+                        width="60%"
+                        style={{ borderRadius: 8, marginBottom: "0.35rem" }}
+                    /> : <Typography
                         variant="caption"
                         fontSize={14}
                         display="block"
                         gutterBottom
                     >
-                        Post by: admin - Category: ReactJs - Created at: Tuesday
-                    </Typography>
+                        {`Post by: ${post?.author.displayName} - Category: ${post?.category} - Created at: ${new Date(post?.createdAt as string).toLocaleString()}`}
+                    </Typography>}
+
                 </Stack>
                 <Stack
                     display={"flex"}
@@ -60,9 +122,22 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
                     margin={".5rem 0"}
                     gap={3}
                 >
-                    <Chip label="ReactJs" aria-label='ReactJs' size='small' onClick={(e) => console.log(e.currentTarget.ariaLabel)} />
-                    <Chip label="ReactJs" size='small' />
-                    <Chip label="ReactJs" size='small' />
+                    {isLoading ? Array(3).fill("").map((_item, id) => (
+                        <Skeleton
+                            animation="wave"
+                            height={36}
+                            width="80px"
+                            style={{ borderRadius: 8, marginBottom: "0.35rem" }}
+                        />
+                    )) : post?.tags.map((item, id) => (
+                        <Chip
+                            key={id}
+                            label={item}
+                            aria-label={item}
+                            size='small'
+                            onClick={(e) => console.log(e.currentTarget.ariaLabel)}
+                        />
+                    ))}
                 </Stack>
                 <Stack
                     display={"flex"}
@@ -72,26 +147,68 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
                     flexDirection={"row"}
                     margin={"1rem 0"}
                 >
-                    <img
-                        src='/assets/thumbnail.JPG'
-                        width={"100%"}
-                        alt='img'
-                    />
+                    {isLoading
+                        ? <Skeleton
+                            width={"100%"}
+                            height={160}
+                            animation="wave"
+                            variant="rectangular"
+                            style={{ borderRadius: 20 }}
+                        />
+                        : <img
+                            src='/assets/thumbnail.JPG'
+                            width={"100%"}
+                            alt='img'
+                        />}
                 </Stack>
                 <Stack
                     display={"flex"}
-                    flexDirection={"row"}
+                    flexDirection={"column"}
                     alignItems={"center"}
                     justifyContent={"center"}
                     width={"100%"}
+                    marginTop={"40px"}
                 >
-                    <div
-                        style={{
-                            margin: "1rem 0",
-                            width: "100%"
-                        }}
-                        dangerouslySetInnerHTML={{ __html: "Hello" }}
-                    ></div>
+                    {isLoading
+                        ? <Fragment>
+                            {Array(2).fill("").map((_item, id) => (
+                                <Skeleton
+                                    key={id}
+                                    animation={false}
+                                    width={"100%"}
+                                    height={30}
+                                    style={{
+                                        marginBottom: "0.5rem"
+                                    }}
+                                />
+                            ))}
+                            {Array(2).fill("").map((_item, id) => (
+                                <Skeleton
+                                    animation="wave"
+                                    width={"100%"}
+                                    height={30}
+                                    style={{
+                                        marginBottom: "0.5rem"
+                                    }}
+                                />
+                            ))}
+                            {Array(2).fill("").map((_item, id) => (
+                                <Skeleton
+                                    width={"100%"}
+                                    height={30}
+                                    style={{
+                                        marginBottom: "0.5rem"
+                                    }}
+                                />
+                            ))}
+                        </Fragment>
+                        : <div
+                            style={{
+                                margin: "1rem 0",
+                                width: "100%"
+                            }}
+                            dangerouslySetInnerHTML={{ __html: post?.content as string }}
+                        />}
                 </Stack>
                 <Stack
                     display={"flex"}
@@ -101,7 +218,15 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
                     width={"100%"}
                     margin={"1rem 0"}
                 >
-                    <ButtonGroup
+                    {isLoading ? Array(2).fill("").map((_item, id) => (
+                        <Skeleton
+                            key={id}
+                            animation="wave"
+                            height={60}
+                            width="30%"
+                            style={{ borderRadius: 8, marginRight: "0.5rem" }}
+                        />
+                    )) : <ButtonGroup
                         variant="text"
                         aria-label="Post action button"
                         className='g-post-action-button-group'
@@ -129,9 +254,10 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
                                 : <ModeCommentOutlinedIcon />}
                             <span>Comment</span>
                         </Button>
-                    </ButtonGroup>
+                    </ButtonGroup>}
+
                 </Stack>
-                {showComment && <Stack
+                {!isLoading && showComment && <Stack
                     display={"flex"}
                     alignItems={"flex-start"}
                     justifyContent={"center"}
@@ -176,6 +302,7 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
                         <Button
                             variant="contained"
                             size="small"
+                            onClick={onSubmitComment}
                             style={{
                                 backgroundColor: "#5488c7",
                                 color: "#fff",
@@ -186,7 +313,7 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
                         </Button>
                     </Stack>
                 </Stack>}
-                <Stack
+                {!isLoading && <Stack
                     display={"flex"}
                     alignItems={"flex-start"}
                     flexDirection={"column"}
@@ -195,10 +322,10 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
                     width={"100%"}
                     marginTop={"1rem"}
                 >
-                    <CommentItem />
-                    <CommentItem />
-                    <CommentItem />
-                </Stack>
+                    {post && post?.comment?.map((item, id) => (
+                        <CommentItem key={id} />
+                    ))}
+                </Stack>}
             </div>
         </AppLayout>
     )

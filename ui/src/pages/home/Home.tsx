@@ -10,7 +10,7 @@ import { Box, Button, Container, Stack } from "@mui/material";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import { Divider } from "../../components/common/divider/Divider";
 import QuestionCard from "../../components/questionCard/QuestionCard";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FilterPanel } from "../../components/filterPanel/FilterPanel";
 import { useImmerState } from "../../hook/useImmerState";
 import { Pagination } from "../../components/pagination/Pagination";
@@ -41,6 +41,7 @@ const Home: React.FunctionComponent<IHomePageOwnProps> = (_props) => {
     const [state, setState] = useImmerState<IHomePageState>(initialState)
     const { isFilterPanelOpen, posts, currentPage, isFirstRender, loading, maxPages } = state;
     const limit: number = 5;
+    const navigate = useNavigate()
     const shimmerArray = Array(5).fill('');
     React.useEffect(() => {
         setState({ loading: true })
@@ -108,10 +109,14 @@ const Home: React.FunctionComponent<IHomePageOwnProps> = (_props) => {
                         spacing={1}
                         width={"100%"}
                     >
-                        {loading ? shimmerArray.map((_item) => (
-                            <PostShimmer />
-                        )) : posts?.map((post: IPostDataProps) => (
-                            <PostCard item={post} />
+                        {loading ? shimmerArray.map((_item, id) => (
+                            <PostShimmer key={id} />
+                        )) : posts?.map((post: IPostDataProps, id) => (
+                            <PostCard 
+                                key={id}
+                                item={post} 
+                                onClick={() => navigate(`/post/${post._id}`)}
+                            />
                         ))}
                     </Stack>
                     <Stack

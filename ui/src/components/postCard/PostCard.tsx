@@ -7,14 +7,16 @@ import "./index.scss"
 import { ITooltipHostPlacement, TooltipHost } from "../common/tooltiphost/TooltipHost";
 import { Label } from "../common/label/Label";
 import { IPostDataProps } from "../../types/Post";
+import { IAction } from "../../types/Function";
 
 export interface IPostCardItemProps {
     item: IPostDataProps;
     subTitle?: string;
+    onClick: IAction;
 }
 
 const PostCard: React.FunctionComponent<IPostCardItemProps> = (props) => {
-    const { item, subTitle } = props
+    const { item, subTitle, onClick } = props
     return (
         <Stack direction={"row"} className="g-post-card-section">
             <div className="g-post-card-user-avatar">
@@ -40,11 +42,12 @@ const PostCard: React.FunctionComponent<IPostCardItemProps> = (props) => {
                         style={{
                             cursor: "pointer",
                         }}
+                        onClick={onClick}
                     />
                 </div>
                 <div className="g-post-card-tags">
-                    {item.tags.map((tag) => (
-                        <p className="g-post-card-tag-item">{tag}</p>
+                    {item.tags.map((tag, id) => (
+                        <p key={id} className="g-post-card-tag-item">{tag}</p>
                     ))}
                 </div>
                 <div className="g-post-card-reaction">
