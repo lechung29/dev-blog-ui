@@ -3,13 +3,22 @@ import "./index.scss"
 import { Avatar, Badge, Button, Stack } from '@mui/material'
 import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
 import Comment from './Comment';
+import { IReferenceComments } from '../../types/Comment';
+import { useAppSelector } from '../../redux/store/store';
+import { userState } from '../../redux/reducers/users/UserSlice';
+import { CommentService } from '../../services/comments/CommentService';
+import { IToastProps, renderToast } from '../../utils/utils';
+import { IRequestStatus } from '../../types/IResponse';
 
-interface ICommentItemProps { }
+interface ICommentItemProps {
+    item: IReferenceComments
+    refreshPost: () => Promise<void>
+}
 
 const CommentItem: React.FunctionComponent<ICommentItemProps> = (props) => {
-    const [isLike, setIsLike] = useState(false)
+    const { user } = useAppSelector(userState)
     const [isUpdateComment, setIsUpdateComment] = useState(false)
-    const [commentValue, setCommentValue] = useState("")
+    const [commentValue, setCommentValue] = useState(props.item.content)
     const onRenderBadgeContent = () => {
         return (
             <div
@@ -27,14 +36,25 @@ const CommentItem: React.FunctionComponent<ICommentItemProps> = (props) => {
                         fontSize: 13,
                     }}
                 />
-                <span>123</span>
+                <span>{props.item.like?.length}</span>
             </div>
         )
+    }
+
+    const handleLikeComment = () => {
+        return CommentService.likeComment(props.item._id)
+            .then((data) => {
+                renderToast(
+                    data.requestStatus === IRequestStatus.Success ? IToastProps.success : IToastProps.error,
+                    data.message
+                )
+                props.refreshPost()
+            })
     }
     return (
         <div className='g-post-comment-item'>
             <div className="g-post-comment-avatar">
-                <Avatar sx={{ width: 36, height: 36 }} >N</Avatar>
+                <Avatar src={props.item.commentator.avatar} sx={{ width: 36, height: 36 }} alt={props.item.commentator.displayName} />
             </div>
             {isUpdateComment
                 ? <div style={{
@@ -75,7 +95,7 @@ const CommentItem: React.FunctionComponent<ICommentItemProps> = (props) => {
                             }}
                             onClick={() => {
                                 setIsUpdateComment(false)
-                                setCommentValue("")
+                                setCommentValue(props.item.content)
                             }}
                         >
                             Hủy bỏ
@@ -103,31 +123,31 @@ const CommentItem: React.FunctionComponent<ICommentItemProps> = (props) => {
                         color='info'
                     >
                         <div className="g-post-comment-info">
-                            <p className="g-post-comment-username">Killian</p>
-                            <p className='g-post-comment-content'>Bài viết haydssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss Bài viết haydssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss Bài viết haydssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss</p>
+                            <p className="g-post-comment-username">{props.item.commentator.displayName}</p>
+                            <p className='g-post-comment-content'>{props.item.content}</p>
                         </div>
                     </Badge>
 
                     <div className='g-post-comment-action-bottom'>
                         <span
                             style={{
-                                fontWeight: isLike ? "600" : "400",
+                                fontWeight: props.item.isLike ? "600" : "400",
                                 cursor: "pointer",
-                                color: isLike ? "#5488c7" : "#000"
+                                color: props.item.isLike ? "#5488c7" : "#000"
                             }}
-                            onClick={() => setIsLike(!isLike)}
+                            onClick={handleLikeComment}
                         >
                             Thích
                         </span>
-                        <span
+                        {user?._id === props.item.commentator._id && <span
                             style={{
                                 cursor: "pointer"
                             }}
                             onClick={() => setIsUpdateComment(true)}
                         >
                             Chỉnh sửa
-                        </span>
-                        <span>3 ngày trước</span>
+                        </span>}
+                        <span>{new Date(props.item.createdAt).toLocaleString()}</span>
                     </div>
                 </div>
             }

@@ -33,15 +33,19 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
 
     useEffect(() => {
         setIsLoading(true)
-        PostService.getSinglePost(postId as string).then((data) => {
+        getPostDetails()
+    }, [])
+
+    const getPostDetails = () => {
+        return PostService.getSinglePost(postId!, user.user?._id).then((data) => {
             if (data.data) {
                 setPost(data.data)
                 setTimeout(() => {
                     setIsLoading(false)
-                }, 2000)
+                }, 1000)
             }
         })
-    }, [])
+    }
 
     const onSubmitComment = () => {
         return CommentService.createComment({
@@ -49,19 +53,11 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
             content: commentValue,
             commentator: user.user?._id!
         }).then((data) => {
-            setShowComment(false)
-            setCommentValue("")
             if (data.requestStatus === IRequestStatus.Success) {
+                setShowComment(false)
+                setCommentValue("")
                 renderToast(IToastProps.success, data.message);
-                setIsLoading(true)
-                PostService.getSinglePost(postId as string).then((data) => {
-                    if (data.data) {
-                        setPost(data.data)
-                        setTimeout(() => {
-                            setIsLoading(false)
-                        }, 2000)
-                    }
-                })
+                getPostDetails()
             } else {
                 renderToast(IToastProps.error, data.message);
             }
@@ -111,7 +107,6 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
                     >
                         {`Post by: ${post?.author.displayName} - Category: ${post?.category} - Created at: ${new Date(post?.createdAt as string).toLocaleString()}`}
                     </Typography>}
-
                 </Stack>
                 <Stack
                     display={"flex"}
@@ -124,6 +119,7 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
                 >
                     {isLoading ? Array(3).fill("").map((_item, id) => (
                         <Skeleton
+                            key={id}
                             animation="wave"
                             height={36}
                             width="80px"
@@ -184,6 +180,7 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
                             ))}
                             {Array(2).fill("").map((_item, id) => (
                                 <Skeleton
+                                    key={id}
                                     animation="wave"
                                     width={"100%"}
                                     height={30}
@@ -194,6 +191,7 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
                             ))}
                             {Array(2).fill("").map((_item, id) => (
                                 <Skeleton
+                                    key={id}
                                     width={"100%"}
                                     height={30}
                                     style={{
@@ -322,8 +320,12 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
                     width={"100%"}
                     marginTop={"1rem"}
                 >
-                    {post && post?.comment?.map((item, id) => (
-                        <CommentItem key={id} />
+                    {post && post?.comments?.map((item, id) => (
+                        <CommentItem 
+                            key={id} 
+                            item={item}
+                            refreshPost={getPostDetails} 
+                        />
                     ))}
                 </Stack>}
             </div>

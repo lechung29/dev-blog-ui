@@ -1,3 +1,4 @@
+import { IReferenceComments } from "./Comment";
 import { IReferenceUser } from "./IAuth";
 
 export interface ICreatePost {
@@ -27,7 +28,7 @@ export interface IPostDataProps {
     content: string;
     author: IReferenceUser;
     tags: string[];
-    comment: string[]
+    comments: IReferenceComments[]
     status: string;
     createdAt: string;
     updatedAt: string;
@@ -42,7 +43,7 @@ export interface IPostProps {
     content: string;
     author: string;
     tags: string[];
-    comment: string[]
+    comments: IReferenceComments[]
     status: IPostStatus;
     createdAt: string;
     updatedAt: string;
@@ -57,3 +58,5 @@ export enum IPostStatus {
     Pending = "Pending",
     Hide = "Hide",
 }
+
+

@@ -20,7 +20,10 @@ const googleLogin = "google";
 
 //Comment
 const createComment = "create-comment";
+const likeComment = "like-comment"
 
+// data
+const guestUser = "0000-0000-00000000-0000-000000000000";
 export {
     root,
     v1,
@@ -36,5 +39,7 @@ export {
     getPublicPosts,
     getMaxPages,
     getSinglePost,
-    createComment
+    createComment,
+    likeComment,
+    guestUser
 }
