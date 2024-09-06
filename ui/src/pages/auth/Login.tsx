@@ -126,8 +126,8 @@ const Login: React.FunctionComponent<ILoginOwnProps> = (_props) => {
         } else {
             setState({ isLoading: false });
             setTimeout(() => {
-                localStorage.setItem("access_token", response.data?.accessToken!)
-                dispatch(login(response.data))
+                // localStorage.setItem("access_token", response.data?.accessToken!)
+                dispatch(login(response.data!))
                 navigate("/");
             }, 1000);
         }

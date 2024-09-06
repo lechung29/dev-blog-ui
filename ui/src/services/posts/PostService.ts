@@ -1,6 +1,6 @@
 import { IResponseType } from "../../types/IResponse";
 import { ICreatePost, IPostDataProps, IPostStatus } from "../../types/Post";
-import { IQueryObject, ObjectToQuery } from "../../utils/helper";
+import { IQueryGetMaxPage, IQueryObject, ObjectToQuery } from "../../utils/helper";
 import { FetchApi, FetchMethod } from "../helpers/FetchApi";
 import { createPost, getAllPost, getFilterPosts, getMaxPages, getPublicPosts, getSinglePost, guestUser, likePost, multiDeletePosts, root, updatePost, v1 } from "../helpers/QueryString";
 
@@ -26,8 +26,9 @@ class PostService {
         return FetchApi(`${root}/${v1}/post/${getSinglePost}/${postId}/${userId ?? guestUser}`, FetchMethod.GET);
     }
 
-    public static getMaxPages(): Promise<IResponseType<number>> {
-        return FetchApi(`${root}/${v1}/post/${getMaxPages}`, FetchMethod.GET);
+    public static getMaxPages(selector: IQueryGetMaxPage): Promise<IResponseType<number>> {
+        const query: string = ObjectToQuery(selector)
+        return FetchApi(`${root}/${v1}/post/${getMaxPages}${query}`, FetchMethod.GET);
     }
 
     public static likePost(postId: string): Promise<IResponseType<IPostDataProps>> {
