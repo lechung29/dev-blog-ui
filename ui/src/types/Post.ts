@@ -30,6 +30,8 @@ export interface IPostDataProps {
     tags: string[];
     comments: IReferenceComments[]
     status: string;
+    like: string[];
+    isLike: boolean;
     createdAt: string;
     updatedAt: string;
 }
@@ -47,6 +49,8 @@ export interface IPostProps {
     status: IPostStatus;
     createdAt: string;
     updatedAt: string;
+    like: string[];
+    isLike: boolean;
 }
 
 export interface IIdentityProps {

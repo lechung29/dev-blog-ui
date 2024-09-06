@@ -12,6 +12,7 @@ const updatePost = "update-post";
 const multiDeletePosts = "multi-delete-post";
 const getMaxPages = "get-max-pages";
 const getSinglePost = "get-single-post";
+const likePost = "like-post";
 
 //Auth
 const login = "login";
@@ -20,7 +21,9 @@ const googleLogin = "google";
 
 //Comment
 const createComment = "create-comment";
-const likeComment = "like-comment"
+const likeComment = "like-comment";
+const updateComment = "update-comment";
+const deleteComment = "delete-comment";
 
 // data
 const guestUser = "0000-0000-00000000-0000-000000000000";
@@ -41,5 +44,8 @@ export {
     getSinglePost,
     createComment,
     likeComment,
-    guestUser
+    guestUser,
+    likePost,
+    updateComment,
+    deleteComment
 }

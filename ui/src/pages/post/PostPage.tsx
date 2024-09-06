@@ -25,26 +25,28 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
     const params = useParams()
     const { postId } = params
     const user = useAppSelector(userState)
-    const [isLike, setIsLike] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
     const [showComment, setShowComment] = useState(false)
     const [commentValue, setCommentValue] = useState("")
     const [post, setPost] = useState<IPostDataProps>()
+    const [isLike, setIsLike] = useState(false)
+    const [disableLike, setDisableLike] = useState(false)
 
     useEffect(() => {
         setIsLoading(true)
-        getPostDetails()
+        getPostDetails().then(() => {
+            setTimeout(() => {
+                setIsLoading(false)
+            }, 1000)
+        })
     }, [])
 
-    const getPostDetails = () => {
-        return PostService.getSinglePost(postId!, user.user?._id).then((data) => {
-            if (data.data) {
-                setPost(data.data)
-                setTimeout(() => {
-                    setIsLoading(false)
-                }, 1000)
-            }
-        })
+    const getPostDetails = async () => {
+        const post = await PostService.getSinglePost(postId!, user.user?._id)
+        if (post.data) {
+            setPost(post.data)
+            setIsLike(post.data.isLike)
+        }
     }
 
     const onSubmitComment = () => {
@@ -62,6 +64,27 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
                 renderToast(IToastProps.error, data.message);
             }
         })
+    }
+
+    const handleLikePost = () => {
+        if (disableLike) {
+            return
+        } else {
+            setDisableLike(true)
+            return PostService.likePost(postId!)
+                .then((data) => {
+                    if (data.requestStatus === IRequestStatus.Success) {
+                        renderToast(IToastProps.success, data.message)
+                        getPostDetails().then(() => {
+                            setDisableLike(false)
+                        })
+                    } else {
+                        renderToast(IToastProps.error, data.message);
+                    }
+                })
+        }
+
+
     }
     return (
         <AppLayout>
@@ -230,7 +253,7 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
                         className='g-post-action-button-group'
                     >
                         <Button
-                            onClick={() => setIsLike(!isLike)}
+                            onClick={handleLikePost}
                             className='g-post-action-button'
                         >
                             {isLike
@@ -239,7 +262,15 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
                                 }} />
                                 : <ThumbUpOutlinedIcon />}
 
-                            <span>Like</span>
+                            <span 
+                                style={{ 
+                                    fontSize: 18,
+                                    fontWeight: 500,
+                                    color: post?.isLike? "#5488c7" : "#000"
+                                }}
+                            >
+                                {post?.like?.length}
+                            </span>
                         </Button>
                         <Button
                             className='g-post-action-button'
@@ -250,7 +281,15 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
                                     color: "#5488c7"
                                 }} />
                                 : <ModeCommentOutlinedIcon />}
-                            <span>Comment</span>
+                            <span
+                                style={{ 
+                                    fontSize: 16,
+                                    fontWeight: 500,
+                                    color: showComment ? "#5488c7" : "#000"
+                                }}
+                            >
+                                {post?.comments.length}
+                            </span>
                         </Button>
                     </ButtonGroup>}
 
@@ -321,10 +360,10 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
                     marginTop={"1rem"}
                 >
                     {post && post?.comments?.map((item, id) => (
-                        <CommentItem 
-                            key={id} 
+                        <CommentItem
+                            key={id}
                             item={item}
-                            refreshPost={getPostDetails} 
+                            refreshPost={getPostDetails}
                         />
                     ))}
                 </Stack>}

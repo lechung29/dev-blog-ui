@@ -25,7 +25,6 @@ const GoogleAuth: React.FunctionComponent = () => {
                 avatar: result.user.photoURL!,
             })
             if (data.requestStatus === IRequestStatus.Success) {
-                localStorage.setItem("access_token", data.data?.accessToken!)
                 dispatch(login(data.data))
                 navigate("/")
             }
