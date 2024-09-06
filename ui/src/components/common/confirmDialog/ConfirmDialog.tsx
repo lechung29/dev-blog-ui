@@ -7,11 +7,12 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import "./index.scss"
 import { DefaultButton } from "../button/defaultbutton/DefaultButton";
+import { IFunc } from "../../../types/Function";
 
 interface IConfirmDialogProps {
 	open: boolean;
 	onClose: () => void;
-	handleConfirm: () => void;
+	handleConfirm: IFunc<void | Promise<void>>
 	title: string;
 	content: React.ReactNode
 	isLoading: boolean;

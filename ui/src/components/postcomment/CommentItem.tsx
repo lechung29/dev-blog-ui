@@ -9,6 +9,7 @@ import { userState } from '../../redux/reducers/users/UserSlice';
 import { CommentService } from '../../services/comments/CommentService';
 import { IToastProps, renderToast } from '../../utils/utils';
 import { IRequestStatus } from '../../types/IResponse';
+import ConfirmDialog from '../common/confirmDialog/ConfirmDialog';
 
 interface ICommentItemProps {
     item: IReferenceComments
@@ -18,8 +19,11 @@ interface ICommentItemProps {
 const CommentItem: React.FunctionComponent<ICommentItemProps> = (props) => {
     const { user } = useAppSelector(userState)
     const [isUpdateComment, setIsUpdateComment] = useState(false)
+    const [isOpenDeleteCommentDialog, setIsOpenDeleteCommentDialog] = useState(false)
+    const [isDeletingComment, setIsDeletingComment] = useState(false)
     const [commentValue, setCommentValue] = useState(props.item.content)
     const onRenderBadgeContent = () => {
+        if (!props.item.like.length) return null
         return (
             <div
                 style={{
@@ -48,6 +52,36 @@ const CommentItem: React.FunctionComponent<ICommentItemProps> = (props) => {
                     data.requestStatus === IRequestStatus.Success ? IToastProps.success : IToastProps.error,
                     data.message
                 )
+                props.refreshPost()
+            })
+    }
+
+    const onUpdateComment = () => {
+        if (!commentValue.trim()) {
+            renderToast(IToastProps.error, "Không được để trống")
+            return
+        }
+        return CommentService.updateComment(props.item._id, user?._id!, commentValue)
+            .then((data) => {
+                renderToast(
+                    data.requestStatus === IRequestStatus.Success ? IToastProps.success : IToastProps.error,
+                    data.message
+                )
+                setIsUpdateComment(false)
+                props.refreshPost()
+            })
+    }
+
+    const handleDeleteComment = () => {
+        setIsDeletingComment(true)
+        return CommentService.deleteComment(props.item._id, user?._id!)
+            .then((data) => {
+                renderToast(
+                    data.requestStatus === IRequestStatus.Success ? IToastProps.success : IToastProps.error,
+                    data.message
+                )
+                setIsDeletingComment(false)
+                setIsOpenDeleteCommentDialog(false)
                 props.refreshPost()
             })
     }
@@ -103,6 +137,7 @@ const CommentItem: React.FunctionComponent<ICommentItemProps> = (props) => {
                         <Button
                             variant="contained"
                             size="small"
+                            onClick={onUpdateComment}
                             style={{
                                 backgroundColor: "#5488c7",
                                 color: "#fff",
@@ -147,6 +182,22 @@ const CommentItem: React.FunctionComponent<ICommentItemProps> = (props) => {
                         >
                             Chỉnh sửa
                         </span>}
+                        {user?._id === props.item.commentator._id && <span
+                            style={{
+                                cursor: "pointer"
+                            }}
+                            onClick={() => setIsOpenDeleteCommentDialog(true)}
+                        >
+                            Xóa
+                        </span>}
+                        {isOpenDeleteCommentDialog && <ConfirmDialog 
+                            open={isOpenDeleteCommentDialog}
+                            title={"Xác nhận xóa bình luận"}
+                            content={"Bạn có chắc muốn xóa bình luận này?"}
+                            onClose={() => setIsOpenDeleteCommentDialog(false)}
+                            isLoading={isDeletingComment}
+                            handleConfirm={handleDeleteComment}
+                        />}
                         <span>{new Date(props.item.createdAt).toLocaleString()}</span>
                     </div>
                 </div>
