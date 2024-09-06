@@ -51,16 +51,16 @@ const PostCard: React.FunctionComponent<IPostCardItemProps> = (props) => {
                     ))}
                 </div>
                 <div className="g-post-card-reaction">
-                    <TooltipHost title={"Lượt thích: 7"}>
+                    <TooltipHost title={`Lượt thích: ${item.like.length}`}>
                         <div className="g-post-card-reaction-item">
                             <RemoveRedEyeIcon style={{ color: "#9b9b9b", fontSize: 14 }} />
-                            <span>{7}</span>
+                            <span>{item.like.length}</span>
                         </div>
                     </TooltipHost>
-                    <TooltipHost title={`Bình luận: 7`}>
+                    <TooltipHost title={`Bình luận: ${item.comments.length}`}>
                         <div className="g-post-card-reaction-item">
                             <ModeCommentIcon style={{ color: "#9b9b9b", fontSize: 14 }} />
-                            <span>{7}</span>
+                            <span>{item.comments.length}</span>
                         </div>
                     </TooltipHost>
                     <TooltipHost title={"Bookmark: 1"}>

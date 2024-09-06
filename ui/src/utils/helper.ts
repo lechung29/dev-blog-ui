@@ -6,8 +6,14 @@ export interface IQueryObject {
     search?: string;
 }
 
+export interface IQueryGetMaxPage {
+    filter?: string;
+    limit?: number;
+    search?: string;
+}
+
 export const ObjectToQuery = (object: IQueryObject) => {
-    let query: string = ""
+    let query: string = "";
     if (object.filter) {
         query += "filter=" + encodeURIComponent(object.filter) + "&";
     }
@@ -27,4 +33,19 @@ export const ObjectToQuery = (object: IQueryObject) => {
         query = "?" + query;
     }
     return query;
-}
+};
+
+export const ObjectToString = (object: Object) => {
+    let result = "";
+    let currentKey = 0;
+
+    for (const key in object) {
+        currentKey++;
+        if (currentKey === Object.keys(object).length) {
+            result += key + " " + object[key];
+        } else {
+            result += key + " " + object[key] + " ";
+        }
+    }
+    return result
+};

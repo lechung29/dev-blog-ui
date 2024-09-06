@@ -16,6 +16,7 @@ import { useImmerState } from "../../hook/useImmerState";
 import { Pagination } from "../../components/pagination/Pagination";
 import { IPostDataProps } from "../../types/Post";
 import PostShimmer from "../../components/postCardShimmer/PostShimmer";
+import { ObjectToString } from "../../utils/helper";
 
 interface IHomePageOwnProps {
 
@@ -24,7 +25,7 @@ interface IHomePageState {
     isFilterPanelOpen: boolean;
     posts: IPostDataProps[];
     currentPage: number;
-    maxPages?: number;
+    maxPages: number;
     loading: boolean;
     isFirstRender: boolean;
 }
@@ -35,6 +36,7 @@ const initialState: IHomePageState = {
     posts: [],
     loading: false,
     isFirstRender: true,
+    maxPages: 0,
 }
 
 const Home: React.FunctionComponent<IHomePageOwnProps> = (_props) => {
@@ -43,12 +45,20 @@ const Home: React.FunctionComponent<IHomePageOwnProps> = (_props) => {
     const limit: number = 5;
     const navigate = useNavigate()
     const shimmerArray = Array(5).fill('');
+    const sort = {
+        createAt: "asc"
+    }
+    const filter = {
+        status: "Public"
+    }
     React.useEffect(() => {
         setState({ loading: true })
         const getPosts = () => {
             return PostService.getFilterPosts({
                 limit: limit,
-                page: currentPage
+                page: currentPage,
+                filter: ObjectToString(filter),
+                sort: ObjectToString(sort),
             }).then((data) => {
                 setState((draft) => {
                     draft.posts = data.data ?? []
@@ -57,7 +67,10 @@ const Home: React.FunctionComponent<IHomePageOwnProps> = (_props) => {
         }
 
         const getMaxPages = () => {
-            return PostService.getMaxPages().then((data) => {
+            return PostService.getMaxPages({
+                limit: limit,
+                filter: ObjectToString(filter),
+            }).then((data) => {
                 setState({ maxPages: data.data })
             })
         }
@@ -111,15 +124,15 @@ const Home: React.FunctionComponent<IHomePageOwnProps> = (_props) => {
                     >
                         {loading ? shimmerArray.map((_item, id) => (
                             <PostShimmer key={id} />
-                        )) : posts?.map((post: IPostDataProps, id) => (
-                            <PostCard 
+                        )) : posts.length ? posts?.map((post: IPostDataProps, id) => (
+                            <PostCard
                                 key={id}
-                                item={post} 
+                                item={post}
                                 onClick={() => navigate(`/post/${post._id}`)}
-                            />
-                        ))}
+                            />)) : <span style={{ textAlign: "center" }}>Không có bài viết phù hợp</span>
+                        }
                     </Stack>
-                    <Stack
+                    {!!posts.length && <Stack
                         display={"flex"}
                         justifyContent={"center"}
                         alignItems={"center"}
@@ -128,11 +141,11 @@ const Home: React.FunctionComponent<IHomePageOwnProps> = (_props) => {
                     >
                         <Pagination
                             loading={loading}
-                            maxPages={maxPages ?? 0}
+                            maxPages={maxPages}
                             currentPage={state.currentPage}
                             onChangePage={(page) => setState({ currentPage: page })}
                         />
-                    </Stack>
+                    </Stack>}
                 </Box>
                 <Box
                     className="g-homepage-right-section"
