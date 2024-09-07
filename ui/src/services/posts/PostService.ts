@@ -2,7 +2,7 @@ import { IResponseType } from "../../types/IResponse";
 import { ICreatePost, IPostDataProps, IPostStatus } from "../../types/Post";
 import { IQueryGetMaxPage, IQueryObject, ObjectToQuery } from "../../utils/helper";
 import { FetchApi, FetchMethod } from "../helpers/FetchApi";
-import { createPost, getAllPost, getFilterPosts, getMaxPages, getPublicPosts, getSinglePost, guestUser, likePost, multiDeletePosts, root, updatePost, v1 } from "../helpers/QueryString";
+import { createPost, getAllPost, getAllTags, getFilterPosts, getMaxPages, getSinglePost, guestUser, likePost, multiDeletePosts, root, updatePost, v1 } from "../helpers/QueryString";
 
 class PostService {
     public static createPost(data: ICreatePost): Promise<IResponseType<ICreatePost>> {
@@ -15,11 +15,6 @@ class PostService {
     public static getFilterPosts(selector: IQueryObject): Promise<IResponseType<IPostDataProps[]>> {
         const query: string = ObjectToQuery(selector)
         return FetchApi(`${root}/${v1}/post/${getFilterPosts}${query}`, FetchMethod.GET);
-    }
-
-    public static getPublicPosts(selector: IQueryObject): Promise<IResponseType<IPostDataProps[]>> {
-        const query: string = ObjectToQuery(selector)
-        return FetchApi(`${root}/${v1}/post/${getPublicPosts}${query}`, FetchMethod.GET);
     }
 
     public static getSinglePost(postId: string, userId?: string): Promise<IResponseType<IPostDataProps>> {
@@ -42,6 +37,10 @@ class PostService {
     public static deleteMultiPost(postIds: string[]): Promise<IResponseType<IPostDataProps[]>> {
         return FetchApi(`${root}/${v1}/post/${multiDeletePosts}`, FetchMethod.DELETE, { postIds: postIds });
     }
+
+    public static getAllTags(): Promise<IResponseType<string[]>> {
+        return FetchApi(`${root}/${v1}/post/${getAllTags}`, FetchMethod.GET);
+    } 
 }
 
 export { PostService };

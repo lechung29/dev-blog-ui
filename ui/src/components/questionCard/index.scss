@@ -4,10 +4,10 @@
     border-bottom: 1px solid #e9ecef;
     display: flex;
     align-items: start;
-    justify-content: space-between;
+    justify-content: center;
     flex-direction: column;
     height: 100px;
-    gap: 5px;
+    gap: .25rem;
     .g-question-card-title {
         max-width: 280px;
         display: -webkit-box;
@@ -16,6 +16,7 @@
         overflow: hidden;
         text-overflow: ellipsis;
         text-align: start;
+        flex: 1;
         span {
             font-size: 14px;
             color: #1b1b1b;

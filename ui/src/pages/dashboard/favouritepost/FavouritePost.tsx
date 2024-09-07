@@ -26,12 +26,12 @@ const FavouritePost: React.FunctionComponent<IFavouritePostProps> = (props) => {
 					<Button className="g-favourite-filter-button" startIcon={<FilterAltIcon />} onClick={() => setState({ isFilterPanelOpen: true })}>
 						Bộ lọc
 					</Button>
-					<FilterPanel
+					{/* <FilterPanel
 						open={state.isFilterPanelOpen}
 						placement={"right"}
 						onClosePanel={() => setState({ isFilterPanelOpen: false })}
-						onOpenPanel={() => setState({ isFilterPanelOpen: true })}
-					/>
+						onOpenPanel={() => setState({ isFilterPanelOpen: true })} */}
+					{/* /> */}
 				</Stack>
 				<Grid container spacing={2}>
 					<Grid item xs={12} sm={6} md={4} lg={3}>
