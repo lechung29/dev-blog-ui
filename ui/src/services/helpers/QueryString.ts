@@ -13,6 +13,7 @@ const multiDeletePosts = "multi-delete-post";
 const getMaxPages = "get-max-pages";
 const getSinglePost = "get-single-post";
 const likePost = "like-post";
+const getAllTags = "get-all-tags";
 
 //Auth
 const login = "login";
@@ -47,5 +48,6 @@ export {
     guestUser,
     likePost,
     updateComment,
-    deleteComment
+    deleteComment,
+    getAllTags
 }

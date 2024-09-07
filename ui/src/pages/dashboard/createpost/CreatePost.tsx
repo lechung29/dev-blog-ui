@@ -4,7 +4,7 @@ import "./createpost.scss";
 import { Label } from "../../../components/common/label/Label";
 import { Autocomplete, Chip, FormHelperText, Grid, ListItem, Paper, Stack, TextField } from "@mui/material";
 import { useImmerState } from "../../../hook/useImmerState";
-import { IPostCategoryValue, PostCategoryList } from "./util";
+import { IPostCategoryName, IPostCategoryValue, PostCategoryList } from "./util";
 import { IToastProps, renderToast } from "../../../utils/utils";
 import "react-quill/dist/quill.snow.css";
 import Editor from "../../../components/posteditor/Editor";
@@ -25,6 +25,7 @@ export interface EditorContentChanged {
 interface ICreatePostState {
 	categoryInput: string;
 	categoryValue: IPostCategoryValue | null;
+	categoryName: IPostCategoryName | null;
 	postTitle: string;
 	tags: string[];
 	tagValue: string
@@ -40,6 +41,7 @@ interface ICreatePostState {
 const initialState: ICreatePostState = {
 	categoryInput: "",
 	categoryValue: null,
+	categoryName: null,
 	postTitle: "",
 	tags: [],
 	tagValue: "",
@@ -50,17 +52,18 @@ const initialState: ICreatePostState = {
 
 const CreatePost: React.FunctionComponent<ICreatePostOwnProps> = (props) => {
 	const [state, setState] = useImmerState<ICreatePostState>(initialState);
-	const { 
-		categoryInput, 
-		categoryValue, 
-		postTitle, 
-		tags, 
-		tagValue, 
-		postContent, 
-		postThumbnails, 
-		titleError, 
-		tagError, 
-		categoryError, 
+	const {
+		categoryInput,
+		categoryValue,
+		categoryName,
+		postTitle,
+		tags,
+		tagValue,
+		postContent,
+		postThumbnails,
+		titleError,
+		tagError,
+		categoryError,
 		contentError,
 		isLoading
 	} = state
@@ -76,14 +79,19 @@ const CreatePost: React.FunctionComponent<ICreatePostOwnProps> = (props) => {
 
 	const handleKeyDown = (event) => {
 		if (event.key === "Enter") {
-			if (tags.includes(tagValue)) {
-				renderToast(IToastProps.error, "Tag này đã tồn tại");
-			} else if (tags.length + 1 > 3) {
-				renderToast(IToastProps.error, "Bài viết chỉ có tối đa 3 tag")
+			if (tagValue.includes(" ")) {
+				renderToast(IToastProps.error, "Tag không thể có khoảng trống, vui lòng thử lại")
 			} else {
-				setState({ tags: [...state.tags, tagValue], tagError: "", tagValue: ""});
-				renderToast(IToastProps.success, "Thêm tag thành công");
+				if (tags.includes(tagValue)) {
+					renderToast(IToastProps.error, "Tag này đã tồn tại");
+				} else if (tags.length + 1 > 3) {
+					renderToast(IToastProps.error, "Bài viết chỉ có tối đa 3 tag")
+				} else {
+					setState({ tags: [...state.tags, tagValue], tagError: "", tagValue: "" });
+					renderToast(IToastProps.success, "Thêm tag thành công");
+				}
 			}
+
 		}
 	};
 
@@ -107,11 +115,11 @@ const CreatePost: React.FunctionComponent<ICreatePostOwnProps> = (props) => {
 			isValid = false;
 		}
 
-		if (!categoryValue?.trim()) {
+		if (!categoryName?.trim()) {
 			categoryError = "Danh mục là bắt buộc";
 			setState({ categoryError: categoryError });
 			isValid = false;
-		} else if (!PostCategoryList.includes(categoryValue)) {
+		} else if (!PostCategoryList.includes(categoryName!)) {
 			categoryError = "Danh mục không hợp lệ";
 			setState({ categoryError: categoryError });
 			isValid = false;
@@ -121,7 +129,7 @@ const CreatePost: React.FunctionComponent<ICreatePostOwnProps> = (props) => {
 			tagError = "Thêm tag cho bài post";
 			setState({ tagError: tagError });
 			isValid = false;
-		} 
+		}
 
 		if (!postContent.trim()) {
 			contentError = "Nội dung bài post là bắt buộc";
@@ -150,21 +158,21 @@ const CreatePost: React.FunctionComponent<ICreatePostOwnProps> = (props) => {
 		} else {
 			const data = await PostService.createPost({
 				title: postTitle,
-                category: categoryValue ?? "",
-                tags: tags,
-                content: postContent,
-                thumbnail: postThumbnails ?? "",
+				category: categoryValue ?? "",
+				tags: tags,
+				content: postContent,
+				thumbnail: postThumbnails ?? "",
 			})
 			if (data.requestStatus === IRequestStatus.Error) {
 				switch (data.fieldError) {
-					case "title": 
+					case "title":
 						setState({ titleError: data.message, isLoading: false });
 						break;
-					default: 
+					default:
 						break;
 				}
 			} else {
-				setState({ isLoading: false})
+				setState({ isLoading: false })
 				renderToast(IToastProps.success, data.message)
 				setTimeout(() => {
 					navigate(`/${role}-dashboard/post-management`)
@@ -183,9 +191,21 @@ const CreatePost: React.FunctionComponent<ICreatePostOwnProps> = (props) => {
 					<Grid className="g-create-post-section-basic-info" item sm={4} xs={12} md={4}>
 						<Label className="g-create-post-info-title" title="Danh mục" />
 						<Autocomplete
-							value={categoryValue}
-							onChange={(_event, newValue: IPostCategoryValue | null) => {
-								setState({ categoryValue: newValue, categoryError: "" });
+							value={categoryName}
+							onChange={(_event, newValue: IPostCategoryName | null) => {
+								switch (newValue) {
+									case "Bài viết": 
+										setState({ categoryName: newValue, categoryValue: "post", categoryError: "" });
+									    break;
+									case "Câu hỏi": 
+										setState({ categoryName: newValue, categoryValue: "question", categoryError: ""})
+										break;
+									case "Thảo luận": 
+										setState({ categoryName: newValue, categoryValue: "discussion", categoryError: "" });
+										break;
+									default:
+										break;
+								}
 							}}
 							inputValue={categoryInput}
 							onInputChange={(_event, newInputValue) => {

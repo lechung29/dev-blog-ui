@@ -2,11 +2,12 @@
     width: 100%;
     height: 60px;
     background: linear-gradient(to right, rgb(138, 60, 82), rgb(106, 130, 251));
-    padding: 0.25rem 0;
+    padding: 0 2rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    
+    text-align: center;
+
     a {
         font-size: 18px;
         color: #fff;

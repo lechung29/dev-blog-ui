@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React from "react";
+import React, { useEffect } from "react";
 import AppLayout from "../../layout/Layout";
 import { PostService } from "../../services/posts/PostService";
 import Thumbnail from "../../components/thumbnail/Thumbnail";
@@ -16,75 +16,123 @@ import { useImmerState } from "../../hook/useImmerState";
 import { Pagination } from "../../components/pagination/Pagination";
 import { IPostDataProps } from "../../types/Post";
 import PostShimmer from "../../components/postCardShimmer/PostShimmer";
-import { ObjectToString } from "../../utils/helper";
+import { ObjectToFilterQuery } from "../../utils/helper";
 
 interface IHomePageOwnProps {
 
 }
+
+const defaultPostStatus: string = "Public"
+const defaultSort: ISortProps = {
+    createdAt: "desc"
+}
+
+export type ISortProps = Record<string, string>
+
+export interface IDefaultFilterProps {
+    status?: string;
+}
+
+export interface IHomeOptionalFilterProps {
+    tags: string[];
+    category: string[];
+}
+
+export type IHomeFilterProps = IDefaultFilterProps & IHomeOptionalFilterProps
+
 interface IHomePageState {
     isFilterPanelOpen: boolean;
     posts: IPostDataProps[];
+    lastQuestions: IPostDataProps[];
     currentPage: number;
     maxPages: number;
-    loading: boolean;
-    isFirstRender: boolean;
+    isLoadingPost: boolean;
+    isLoadingLastQuestions: boolean;
+    isLoadingMaxPages: boolean;
+    filtersObject: IHomeFilterProps;
+    sortObject: ISortProps
 }
 
 const initialState: IHomePageState = {
     isFilterPanelOpen: false,
     currentPage: 1,
     posts: [],
-    loading: false,
-    isFirstRender: true,
+    lastQuestions: [],
+    isLoadingPost: false,
+    isLoadingLastQuestions: false,
+    isLoadingMaxPages: false,
     maxPages: 0,
+    filtersObject: {
+        status: defaultPostStatus,
+        tags: [],
+        category: []
+    },
+    sortObject: defaultSort
 }
 
 const Home: React.FunctionComponent<IHomePageOwnProps> = (_props) => {
     const [state, setState] = useImmerState<IHomePageState>(initialState)
-    const { isFilterPanelOpen, posts, currentPage, isFirstRender, loading, maxPages } = state;
+    const { isFilterPanelOpen, posts, currentPage, isLoadingPost, isLoadingLastQuestions, isLoadingMaxPages, maxPages, lastQuestions, filtersObject, sortObject } = state;
     const limit: number = 5;
     const navigate = useNavigate()
     const shimmerArray = Array(5).fill('');
-    const sort = {
-        createAt: "asc"
-    }
-    const filter = {
-        status: "Public"
-    }
-    React.useEffect(() => {
-        setState({ loading: true })
-        const getPosts = () => {
-            return PostService.getFilterPosts({
-                limit: limit,
-                page: currentPage,
-                filter: ObjectToString(filter),
-                sort: ObjectToString(sort),
-            }).then((data) => {
-                setState((draft) => {
-                    draft.posts = data.data ?? []
-                })
-            })
-        }
 
-        const getMaxPages = () => {
-            return PostService.getMaxPages({
-                limit: limit,
-                filter: ObjectToString(filter),
-            }).then((data) => {
-                setState({ maxPages: data.data })
-            })
-        }
 
-        if (isFirstRender) {
-            Promise.all([getPosts(), getMaxPages()]).then(() => {
-                setState({ loading: false, isFirstRender: false })
+    const getPosts = () => {
+        setState({ isLoadingPost: true })
+        return PostService.getFilterPosts({
+            limit: limit,
+            page: currentPage,
+            filter: ObjectToFilterQuery(filtersObject),
+            sort: ObjectToFilterQuery(sortObject),
+        }).then((data) => {
+            setState((draft) => {
+                draft.posts = data.data ?? []
             })
-        } else {
-            getPosts().then(() => {
-                setState({ loading: false })
+        })
+    }
+
+    const getMaxPages = () => {
+        setState({ isLoadingMaxPages: true })
+        return PostService.getMaxPages({
+            limit: limit,
+            filter: ObjectToFilterQuery(filtersObject),
+        }).then((data) => {
+            setState({ maxPages: data.data })
+        })
+    }
+
+
+    const getLikelyQuestions = () => {
+        setState({ isLoadingLastQuestions: true })
+        return PostService.getFilterPosts({
+            limit: 10,
+            filter: ObjectToFilterQuery({
+                status: "Public",
+                category: "question"
+            }),
+            sort: ObjectToFilterQuery({
+                createdAt: "desc"
+            }),
+        }).then((data) => {
+            setState((draft) => {
+                draft.lastQuestions = data.data ?? []
             })
-        }
-    }, [currentPage])
+        })
+    }
+
+    useEffect(() => {
+        getPosts().then(() => setState({ isLoadingPost: false, isLoadingMaxPages: false}))
+    }, [currentPage, filtersObject, sortObject])
+
+    useEffect(() => {
+        getMaxPages()
+    }, [filtersObject, sortObject])
+
+    useEffect(() => {
+        getLikelyQuestions().then(() => setState({ isLoadingLastQuestions: false }))
+    }, [])
+
     return (
         <AppLayout>
             <Thumbnail />
@@ -110,23 +158,32 @@ const Home: React.FunctionComponent<IHomePageOwnProps> = (_props) => {
                         >
                             Bộ lọc
                         </Button>
-                        <FilterPanel
+                        {isFilterPanelOpen && <FilterPanel
                             open={isFilterPanelOpen}
+                            filtersValue={filtersObject}
+                            sortValue={sortObject}
                             placement={"right"}
                             onClosePanel={() => setState({ isFilterPanelOpen: false })}
                             onOpenPanel={() => setState({ isFilterPanelOpen: true })}
-                        />
+                            onAplly={(filter, sort) => {
+                                setState((draft) => {
+                                    draft.currentPage = 1
+                                    draft.filtersObject = filter
+                                    draft.sortObject = sort
+                                })
+                            }}
+                        />}
                     </Stack>
                     <Stack
                         direction={"column"}
                         spacing={1}
                         width={"100%"}
                     >
-                        {loading ? shimmerArray.map((_item, id) => (
+                        {isLoadingPost ? shimmerArray.map((_item, id) => (
                             <PostShimmer key={id} />
-                        )) : posts.length ? posts?.map((post: IPostDataProps, id) => (
+                        )) : posts.length ? posts?.map((post: IPostDataProps) => (
                             <PostCard
-                                key={id}
+                                key={post._id}
                                 item={post}
                                 onClick={() => navigate(`/post/${post._id}`)}
                             />)) : <span style={{ textAlign: "center" }}>Không có bài viết phù hợp</span>
@@ -140,7 +197,7 @@ const Home: React.FunctionComponent<IHomePageOwnProps> = (_props) => {
                         marginTop={4}
                     >
                         <Pagination
-                            loading={loading}
+                            loading={isLoadingMaxPages}
                             maxPages={maxPages}
                             currentPage={state.currentPage}
                             onChangePage={(page) => setState({ currentPage: page })}
@@ -165,17 +222,15 @@ const Home: React.FunctionComponent<IHomePageOwnProps> = (_props) => {
                         direction={"column"}
                         spacing={1}
                     >
-                        <QuestionCard />
-                        <QuestionCard />
-                        <QuestionCard />
-                        <QuestionCard />
-                        <QuestionCard />
-                        <QuestionCard />
-                        <QuestionCard />
-                        <QuestionCard />
-                        <QuestionCard />
-                        <QuestionCard />
-                        <QuestionCard />
+                        {isLoadingLastQuestions ? shimmerArray.map((_item, id) => (
+                            <PostShimmer key={id} />
+                        )) : lastQuestions.length ? lastQuestions?.map((post: IPostDataProps) => (
+                            <QuestionCard
+                                key={post._id}
+                                item={post}
+                                onClick={() => navigate(`/post/${post._id}`)}
+                            />)) : <span style={{ textAlign: "center" }}>Không có bài viết phù hợp</span>
+                        }
                     </Stack>
                 </Box>
             </Container>

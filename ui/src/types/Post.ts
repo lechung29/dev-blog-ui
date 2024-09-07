@@ -32,6 +32,7 @@ export interface IPostDataProps {
     status: string;
     like: string[];
     isLike: boolean;
+    totalLikes: number;
     createdAt: string;
     updatedAt: string;
 }
@@ -47,6 +48,7 @@ export interface IPostProps {
     tags: string[];
     comments: IReferenceComments[]
     status: IPostStatus;
+    totalLikes: number;
     createdAt: string;
     updatedAt: string;
     like: string[];
