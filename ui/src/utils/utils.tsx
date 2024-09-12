@@ -6,7 +6,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 export enum IToastProps {
 	success = "success",
 	error = "error"
-} 
+}
 export const renderToast = (type: IToastProps, message: string) => {
 	toast(
 		(t) => (
@@ -23,3 +23,10 @@ export const renderToast = (type: IToastProps, message: string) => {
 		}
 	);
 };
+
+export const highlightSubstring = (parentString: string, subString: string, subTitleStyle: React.CSSProperties) => {
+	const regex = new RegExp(`(${subString})`, 'gi');
+	return parentString.split(regex).map((part, index) =>
+		regex.test(part) ? <span style={subTitleStyle}>{part}</span> : part
+	)
+}

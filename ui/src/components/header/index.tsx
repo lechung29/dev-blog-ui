@@ -1,68 +1,70 @@
-import React from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useCallback } from "react";
 import "./index.scss";
 import { Image, ImageFit } from "../common/image/Image";
-import { engFlag, smallogoSrc, vieFlag } from "../utils/common/common";
-import { Link, NavLink } from "react-router-dom";
+import { engFlag, smallLogoSrc, vieFlag } from "../utils/common/common";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Search from "../common/searchbox/Search";
 import { useImmerState } from "../../hook/useImmerState";
 import Language from "./Language";
 import LoginIcon from "@mui/icons-material/Login";
-import { useSelector } from "react-redux";
-import { RootState } from "../../redux/store/store";
-import { IFunc } from "../../types/Function";
+import { useAppSelector } from "../../redux/store/store";
+import { IAction, IAction1, IFunc } from "../../types/Function";
 import { Avatar } from "@mui/material";
 import NavigationPanel from "../navigationPanel/NavigationPanel";
 import { TooltipHost } from "../common/tooltiphost/TooltipHost";
+import { userState } from "../../redux/reducers/users/UserSlice";
 
-export interface IHeaderOwnProps {}
+export interface IHeaderOwnProps { }
 
 export interface IHeaderState {
-    search?: string;
     isNavigatePanelOpen: boolean;
+    search: string;
 }
-
-const initialState: IHeaderState = {
-    search: "",
-    isNavigatePanelOpen: false,
-};
-
-export const navbarListUrl = [
-    {
-        name: "Bài viết",
-        path: "/newest",
-    },
-    {
-        name: "Hỏi đáp",
-        path: "/questions",
-    },
-    {
-        name: "Thảo luận",
-        path: "/discussions",
-    },
-];
 
 const Header: React.FunctionComponent<IHeaderOwnProps> = (_props) => {
     const logoHeight: Readonly<number> = 30;
     const logoWidth: Readonly<number> = 220;
+    const navigate = useNavigate()
+    const { searchText } = useParams()
+    const { user, isLoggedIn } = useAppSelector(userState)
+    const initialState: IHeaderState = {
+        isNavigatePanelOpen: false,
+        search: searchText || "",
+    };
     const [state, setState] = useImmerState<IHeaderState>(initialState);
-    const { search, isNavigatePanelOpen } = state;
-    const {user, isLoggedIn} = useSelector((state: RootState) => state.user);
+    const { isNavigatePanelOpen, search } = state;
 
 
-    const onChangeSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setState({ search: e.target.value });
+    const onChangeSearch: IAction1<React.ChangeEvent<HTMLInputElement>> = (event) => {
+        setState((draft) => {
+            draft.search = event.target.value;
+        })
     };
 
-    const onRenderAvatar: IFunc<JSX.Element> = () => {
+    const onKeyDown: IAction1<React.KeyboardEvent> = (event) => {
+        if (event.key === "Enter") {
+            onSearchSubmit();
+        }
+    }
+
+
+    const onSearchSubmit: IAction = () => {
+        if (search) {
+            navigate(`/search/${search}`)
+        }
+    };
+
+    const onRenderAvatar: IFunc<JSX.Element> = useCallback(() => {
         return isLoggedIn ? (
             <TooltipHost title={user?.displayName} >
-                <Avatar 
+                <Avatar
                     style={{
                         cursor: "pointer"
                     }}
-                    alt={user?.displayName} 
-                    src={user?.avatar} 
-                    onClick={() => setState({isNavigatePanelOpen: true})}
+                    alt={user?.displayName}
+                    src={user?.avatar}
+                    onClick={() => setState({ isNavigatePanelOpen: true })}
                 />
             </TooltipHost>
         ) : (
@@ -71,14 +73,20 @@ const Header: React.FunctionComponent<IHeaderOwnProps> = (_props) => {
                 <span>{"Đăng nhập/Đăng ký"}</span>
             </Link>
         );
-    };
+    }, [isLoggedIn])
+
+    const handleOpenClosePanel: IAction1<boolean> = (status) => {
+        setState((draft) => {
+            draft.isNavigatePanelOpen = status;
+        })
+    }
 
     const onRenderNavigatePanel: IFunc<JSX.Element> = () => {
-        return <NavigationPanel 
+        return <NavigationPanel
             placement="right"
             open={isNavigatePanelOpen}
-            onOpenPanel={() => setState({ isNavigatePanelOpen: true})}
-            onClosePanel={() => setState({ isNavigatePanelOpen: false})}
+            onOpenPanel={() => handleOpenClosePanel(true)}
+            onClosePanel={() => handleOpenClosePanel(false)}
         />
     }
     return (
@@ -86,37 +94,41 @@ const Header: React.FunctionComponent<IHeaderOwnProps> = (_props) => {
             <div className="g-header-main-section">
                 <div className="g-header-main-left-section">
                     <div className="g-header-main-left-logo">
-                        <Image src={smallogoSrc} objectFit={ImageFit.COVER} width={logoWidth} height={logoHeight} alt={"logo"} />
-                    </div>
-                    <div className="g-header-main-left-navbar">
-                        {navbarListUrl.map((item, index) => (
-                            <NavLink className="g-header-main-left-navbar-item" key={index} to={item.path}>
-                                {item.name}
-                            </NavLink>
-                        ))}
+                        <Image
+                            src={smallLogoSrc}
+                            objectFit={ImageFit.COVER}
+                            width={logoWidth}
+                            height={logoHeight}
+                            alt={"logo"}
+                            onClick={() => {
+                                navigate("/")
+                            }}
+                        />
                     </div>
                 </div>
-                <div className="g-header-main-right-section">
+                <div className="g-header-main-center-section">
                     <Search
                         id="id-g-searchbox-devblog"
                         placeholder="Tìm kiếm trên Devblog"
                         type="text"
+                        className="hello"
                         autoComplete="off"
                         name="searchInput"
                         value={search}
                         onChange={onChangeSearch}
-                        onSearch={() => alert(search)}
+                        onSearch={onSearchSubmit}
+                        onKeyDown={onKeyDown}
                     />
-                    <div className="g-header-main-right-action">
-                        <Language
-                            languages={[
-                                { title: "Vietnamese", name: "vie", image: vieFlag },
-                                { title: "English", name: "eng", image: engFlag },
-                            ]}
-                        />
-                        {onRenderAvatar()}
-                        {onRenderNavigatePanel()}
-                    </div>
+                </div>
+                <div className="g-header-main-right-section">
+                    <Language
+                        languages={[
+                            { title: "Vietnamese", name: "vie", image: vieFlag },
+                            { title: "English", name: "eng", image: engFlag },
+                        ]}
+                    />
+                    {onRenderAvatar()}
+                    {onRenderNavigatePanel()}
                 </div>
             </div>
         </section>

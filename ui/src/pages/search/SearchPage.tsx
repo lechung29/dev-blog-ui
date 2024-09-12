@@ -13,35 +13,162 @@ import { SearchTabList } from './util';
 import PostCard from '../../components/postCard/PostCard';
 import SearchSort from '../../components/searchsort/SearchSort';
 import { IPostDataProps } from '../../types/Post';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { IAction2, IFunc, IFunc2, IFunc3 } from '../../types/Function';
+import { PostService } from '../../services/posts/PostService';
+import { ObjectToFilterQuery } from '../../utils/helper';
+import { Pagination } from '../../components/pagination/Pagination';
+import { IPostCategoryValue, PostCategoryValue } from '../dashboard/createpost/util';
+import * as _ from "lodash"
+import PostShimmer from '../../components/postCardShimmer/PostShimmer';
 
 interface ISearchPageProps { }
 
+export interface ISearchSortValue {
+    field: string;
+    value: string;
+}
 interface ISearchPageState {
-    tabValue: string,
-    posts?: any[]
+    tabValue: IPostCategoryValue,
+    posts: IPostDataProps[]
+    sortValue: ISearchSortValue;
+    currentPage: number;
+    maxPages: number;
+    runAfter: boolean;
+    openSortMenu: HTMLElement | null;
+    isPostLoading: boolean;
+    isMaxPageLoading: boolean;
 }
 
 const initialState: ISearchPageState = {
-    tabValue: "newest",
+    tabValue: "post",
     posts: [],
+    sortValue: {
+        field: "createdAt",
+        value: "desc",
+    },
+    currentPage: 1,
+    maxPages: 0,
+    runAfter: false,
+    openSortMenu: null,
+    isPostLoading: false,
+    isMaxPageLoading: false,
 }
 
 const SearchPage: React.FunctionComponent<ISearchPageProps> = (props) => {
     const [state, setState] = useImmerState<ISearchPageState>(initialState)
+    const { tabValue, posts, currentPage, maxPages, runAfter, sortValue, openSortMenu, isMaxPageLoading, isPostLoading } = state
     const navigate = useNavigate()
-    useEffect(() => {
-        // PostService.getFilterPosts({ limit: 10 }).then((data) => setState({ posts: data.data }))
-    }, [])
+    const { searchText = "" } = useParams()
+    const shimmerArray = Array(5).fill('');
 
-    const handleChange = (_event: React.SyntheticEvent, newValue: string) => {
+    const getPosts: IFunc3<number, IPostCategoryValue, string, Promise<void>> = (currentPage, category, searchText) => {
+        setState((draft) => {
+            draft.isPostLoading = true
+        })
+        return PostService.getFilterPosts({
+            limit: 5,
+            page: currentPage,
+            filter: ObjectToFilterQuery({
+                status: "Public",
+                category: category,
+            }),
+            sort: ObjectToFilterQuery(_.set({}, sortValue.field, sortValue.value)),
+            search: searchText
+        }).then((data) => {
+            setState((draft) => {
+                draft.posts = data.data ?? []
+            })
+        })
+    }
+
+    const getMaxPages: IFunc2<IPostCategoryValue, string, Promise<void>> = (category, searchText) => {
+        setState((draft) => {
+            draft.isMaxPageLoading = true
+        })
+        return PostService.getMaxPages({
+            limit: 5,
+            filter: ObjectToFilterQuery({
+                status: "Public",
+                category: category
+            }),
+            search: searchText
+        }).then((data) => {
+            setState({ maxPages: data.data })
+        })
+    }
+
+    useEffect(() => {
+        if (tabValue !== "post" || currentPage !== 1) {
+            setState((draft) => {
+                draft.currentPage = 1
+                draft.tabValue = "post"
+            })
+        } else {
+            Promise.all([getPosts(1, "post", searchText), getMaxPages('post', searchText)])
+                .then(([..._other]) => {
+                    setState((draft) => {
+                        draft.isPostLoading = false
+                        draft.isMaxPageLoading = false
+                    })
+                })
+        }
+    }, [searchText])
+
+    useEffect(() => {
+        if (runAfter) {
+            getPosts(currentPage, tabValue, searchText)
+                .then(() => {
+                    setState((draft) => {
+                        draft.isPostLoading = false
+                    })
+                })
+        } else {
+            setState({ runAfter: true })
+        }
+    }, [tabValue, currentPage, sortValue])
+
+    useEffect(() => {
+        if (runAfter) {
+            getMaxPages(tabValue, searchText)
+                .then(() => {
+                    setState((draft) => {
+                        draft.isMaxPageLoading = false
+                    })
+                })
+        } else {
+            setState({ runAfter: true })
+        }
+    }, [tabValue])
+
+    const handleChange: IAction2<React.SyntheticEvent, IPostCategoryValue> = (_event, newValue) => {
         setState({ tabValue: newValue })
     };
+
+    const onRenderTab: IFunc<JSX.Element[]> = () => {
+        return isPostLoading 
+            ? shimmerArray.map((_item, id) => (
+                <PostShimmer key={id} />
+            ))
+            : PostCategoryValue.map((item, key) => (
+                <TabPanel key={key} value={item}>
+                    {posts?.map((post: IPostDataProps) => (
+                        <PostCard
+                            key={post._id}
+                            item={post}
+                            subTitle={searchText}
+                            onClick={() => navigate(`/post/${post._id}`)}
+                        />
+                    ))}
+                </TabPanel>
+            )) 
+    }
+
     return (
         <AppLayout>
             <div className='g-search-page-content-section'>
                 <Box sx={{ flex: 1, typography: 'body1' }}>
-                    <TabContext value={state.tabValue}>
+                    <TabContext value={tabValue}>
                         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                             <TabList
                                 onChange={handleChange}
@@ -61,34 +188,42 @@ const SearchPage: React.FunctionComponent<ISearchPageProps> = (props) => {
                                         }}
                                     />
                                 ))}
-                                <SearchSort />
+                                <SearchSort
+                                    open={openSortMenu}
+                                    sortValue={sortValue}
+                                    onOpen={(e) => {
+                                        setState({ openSortMenu: e.target });
+                                    }}
+                                    onClose={() => {
+                                        setState({ openSortMenu: null })
+                                    }}
+                                    onChangeSortValue={(sortValue) => {
+                                        setState((draft) => {
+                                            draft.sortValue = sortValue
+                                        })
+                                    }}
+                                />
                             </TabList>
                         </Box>
-                        <TabPanel value="newest">
-                            {state.posts?.map((post: IPostDataProps) => (
-                                <PostCard 
-                                    item={post}
-                                    onClick={() => navigate(`/post/${post._id}`)} 
-                                />
-                            ))}
-                        </TabPanel>
-                        <TabPanel value="question">
-                            {state.posts?.map((post: IPostDataProps) => (
-                                <PostCard 
-                                    item={post} 
-                                    onClick={() => navigate(`/post/${post._id}`)}
-                                />
-                            ))}
-                        </TabPanel>
-                        <TabPanel value="discussion">
-                            {state.posts?.map((post: IPostDataProps) => (
-                                <PostCard 
-                                    item={post} 
-                                    onClick={() => navigate(`/post/${post._id}`)}
-                                />
-                            ))}
-                        </TabPanel>
+                        {onRenderTab()}
                     </TabContext>
+                    <div
+                        style={{
+                            width: '100%',
+                            display: "flex",
+                            justifyContent: 'center',
+                            marginTop: '1rem'
+                        }}
+                    >
+                        {
+                            maxPages > 0 && <Pagination
+                                loading={isMaxPageLoading}
+                                maxPages={maxPages}
+                                currentPage={state.currentPage}
+                                onChangePage={(page) => setState({ currentPage: page })}
+                            />
+                        }
+                    </div>
                 </Box>
             </div>
         </AppLayout>

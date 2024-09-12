@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { IUserInformation } from "../../../types/IAuth";
+import { IUpdateUserProps, IUserInformation } from "../../../types/IAuth";
 import { RootState } from "../../store/store";
 
 export interface IAuthenticationState {
@@ -11,6 +11,10 @@ const initialState: IAuthenticationState = {
     isLoggedIn: false,
     user: null,
 };
+
+export interface IUpdateUserPropsWithId extends IUpdateUserProps {
+    userId: string;
+}
 
 const userSlice = createSlice({
     name: "user",
@@ -26,10 +30,13 @@ const userSlice = createSlice({
             state.user = null;
             localStorage.removeItem("access_token");
         },
+        updateUser: (state, action) => {
+            state.user = action.payload;
+        }
     },
 })
 
 export const userState = (state: RootState) => state.user
 
-export const { login, logout } = userSlice.actions;
+export const { login, logout, updateUser } = userSlice.actions;
 export default userSlice.reducer;

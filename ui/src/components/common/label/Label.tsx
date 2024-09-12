@@ -1,6 +1,7 @@
 import React, { HTMLAttributes } from "react";
 import { ITooltipHostPlacement, TooltipHost } from "../tooltiphost/TooltipHost";
 import "./index.scss";
+import { highlightSubstring } from "../../../utils/utils";
 
 
 interface ILabelProps extends HTMLAttributes<HTMLLabelElement> {
@@ -18,26 +19,14 @@ interface ILabelProps extends HTMLAttributes<HTMLLabelElement> {
 }
 
 const LabelView: React.FunctionComponent<ILabelProps> = (props) => {
-    const { bold, italic, tooltipProps, subTitle, subTitleStyle, title,  ...rest } = props;
+    const { bold, italic, tooltipProps, subTitle, subTitleStyle, title, endIcon, startIcon,  ...rest } = props;
     const className = `${props.className ?? ""} ${bold ? "g-label-bold" : ""}${italic ? "g-label-italic" : ""} g-label`;
     const onRenderTitle = () => {
-        if (subTitle && (title.includes(subTitle) || title.includes(subTitle.toLocaleLowerCase()))) {
-            const parts = title.split(subTitle);
-            return (
-                <>
-                    {parts.map((part, index) => (
-                        <React.Fragment key={index}>
-                            <span>{part}</span>
-                            {index < parts.length - 1 && (
-                                <span style={subTitleStyle}>{subTitle}</span>
-                            )}
-                        </React.Fragment>
-                    ))}
-                </>
-            );
+        if (subTitle) {
+            return highlightSubstring(title, subTitle, subTitleStyle!)
         }
         return title;
-    };
+    };  
 
     if (!!tooltipProps) {
         return (
@@ -48,18 +37,18 @@ const LabelView: React.FunctionComponent<ILabelProps> = (props) => {
                 placement={props.tooltipProps?.placement}
             >
                 <label {...rest}  className={className}>
-                    {props.startIcon ?? <></>}
+                    {startIcon ?? <></>}
                     {onRenderTitle()}
-                    {props.endIcon ?? <></>}
+                    {endIcon ?? <></>}
                 </label>
             </TooltipHost>
         );
     } else {
         return (
             <label {...rest} className={className}>
-                {props.startIcon ?? <></>}
+                {startIcon ?? <></>}
                 {onRenderTitle()}
-                {props.endIcon ?? <></>}
+                {endIcon ?? <></>}
             </label>
         );
     }

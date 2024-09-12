@@ -22,8 +22,8 @@ interface IHomePageOwnProps {
 
 }
 
-const defaultPostStatus: string = "Public"
-const defaultSort: ISortProps = {
+export const defaultPostStatus: string = "Public"
+export const defaultSort: ISortProps = {
     createdAt: "desc"
 }
 
@@ -50,7 +50,8 @@ interface IHomePageState {
     isLoadingLastQuestions: boolean;
     isLoadingMaxPages: boolean;
     filtersObject: IHomeFilterProps;
-    sortObject: ISortProps
+    sortObject: ISortProps,
+    runAfter: boolean;
 }
 
 const initialState: IHomePageState = {
@@ -67,12 +68,13 @@ const initialState: IHomePageState = {
         tags: [],
         category: []
     },
-    sortObject: defaultSort
+    sortObject: defaultSort,
+    runAfter: false,
 }
 
 const Home: React.FunctionComponent<IHomePageOwnProps> = (_props) => {
     const [state, setState] = useImmerState<IHomePageState>(initialState)
-    const { isFilterPanelOpen, posts, currentPage, isLoadingPost, isLoadingLastQuestions, isLoadingMaxPages, maxPages, lastQuestions, filtersObject, sortObject } = state;
+    const { isFilterPanelOpen, posts, currentPage, isLoadingPost, isLoadingLastQuestions, isLoadingMaxPages, maxPages, lastQuestions, filtersObject, sortObject, runAfter } = state;
     const limit: number = 5;
     const navigate = useNavigate()
     const shimmerArray = Array(5).fill('');
@@ -122,11 +124,27 @@ const Home: React.FunctionComponent<IHomePageOwnProps> = (_props) => {
     }
 
     useEffect(() => {
-        getPosts().then(() => setState({ isLoadingPost: false, isLoadingMaxPages: false}))
-    }, [currentPage, filtersObject, sortObject])
+        
+        if (runAfter) {
+            if (currentPage === 1) {
+                console.log("chạy 1")
+                getPosts().then(() => setState({ isLoadingPost: false }))
+            } else {
+                setState({ currentPage: 1})
+            }
+        } else {
+            console.log("chạy 2")
+            setState({ runAfter: true })
+        }
+    }, [filtersObject, sortObject])
 
     useEffect(() => {
-        getMaxPages()
+        console.log("chạy 3")
+        getPosts().then(() => setState({ isLoadingPost: false }))
+    }, [currentPage])
+        
+    useEffect(() => {
+        getMaxPages().then(() => setState({ isLoadingMaxPages: false}))
     }, [filtersObject, sortObject])
 
     useEffect(() => {

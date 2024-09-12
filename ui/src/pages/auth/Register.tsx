@@ -343,7 +343,7 @@ const SignUpView: React.FunctionComponent<ISignUpOwnProps> = (props) => {
                                 variant="contained"
                                 type="submit"
                                 disabled={disableButton}
-                                buttonStyle={{
+                                style={{
                                     backgroundColor: "#409eff",
                                     textTransform: "capitalize",
                                     fontSize: 13,

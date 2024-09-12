@@ -1,10 +1,15 @@
-import React, { Fragment, useRef } from 'react'
+import React, { Fragment, useMemo, useRef } from 'react'
 import { useImmerState } from '../../hook/useImmerState';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
 import { Alert } from '../common/alert/Alert';
 import { IFunc } from '../../types/Function';
 import { DefaultButton } from '../common/button/defaultbutton/DefaultButton';
 import "./index.scss"
+import { useAppSelector } from '../../redux/store/store';
+import { userState } from '../../redux/reducers/users/UserSlice';
+import { AuthService } from '../../services/auth/AuthService';
+import { IRequestStatus } from '../../types/IResponse';
+import { delay } from '../../utils/helper';
 
 interface IChangePasswordDialogProps {
     open: boolean;
@@ -16,8 +21,8 @@ interface IChangePasswordDialogState {
     newPassword: string;
     currentPasswordError: string;
     newPasswordError: string;
-    isOpenAlert?: boolean;
-    message?: string;
+    isOpenAlert: boolean;
+    message: string;
     isUpdating?: boolean;
 }
 
@@ -33,8 +38,19 @@ const initialState: IChangePasswordDialogState = {
 
 const ChangePasswordDialog: React.FunctionComponent<IChangePasswordDialogProps> = (props) => {
     const [state, setState] = useImmerState<IChangePasswordDialogState>(initialState)
+    const { user } = useAppSelector(userState)
+    const { onClose, open } = props
+    const { currentPassword, currentPasswordError, newPassword, newPasswordError, isOpenAlert, isUpdating, message } = state
     const currentPasswordRef = useRef<HTMLInputElement>();
     const newPasswordRef = useRef<HTMLInputElement>();
+
+    const iconStyle: React.CSSProperties = useMemo(() => {
+        return {
+            width: 20,
+            height: 20,
+            color: "#fff",
+        }
+    }, [])
 
     const onChangeValue: React.ChangeEventHandler<HTMLInputElement> = (event) => {
         switch (event.target.name) {
@@ -60,21 +76,21 @@ const ChangePasswordDialog: React.FunctionComponent<IChangePasswordDialogProps> 
         let currentPasswordError = "";
         let newPasswordError = "";
 
-        if (!state.currentPassword.trim()) {
+        if (!currentPassword.trim()) {
             currentPasswordError = "Mật khẩu hiện tại là bắt buộc";
-            setState({currentPasswordError: currentPasswordError});
+            setState({ currentPasswordError: currentPasswordError });
             isValid = false;
         }
 
-        if (!state.newPassword.trim()) {
+        if (!newPassword.trim()) {
             newPasswordError = "Mật khẩu mới là bắt buộc";
-            setState({newPasswordError: newPasswordError});
+            setState({ newPasswordError: newPasswordError });
             isValid = false;
         }
 
-        if (state.currentPassword.trim() === state.newPassword.trim()) {
+        if (currentPassword.trim() === newPassword.trim()) {
             newPasswordError = "Mật khẩu mới phải khác mật khẩu hiện tại";
-            setState({newPasswordError: newPasswordError});
+            setState({ newPasswordError: newPasswordError });
             isValid = false;
         }
 
@@ -89,23 +105,53 @@ const ChangePasswordDialog: React.FunctionComponent<IChangePasswordDialogProps> 
     };
 
     const handleSubmit = async () => {
-        setState({isUpdating: true})
+        setState({ isUpdating: true })
         if (!validation()) {
-            setState({isUpdating: false})
+            setState({ isUpdating: false })
             return;
         }
-        console.log("current: ", state.currentPassword)
-        console.log("new: ", state.newPassword)
-        setState({isOpenAlert: true})
-        setTimeout(() => {
-            setState({isUpdating: false})
-        }, 2000)
+        const updatedUser = await AuthService.updatePassword(user?._id!, {
+            currentPassword: currentPassword,
+            newPassword: newPassword
+        })
+        if (updatedUser.requestStatus === IRequestStatus.Error) {
+            switch (updatedUser.fieldError) {
+                case "currentPassword":
+                    setState((draft) => {
+                        draft.currentPasswordError = updatedUser.message;
+                        draft.isUpdating = false;
+                    })
+                    currentPasswordRef.current?.focus()
+                    break;
+                case "newPassword":
+                    setState((draft) => {
+                        draft.newPasswordError = updatedUser.message;
+                        draft.isUpdating = false;
+                    })
+                    newPasswordRef.current?.focus()
+                    break;
+                default:
+                    break;
+            }
+        } else {
+            setState((draft) => {
+                draft.currentPassword = "";
+                draft.newPassword = "";
+                draft.message = updatedUser.message;
+                draft.isUpdating = false;
+                draft.isOpenAlert = true;
+            })
+            await delay(1000).then(() => {
+                onClose()
+            })
+        }
     };
 
-    return ( <Fragment>
+    return (<Fragment>
         <Dialog
-            open={props.open}
+            open={open}
             maxWidth={"sm"}
+            className='g-change-password-dialog'
         >
             <DialogTitle>Đổi mật khẩu</DialogTitle>
             <DialogContent>
@@ -116,11 +162,11 @@ const ChangePasswordDialog: React.FunctionComponent<IChangePasswordDialogProps> 
                     label="Mật khẩu hiện tại"
                     type="password"
                     inputRef={currentPasswordRef}
-                    value={state.currentPassword}
+                    value={currentPassword}
                     onChange={onChangeValue}
                     fullWidth
-                    error={!!state.currentPasswordError}
-                    helperText={state.currentPasswordError}
+                    error={!!currentPasswordError}
+                    helperText={currentPasswordError}
                     variant="standard"
                 />
                 <TextField
@@ -130,42 +176,38 @@ const ChangePasswordDialog: React.FunctionComponent<IChangePasswordDialogProps> 
                     label="Mật khẩu mới"
                     type="password"
                     inputRef={newPasswordRef}
-                    value={state.newPassword}
+                    value={newPassword}
                     onChange={onChangeValue}
                     fullWidth
-                    helperText={state.newPasswordError}
-                    error={!!state.newPasswordError}
+                    helperText={newPasswordError}
+                    error={!!newPasswordError}
                     variant="standard"
                 />
             </DialogContent>
             <DialogActions>
-                <Button disabled={state.isUpdating} style={{textTransform: "none"}} onClick={props.onClose}>Hủy</Button>
+                <Button
+                    className="g-update-form-cancel-button"
+                    disabled={isUpdating}
+                    onClick={onClose}
+                >
+                    Hủy
+                </Button>
                 <DefaultButton
                     variant="contained"
-                    disabled={state.isUpdating}
-                    buttonStyle={{
-                        backgroundColor: "#409eff",
-                        textTransform: "capitalize",
-                        fontSize: 13,
-                        height: 36,
-                        width: 100
-                    }}
-                    iconStyle={{
-                        width: 20,
-                        height: 20,
-                        color: "#fff",
-                    }}
-                    isLoading={state.isUpdating}
+                    className='g-update-form-submit-button'
+                    disabled={isUpdating}
+                    iconStyle={iconStyle}
+                    isLoading={isUpdating}
                     title={"Xác nhận"}
                     onClick={handleSubmit}
                 />
             </DialogActions>
         </Dialog>
-        {state.isOpenAlert && <Alert
-            open={state.isOpenAlert}
-            severity='success'
-            message='Đổi mật khẩu thành công'
-            onClose={() => setState({isOpenAlert: false})}
+        {isOpenAlert && <Alert
+            open={isOpenAlert}
+            severity={"success"}
+            message={message}
+            onClose={() => setState({ isOpenAlert: false })}
         />}
     </Fragment>)
 }
