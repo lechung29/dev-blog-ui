@@ -7,7 +7,7 @@ interface IPaginationProps {
     maxPages: number;
     currentPage: number;
     onChangePage: (value: number) => void;
-    loading: boolean;
+    loading?: boolean;
 }
 
 const PaginationView: React.FunctionComponent<IPaginationProps> = (props) => {
@@ -17,7 +17,7 @@ const PaginationView: React.FunctionComponent<IPaginationProps> = (props) => {
     useEffect(() => {
         onChangePage(page)
     }, [page])
-    return loading ? (<Skeleton
+    return !!loading ? (<Skeleton
         animation="wave"
         height={48}
         width="100px"

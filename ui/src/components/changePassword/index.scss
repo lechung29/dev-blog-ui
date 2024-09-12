@@ -11,3 +11,21 @@
         }
     }
 }
+
+.g-update-form-cancel-button {
+    text-transform: none !important;
+}
+
+.g-update-form-submit-button {
+    background-color: #409eff!important;
+    color: #fff;
+    text-transform: capitalize !important;
+    font-size: 13px;
+    height: 36px;
+    width: 100px;
+    border: 1px solid #b3d8ff;
+
+    &:hover {
+        cursor: pointer;
+    }
+}

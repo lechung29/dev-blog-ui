@@ -219,7 +219,7 @@ const Login: React.FunctionComponent<ILoginOwnProps> = (_props) => {
                             <DefaultButton
                                 variant="contained"
                                 type="submit"
-                                buttonStyle={{
+                                style={{
                                     backgroundColor: "#409eff",
                                     textTransform: "capitalize",
                                     fontSize: 13,

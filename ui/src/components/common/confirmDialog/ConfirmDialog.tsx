@@ -34,16 +34,10 @@ const ConfirmDialog: React.FunctionComponent<IConfirmDialogProps> = (props) => {
 			<DialogActions>
 				<Button style={{ textTransform: "none" }} onClick={props.onClose}>Hủy</Button>
 				<DefaultButton
+					className='g-update-form-submit-button'
 					variant="contained"
 					onClick={props.handleConfirm}
 					autoFocus
-					buttonStyle={{
-						backgroundColor: "#409eff",
-						textTransform: "capitalize",
-						fontSize: 13,
-						height: 36,
-						width: 100
-					}}
 					iconStyle={{
 						width: 20,
 						height: 20,

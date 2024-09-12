@@ -1,12 +1,14 @@
+import { IPostCategoryValue } from "../dashboard/createpost/util"
+
 interface ITabListProps {
     label: string
-    value: string
+    value: IPostCategoryValue
 }
 
 export const SearchTabList: ITabListProps[] = [
     {
         label: "Bài viết",
-        value: "newest",
+        value: "post",
     },
     {
         label: "Câu hỏi",

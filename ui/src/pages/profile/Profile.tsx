@@ -1,133 +1,264 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import AppLayout from "../../layout/Layout";
 import { Avatar, Box, Container, Grid, Stack, TextField } from "@mui/material";
 import "./index.scss";
 import { Label } from "../../components/common/label/Label";
-import { useSelector } from "react-redux";
-import { RootState } from "../../redux/store/store";
+import { useAppDispatch, useAppSelector } from "../../redux/store/store";
 import { useImmerState } from "../../hook/useImmerState";
 import { DefaultButton } from "../../components/common/button/defaultbutton/DefaultButton";
 import ChangePasswordDialog from "../../components/changePassword/ChangePasswordDialog";
+import { updateUser, userState } from "../../redux/reducers/users/UserSlice";
+import uploadToCloudinary from "../../services/helpers/upload";
+import { AuthService } from "../../services/auth/AuthService";
+import { IRequestStatus } from "../../types/IResponse";
+import { delay } from "../../utils/helper";
+import { useNavigate } from "react-router-dom";
+import { Alert } from "../../components/common/alert/Alert";
 interface IProfilePageOwnProps {}
 
-
 interface IProfilePageState {
-  isUpdating: boolean;
-	imageFileUrl?: string;
-  displayName?: string;
-  email?: string;
-  isOpenChangePassword?: boolean;
+    isUpdating: boolean;
+    isDisabled: boolean;
+    imageFileUrl: string;
+    displayName: string;
+    displayNameError: string;
+    email: string;
+    emailError: string;
+    isOpenChangePassword?: boolean;
+    isOpenAlert: boolean;
+    message: string;
 }
 
-
-
 const Profile: React.FunctionComponent<IProfilePageOwnProps> = (_props) => {
-	const user = useSelector((state: RootState) => state.user.user);
-  const initialState: IProfilePageState = {
-    imageFileUrl: user?.avatar,
-    displayName: user?.displayName,
-    email: user?.email,
-    isUpdating: false,
-    isOpenChangePassword: false,
-  };
-	const [state, setState] = useImmerState<IProfilePageState>(initialState);
-	const avatarPickerRef = useRef<HTMLInputElement | null>(null);
+    const { user } = useAppSelector(userState)
+    const dispatch = useAppDispatch()
+    const navigate = useNavigate()
+    const initialState: IProfilePageState = {
+        imageFileUrl: user?.avatar || "",
+        displayName: user?.displayName || "",
+        email: user?.email || "",
+        displayNameError: "",
+        emailError: "",
+        isUpdating: false,
+        isOpenChangePassword: false,
+        isDisabled: false,
+        isOpenAlert: false,
+        message: "",
+    };
+    const [state, setState] = useImmerState<IProfilePageState>(initialState);
+    const { isUpdating, displayName, email, imageFileUrl, isOpenChangePassword, displayNameError, emailError, isDisabled, isOpenAlert, message } = state
+    const avatarPickerRef = useRef<HTMLInputElement | null>(null);
+    const emailRef = useRef<HTMLInputElement>();
+    const displayNameRef = useRef<HTMLInputElement>();
+    const iconStyle: React.CSSProperties = useMemo(() => {
+      return {
+          width: 20,
+          height: 20,
+          color: "#fff",
+      }
+  }, [])
 
-	const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const file = e.target.files?.[0];
-		if (file) {
-			setState({ imageFileUrl: URL.createObjectURL(file) });
-		}
-	};
+    const onChangeValue: React.ChangeEventHandler<HTMLInputElement> = (event) => {
+        switch (event.target.name) {
+            case "displayName":
+                setState((draft) => {
+                    draft.displayName = event.target.value;
+                    draft.displayNameError = "";
+                    draft.isDisabled = false
+                });
+                break;
+            case "email":
+                setState((draft) => {
+                    draft.email = event.target.value;
+                    draft.emailError = "";
+                    draft.isDisabled = false
+                });
+                break;
+            default:
+                break;
+        }
+    }
 
-	return (
-		<AppLayout>
-			<Container className="g-profile-section">
-				<Box className="g-profile-update-form" component={"section"}>
-					<Stack className="g-profile-title-section">
-						<Label className="g-profile-primary-title" title={"Thông tin cá nhân"} />
-						<Label className="g-profile-sub-title" title={"Quản lý thông tin cá nhân của bạn"} />
-					</Stack>
-					<Stack className="g-profile-content">
-						<Box className="g-profile-content-form">
-							<Stack display={"flex"} alignItems={"center"} justifyContent={"center"}>
-								<input type="file" accept="image/*" hidden onChange={handleImageChange} ref={avatarPickerRef} />
-								<div style={{cursor: "pointer"}} onClick={() => avatarPickerRef.current?.click()}>
-                  <Avatar
-                    alt={user?.displayName}
-                    src={state.imageFileUrl || user?.avatar}
-                    sx={{ width: 80, height: 80 }}
-                  />
-								</div>
-							</Stack>
-              <Grid className="g-update-field-container" container rowSpacing={2} columnSpacing={2}>
-                <Grid className="g-update-field-label" item xs={4} md={3}>
-                  <Label title={"ID của bạn"} />
-                </Grid>
-                <Grid className="g-update-field-input" item xs={8} md={9}>
-                  <TextField
-                    id="g-update-field-id"
-                    className="g-update-section-input-item"
-                    size="small"
-                    disabled
-                    value={user?._id}
-                  />
-                </Grid>
-                <Grid className="g-update-field-label" item xs={4} md={3}>
-                  <Label title={"Tên hiển thị"} />
-                </Grid>
-                <Grid className="g-update-field-input" item xs={8} md={9}>
-                    <TextField
-                    id="g-update-field-displayname"
-                    className="g-update-section-input-item"
-                    name="displayName"
-                    size="small"
-                    value={state.displayName}
-                  />
-                </Grid>
-                <Grid className="g-update-field-label" item xs={4} md={3}>
-                  <Label title={"Email"} />
-                </Grid>
-                <Grid className="g-update-field-input" item xs={8} md={9}>
-                    <TextField
-                    id="g-update-field-email"
-                    className="g-update-section-input-item"
-                    size="small"
-                    value={state.email}
-                  />
-                </Grid>
-              </Grid>
-              <Stack className="g-update-button-container">
-                <DefaultButton 
-                  disabled={state.isUpdating}
-                  className="g-change-password-button"
-                  title="Đổi mật khẩu"
-                  onClick={() => setState({isOpenChangePassword: true})}
-                />
-                {state.isOpenChangePassword && <ChangePasswordDialog 
-                  open={state.isOpenChangePassword}
-                  onClose={() => setState({isOpenChangePassword: false})}
-                />}
-                <DefaultButton 
-                  disabled={state.isUpdating}
-                  isLoading={state.isUpdating}
-                  className="g-update-button"
-                  title="Cập nhật"
-                  iconStyle={{
-                    width: 20,
-                    height: 20,
-                    color: "#fff",
-                  }}
-                  onClick={() => setState({isUpdating: !state.isUpdating})}
-                />
-              </Stack>
-						</Box>
-					</Stack>
-				</Box>
-			</Container>
-		</AppLayout>
-	);
+    useEffect(() => {
+        if (displayName === user?.displayName && email === user.email && imageFileUrl === user.avatar) {
+            setState({ isDisabled: true })
+        }
+    }, [imageFileUrl, displayName, email])
+
+    const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const url = await uploadToCloudinary(file);
+            setState((draft) => {
+                draft.imageFileUrl = url;
+                draft.isDisabled = false
+            });
+        }
+    };
+
+    const handleSubmit = async () => {
+        setState({ isUpdating: true})
+        const updatedUser = await AuthService.updateUserInfo(user?._id!, {
+          avatar: imageFileUrl,
+          displayName: displayName,
+          email: email
+        })
+
+        if (updatedUser.requestStatus === IRequestStatus.Error) {
+            switch (updatedUser.fieldError) {
+                case "email":
+                    setState((draft) => {
+                        draft.emailError = updatedUser.message;
+                        draft.isUpdating = false
+                    });
+                    emailRef.current?.focus();
+                    break;
+                case "displayName":
+                    setState((draft) => {
+                        draft.displayNameError = updatedUser.message;
+                        draft.isUpdating = false
+                    });
+                    displayNameRef.current?.focus();
+                    break;
+                default:
+                    break;
+            }
+        } else {
+            dispatch(updateUser(updatedUser.data));
+            await delay(1000).then(() => {
+                setState((draft) => {
+                    draft.isUpdating = false;
+                    draft.isOpenAlert = true;
+                    draft.message = updatedUser.message;
+                }); 
+            })
+            await delay(2000).then(() => {
+                navigate("/")
+            })
+        }
+    }
+
+    return (
+        <AppLayout>
+            <Container className="g-profile-section">
+                <Box 
+                    className="g-profile-update-form" 
+                    component={"section"}
+                >
+                    <Stack className="g-profile-title-section">
+                        <Label 
+                            className="g-profile-primary-title" 
+                            title={"Thông tin cá nhân"} 
+                          />
+                        <Label 
+                            className="g-profile-sub-title" 
+                            title={"Quản lý thông tin cá nhân của bạn"} 
+                        />
+                    </Stack>
+                    <Stack className="g-profile-content">
+                        <Box className="g-profile-content-form">
+                            <Stack className="g-profile-content-image">
+                                <input 
+                                    type="file" 
+                                    accept="image/*" 
+                                    hidden 
+                                    onChange={handleImageChange} 
+                                    ref={avatarPickerRef} 
+                                />
+                                <div onClick={() => avatarPickerRef.current?.click()}>
+                                    <Avatar 
+                                        alt={displayName} 
+                                        src={imageFileUrl || user?.avatar} 
+                                        sx={{ width: 80, height: 80 }} 
+                                    />
+                                </div>
+                            </Stack>
+                            <Grid 
+                                className="g-update-field-container" 
+                                container 
+                                rowSpacing={2} 
+                                columnSpacing={2}
+                            >
+                                <Grid className="g-update-field-label" item xs={4} md={3}>
+                                    <Label title={"ID của bạn"} />
+                                </Grid>
+                                <Grid className="g-update-field-input" item xs={8} md={9}>
+                                    <TextField
+                                        id="g-update-field-id"
+                                        className="g-update-section-input-item"
+                                        size="small"
+                                        disabled
+                                        value={user?._id}
+                                    />
+                                </Grid>
+                                <Grid className="g-update-field-label" item xs={4} md={3}>
+                                    <Label title={"Tên hiển thị"} />
+                                </Grid>
+                                <Grid className="g-update-field-input" item xs={8} md={9}>
+                                    <TextField
+                                        id="g-update-field-displayname"
+                                        className="g-update-section-input-item"
+                                        name="displayName"
+                                        size="small"
+                                        value={displayName}
+                                        inputRef={displayNameRef}
+                                        onChange={onChangeValue}
+                                        helperText={displayNameError}
+                                        error={!!displayNameError}
+                                    />
+                                </Grid>
+                                <Grid className="g-update-field-label" item xs={4} md={3}>
+                                    <Label title={"Email"} />
+                                </Grid>
+                                <Grid className="g-update-field-input" item xs={8} md={9}>
+                                    <TextField 
+                                        id="g-update-field-email" 
+                                        className="g-update-section-input-item" 
+                                        size="small" 
+                                        name="email"
+                                        value={email} 
+                                        onChange={onChangeValue}
+                                        inputRef={emailRef}
+                                        helperText={emailError}
+                                        error={!!emailError}
+                                    />
+                                </Grid>
+                            </Grid>
+                            <Stack className="g-update-button-container">
+                                <DefaultButton
+                                    disabled={isUpdating}
+                                    className="g-change-password-button"
+                                    title="Đổi mật khẩu"
+                                    onClick={() => setState({ isOpenChangePassword: true })}
+                                />
+                                {isOpenChangePassword && (
+                                    <ChangePasswordDialog
+                                        open={isOpenChangePassword}
+                                        onClose={() => setState({ isOpenChangePassword: false })}
+                                    />
+                                )}
+                                <DefaultButton
+                                    disabled={isDisabled}
+                                    isLoading={isUpdating}
+                                    className="g-update-button"
+                                    title="Cập nhật"
+                                    iconStyle={iconStyle}
+                                    onClick={handleSubmit}
+                                />
+                                {isOpenAlert && <Alert
+                                    open={isOpenAlert}
+                                    severity={"success"}
+                                    message={message}
+                                    onClose={() => setState({ isOpenAlert: false })}
+                                />}
+                            </Stack>
+                        </Box>
+                    </Stack>
+                </Box>
+            </Container>
+        </AppLayout>
+    );
 };
 
 export default Profile;

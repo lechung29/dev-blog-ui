@@ -13,6 +13,17 @@ export interface IGoogleLoginType {
     avatar?: string;
 }
 
+export interface IUpdateUserProps {
+    displayName?: string;
+    email?: string;
+    avatar?: string;
+}
+
+export interface IChangePasswordProps {
+    currentPassword: string;
+    newPassword: string;
+}
+
 export interface IUserInformation {
     _id: string;
     email: string;

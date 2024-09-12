@@ -19,6 +19,8 @@ const getAllTags = "get-all-tags";
 const login = "login";
 const register = "register";
 const googleLogin = "google";
+const updateUser = "update";
+const updatePassword = "update-password";
 
 //Comment
 const createComment = "create-comment";
@@ -36,6 +38,8 @@ export {
     login,
     register,
     googleLogin,
+    updateUser,
+    updatePassword,
     deletePost,
     multiDeletePosts,
     updatePost,
