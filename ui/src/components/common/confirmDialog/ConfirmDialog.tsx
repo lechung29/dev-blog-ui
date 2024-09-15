@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import * as React from "react";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
@@ -7,43 +8,62 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import "./index.scss"
 import { DefaultButton } from "../button/defaultbutton/DefaultButton";
-import { IFunc } from "../../../types/Function";
+import { IAction1, IFunc } from "../../../types/Function";
 
 interface IConfirmDialogProps {
 	open: boolean;
-	onClose: () => void;
+	onClose?: () => void;
 	handleConfirm: IFunc<void | Promise<void>>
 	title: string;
 	content: React.ReactNode
-	isLoading: boolean;
+	isLoading?: boolean;
+	noCancelButton?: boolean;
 }
 
 const ConfirmDialog: React.FunctionComponent<IConfirmDialogProps> = (props) => {
+	const { content, handleConfirm, open, title, isLoading, noCancelButton, onClose } = props
+
+	const iconStyle = React.useMemo(() => {
+		return {
+			width: 20,
+			height: 20,
+			color: "#fff",
+		}
+	}, [])
+
+	const onKeyDown: IAction1<React.KeyboardEvent> = React.useCallback((event) => {
+		if (event.key === "Enter") {
+			handleConfirm();
+		}
+	}, [])
+
 	return (
 		<Dialog
-			open={props.open}
+			open={open}
 			aria-labelledby="alert-dialog-title"
 			aria-describedby="alert-dialog-description"
 		>
-			<DialogTitle id="alert-dialog-title">{props.title}</DialogTitle>
+			<DialogTitle id="alert-dialog-title">{title}</DialogTitle>
 			<DialogContent>
 				<DialogContentText id="alert-dialog-description">
-					{props.content}
+					{content}
 				</DialogContentText>
 			</DialogContent>
 			<DialogActions>
-				<Button style={{ textTransform: "none" }} onClick={props.onClose}>Hủy</Button>
+				{!noCancelButton && <Button
+					className="g-dialog-footer-button"
+					onClick={onClose}
+				>
+					Hủy
+				</Button>}
 				<DefaultButton
 					className='g-update-form-submit-button'
 					variant="contained"
-					onClick={props.handleConfirm}
+					onClick={handleConfirm}
+					onKeyDown={onKeyDown}
 					autoFocus
-					iconStyle={{
-						width: 20,
-						height: 20,
-						color: "#fff",
-					}}
-					isLoading={props.isLoading}
+					iconStyle={iconStyle}
+					isLoading={isLoading}
 					title={"Xác nhận"}
 				/>
 			</DialogActions>

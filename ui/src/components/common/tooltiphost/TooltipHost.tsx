@@ -17,9 +17,10 @@ export enum ITooltipHostPlacement {
     Top = "top",
 }
 
-export interface ITooltipHostProps extends TooltipProps {}
+export interface ITooltipHostProps extends TooltipProps { }
 
 const TooltipHostView: React.FunctionComponent<ITooltipHostProps> = (props) => {
+    const { title, children } = props
     const CustomTooltip = styled(({ className, ...props }: ITooltipHostProps) => <Tooltip {...props} placement="top" arrow classes={{ popper: className }} />)(({ theme }) => ({
         [`& .${tooltipClasses.tooltip}`]: {
             backgroundColor: theme.palette.grey[300],
@@ -31,9 +32,9 @@ const TooltipHostView: React.FunctionComponent<ITooltipHostProps> = (props) => {
         },
         [`& .${tooltipClasses.arrow}`]: {
             color: theme.palette.grey[300],
-          },
+        },
     }));
-    return <CustomTooltip title={props.title}>{props.children}</CustomTooltip>;
+    return <CustomTooltip title={title}>{children}</CustomTooltip>;
 };
 
 export { TooltipHostView as TooltipHost };

@@ -1,11 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import "./index.scss";
 import Search from "../common/searchbox/Search";
 import { useImmerState } from "../../hook/useImmerState";
-import { ThemeSwitch } from "../themeSwitch/ThemeSwitch";
 import ChangeLanguage from "../changeLanguage/ChangeLanguage";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../redux/store/store";
+import { useDispatch } from "react-redux";
+import { useAppSelector } from "../../redux/store/store";
 import { Avatar, Menu, MenuItem } from "@mui/material";
 import { Divider } from "../common/divider/Divider";
 import { IPageRoute } from "../navigationPanel/NavigationPanel";
@@ -13,35 +12,38 @@ import PersonIcon from "@mui/icons-material/Person";
 import LogoutIcon from "@mui/icons-material/Logout";
 import HomeIcon from "@mui/icons-material/Home";
 import { useNavigate } from "react-router-dom";
-import { logout } from "../../redux/reducers/users/UserSlice";
+import { logout, userState } from "../../redux/reducers/users/UserSlice";
 import { Image, ImageFit } from "../common/image/Image";
 import { smallLogoSrc } from "../utils/common/common";
+import { IAction, IAction1 } from "../../types/Function";
 
 export interface IDashboardHeaderState {
 	search?: string;
 	lang: "vie" | "eng";
+	anchorEl: null | HTMLElement
 }
 
 const initialState: IDashboardHeaderState = {
 	search: "",
 	lang: "vie",
+	anchorEl: null,
 };
 
 const DashboardHeader: React.FunctionComponent = () => {
-	const [isDarkTheme, setIsDarkTheme] = useState<boolean>(false);
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
+	const { user } = useAppSelector(userState)
 	const logoHeight: Readonly<number> = 34;
 	const logoWidth: Readonly<number> = 240;
 	const [state, setState] = useImmerState<IDashboardHeaderState>(initialState);
-	const { user } = useSelector((state: RootState) => state.user);
-	const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+	const { anchorEl, lang, search } = state
+	const open = Boolean(anchorEl);
 
 	const avatarMenuList: IPageRoute[] = [
 		{
 			title: "Trang chủ",
 			route: "/",
-			icon: <HomeIcon style={{color: "#5488c7"}}/>,
+			icon: <HomeIcon style={{ color: "#5488c7" }} />,
 			onClick: () => {
 				navigate("/");
 			},
@@ -49,7 +51,7 @@ const DashboardHeader: React.FunctionComponent = () => {
 		{
 			title: "Thông tin cá nhân",
 			route: "/profile",
-			icon: <PersonIcon style={{color: "#5488c7"}}/>,
+			icon: <PersonIcon style={{ color: "#5488c7" }} />,
 			onClick: () => {
 				navigate("/profile");
 			},
@@ -57,7 +59,7 @@ const DashboardHeader: React.FunctionComponent = () => {
 		{
 			title: "Đăng xuất",
 			route: "/login",
-			icon: <LogoutIcon style={{color: "#5488c7"}}/>,
+			icon: <LogoutIcon style={{ color: "#5488c7" }} />,
 			onClick: () => {
 				dispatch(logout());
 				navigate("/login");
@@ -65,19 +67,32 @@ const DashboardHeader: React.FunctionComponent = () => {
 		},
 	];
 
-	const open = Boolean(anchorEl);
-	const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-		setAnchorEl(event.currentTarget);
-	};
-	const handleClose = () => {
-		setAnchorEl(null);
+	const onChangeSearch: IAction1<React.ChangeEvent<HTMLInputElement>> = (event) => {
+		setState((draft) => {
+			draft.search = event.target.value;
+		})
 	};
 
-	const onChangeSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setState({ search: e.target.value });
+	const onKeyDown: IAction1<React.KeyboardEvent> = (event) => {
+		if (event.key === "Enter") {
+			onSearchSubmit();
+		}
+	}
+
+	const onSearchSubmit: IAction = () => {
+		if (search) {
+			navigate(`/search/${search}`)
+		}
 	};
 
-	const onChangeLanguage = () => {
+	const handleClick: IAction1<React.MouseEvent<HTMLElement>> = (event) => {
+		setState({ anchorEl: event.target })
+	};
+	const handleClose: IAction = () => {
+		setState({ anchorEl: null })
+	};
+
+	const onChangeLanguage: IAction = () => {
 		if (state.lang === "vie") {
 			setState({ lang: "eng" });
 		} else if (state.lang === "eng") {
@@ -87,8 +102,14 @@ const DashboardHeader: React.FunctionComponent = () => {
 
 	return (
 		<div className="g-dashboard-header-section">
-			<div className="g-dashboard-panel-logo">
-				<Image src={smallLogoSrc} objectFit={ImageFit.COVER} width={logoWidth} height={logoHeight} alt={"logo"} />
+			<div className="g-dashboard-panel-logo" onClick={() => navigate("/")}>
+				<Image
+					src={smallLogoSrc}
+					objectFit={ImageFit.COVER}
+					width={logoWidth}
+					height={logoHeight}
+					alt={"logo"}
+				/>
 			</div>
 			<div className="g-dashboard-header-searchbox">
 				<Search
@@ -97,21 +118,21 @@ const DashboardHeader: React.FunctionComponent = () => {
 					type="text"
 					autoComplete="off"
 					name="searchInput"
-					value={state.search}
+					value={search}
 					onChange={onChangeSearch}
-					onSearch={() => alert(state.search)}
+					onSearch={onSearchSubmit}
+					onKeyDown={onKeyDown}
 				/>
 			</div>
 			<div className="g-dashboard-header-info">
-				<ThemeSwitch size="small" checked={isDarkTheme} onChange={(_event, isChecked) => setIsDarkTheme(isChecked)} />
-				<ChangeLanguage language={state.lang} onChangeLanguage={onChangeLanguage} />
+				<ChangeLanguage 
+					language={lang} 
+					onChangeLanguage={onChangeLanguage} 
+				/>
 				<Avatar
-					style={{
-						cursor: "pointer",
-					}}
+					className="g-dashboard-header-avatar"
 					alt={user?.displayName}
 					src={user?.avatar}
-					sx={{ width: 48, height: 48 }}
 					onClick={handleClick}
 				/>
 				<Menu
@@ -148,18 +169,26 @@ const DashboardHeader: React.FunctionComponent = () => {
 					transformOrigin={{ horizontal: "right", vertical: "top" }}
 					anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
 				>
-					<MenuItem style={{ display: "flex", alignItems: "center", justifyContent: "center", cursor: "none", pointerEvents: "none", marginBottom: 4 }}>
-						<Avatar alt={user?.displayName} src={user?.avatar} sx={{ width: 40, height: 40 }} />
-						<div style={{ display: "flex", flexDirection: "column" }}>
-							<p style={{ fontWeight: 600, fontSize: "0.875rem", color: "rgb(20, 21, 34)" }}>{user?.displayName}</p>
-							<p style={{ fontWeight: 400, fontSize: "0.75rem", color: "rgb(84, 87, 122)" }}>{user?.email}</p>
+					<MenuItem className="g-dashboard-avatar-row">
+						<Avatar 
+							className="g-dashboard-avatar-image"
+							alt={user?.displayName} 
+							src={user?.avatar} 
+						/>
+						<div className="g-dashboard-avatar-info">
+							<p className="g-dashboard-avatar-info-name">{user?.displayName}</p>
+							<p className="g-dashboard-avatar-info-email">{user?.email}</p>
 						</div>
 					</MenuItem>
 					<Divider />
 					{avatarMenuList.map((item, index) => (
-						<MenuItem key={index} style={{ display: "flex", gap: "8px" }} onClick={item.onClick}>
+						<MenuItem 
+							key={index}
+							className="g-avatar-menu-item" 
+							onClick={item.onClick}
+						>
 							{item.icon}
-							<p>{item.title}</p>
+							<p className="g-avatar-menu-item-title">{item.title}</p>
 						</MenuItem>
 					))}
 				</Menu>

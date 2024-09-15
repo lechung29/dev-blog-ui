@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { IconButton } from "@mui/material";
 import React, { AllHTMLAttributes } from "react";
 import SearchIcon from "@mui/icons-material/Search";
@@ -17,6 +18,7 @@ export interface ISearchBoxProps extends AllHTMLAttributes<HTMLInputElement> {
 
 const Search: React.FunctionComponent<ISearchBoxProps> = (props) => {
     const { className, id, name, placeholder, autoComplete, type, searchIconProps, value, onSearch, ...rest } = props;
+
     return (
         <div className="g-searchbox-input-group">
             <input

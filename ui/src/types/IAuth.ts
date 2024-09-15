@@ -1,3 +1,5 @@
+import { IIdentityProps } from "./Post";
+
 export interface ILoginType {
     email: string;
     password: string;
@@ -30,10 +32,18 @@ export interface IUserInformation {
     displayName: string;
     createdAt: string;
     updatedAt: string;
+    status: userStatus;
     role: "user" | "admin";
     avatar: string;
     accessToken: string;
 }
+
+export enum userStatus {
+    active = "active",
+    inactive = "locked",
+}
+
+export type IUserInformationWithId = IUserInformation & IIdentityProps
 
 
 export interface IReferenceUser {

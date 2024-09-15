@@ -1,47 +1,57 @@
-import React, { useState } from "react";
+import React from "react";
 import "./Language.scss";
 import { Stack, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { TooltipHost } from "../common/tooltiphost/TooltipHost";
+import { useImmerState } from "../../hook/useImmerState";
+import { classNames } from "../../utils/helper";
 
-interface ILanguague {
+interface ILanguage {
     name: string;
     title: string;
     image: string;
 }
 
 interface ILanguageOwnProps {
-    languages: ILanguague[];
+    languages: ILanguage[];
+}
+
+interface ILanguageState {
+    lang: string;
+}
+const initialState: ILanguageState = {
+    lang: "vie",
 }
 
 const Language: React.FunctionComponent<ILanguageOwnProps> = (props) => {
-    const [lang, setLang] = useState("vie");
+    const { languages } = props
+    const [state, setState] = useImmerState<ILanguageState>(initialState)
+    const { lang } = state;
 
     const handleChange = (event: React.MouseEvent<HTMLElement>, newLang: string) => {
         event.preventDefault();
-        setLang(newLang);
+        setState({ lang: newLang })
     };
 
     return (
-        <Stack 
-            flex={1} 
-            display={"flex"} 
-            flexDirection={"row"} 
-            justifyContent={"center"}
-        >
-            <ToggleButtonGroup 
-                className="g-choose-language-section" 
-                value={lang} 
+        <Stack className="g-header-toggle-language">
+            <ToggleButtonGroup
+                className="g-choose-language-section"
+                value={lang}
                 aria-label="Languages"
             >
-                {props.languages.map((item, index) => (
-                    <ToggleButton 
-                        className={`g-choose-language-item ${lang === item.name && "g-active-language"}`} 
-                        key={index} style={{ textTransform: "none" }} 
+                {languages.map((item, index) => (
+                    <ToggleButton
+                        className={classNames("g-choose-language-item", { "g-active-language": lang === item.name })}
+                        key={index}
                         value={item.name}
                         onClick={handleChange}
                     >
                         <TooltipHost title={item.title}>
-                            <img src={item.image} alt={item.title} width="24" height="24" />
+                            <img
+                                className="g-choose-language-image"
+                                src={item.image}
+                                alt={item.title}
+                            />
                         </TooltipHost>
                     </ToggleButton>
                 ))}

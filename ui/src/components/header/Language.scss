@@ -1,21 +1,32 @@
-.g-choose-language-section {
-    height: 40px;
-    border-radius: 20px !important;
-    border: 2px solid #5488c7;
-    overflow: hidden;
-    width: auto;
-    .g-choose-language-item{
-        &:hover {
-            background-color: transparent!important;
-        }
+.g-header-toggle-language {
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    flex: 1;
 
-        &[aria-pressed="true"] {
-            background-color: #5488c7;
-        }
+    .g-choose-language-section {
+        height: 40px;
+        border-radius: 20px !important;
+        border: 2px solid #5488c7;
+        overflow: hidden;
+        width: auto;
+        .g-choose-language-item {
+            &:hover {
+                background-color: transparent !important;
+            }
 
-        &[aria-pressed="true"]:hover {
-            background-color: #5488c7!important;
+            &[aria-pressed="true"] {
+                background-color: #5488c7;
+            }
+
+            &[aria-pressed="true"]:hover {
+                background-color: #5488c7 !important;
+            }
+
+            .g-choose-language-image {
+                width: 24px;
+                height: 24px;
+            }
         }
     }
-
 }

@@ -18,7 +18,13 @@ const Thumbnail = () => {
             scrollbar={{ draggable: true }}
         >
             <SwiperSlide>
-                <img width={"100%"} height={150} src="/assets/thumbnail.jpg" className="img" alt="thumbnail" />
+                <img 
+                    width={"100%"} 
+                    height={150} 
+                    src="/assets/thumbnail.jpg" 
+                    className="img" 
+                    alt="thumbnail" 
+                />
             </SwiperSlide>
         </Swiper>
     );

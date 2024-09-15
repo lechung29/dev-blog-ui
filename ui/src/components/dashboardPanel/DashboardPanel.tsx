@@ -1,28 +1,48 @@
-import React from "react";
+import React, { useMemo } from "react";
 import "./index.scss";
-// import { Image, ImageFit } from "../common/image/Image";
-// import { smallogoSrc } from "../utils/common/common";
 import { List, ListItemIcon } from "@mui/material";
 import { NavLink } from "react-router-dom";
 import { adminPanelList, userPanelList } from "./index";
-import { useSelector } from "react-redux";
-import { RootState } from "../../redux/store/store";
+import { useAppSelector } from "../../redux/store/store";
+import { userState } from "../../redux/reducers/users/UserSlice";
+import { Label } from "../common/label/Label";
+import { ITooltipHostPlacement } from "../common/tooltiphost/TooltipHost";
 
 const DashboardPanel: React.FunctionComponent = () => {
-	const role = useSelector((state: RootState) => state.user.user?.role)
-	const panelList = role === "admin" ? adminPanelList : userPanelList
+	const { user } = useAppSelector(userState)
+	
+	const panelList = useMemo(() => {
+		return user?.role === "admin" ? adminPanelList : userPanelList
+	}, [user])
+
 	return (
 		<div className="g-dashboard-panel">
 			<div className="g-dashboard-panel-content">
-				<List sx={{ width: "100%", maxWidth: 360 }} component="nav" aria-labelledby="nested-list-subheader">
+				<List
+					className="g-dashboard-panel-list"
+					component="nav"
+					aria-labelledby="nested-list-subheader"
+				>
 					{panelList.map((item, index) => (
-                        <NavLink className={"g-dashboard-list-item"} key={index} to={item.route}>
-                            <ListItemIcon style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "32px", minWidth: "unset" }}>
-                                {item.icon}
-                            </ListItemIcon>
-                            <p style={{textAlign: "start", flex: 1}}>{item.title}</p>
-                        </NavLink>
-                    ))}
+						<NavLink
+							className={"g-dashboard-list-item"}
+							key={index}
+							to={item.route}
+						>
+							<ListItemIcon className="g-dashboard-item-icon">
+								{item.icon}
+							</ListItemIcon>
+							<Label
+								bold
+								title={item.title}
+								tooltipProps={{
+									placement: ITooltipHostPlacement.Top,
+									arrow: true,
+								}}
+								className="g-dashboard-item-title"
+							/>
+						</NavLink>
+					))}
 				</List>
 			</div>
 		</div>

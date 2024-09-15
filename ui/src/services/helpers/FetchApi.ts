@@ -1,5 +1,5 @@
-import { IFunc3 } from "../../types/Function";
-// import axios from "axios"
+import { IFetch } from "../../types/Function";
+
 export enum FetchMethod {
     GET = "GET",
     POST = "POST",
@@ -7,34 +7,25 @@ export enum FetchMethod {
     DELETE = "DELETE",
 }
 
-export const FetchApi: IFunc3<string, FetchMethod, any, Promise<any>> = async (url, method, body) => {
+export const FetchApi: IFetch<string, FetchMethod, any, Function, Promise<any>> = async (url, method, body, handleUnauthorized) => {
     try {
-        const access_token = localStorage.getItem('access_token');
-        // switch (method) {
-        //     case FetchMethod.GET:
-        //         response = await axios.get(url, headers);
-        //         break;
-        //     case FetchMethod.POST:
-        //         response = await axios.post(url, headers, body);
-        //         break;
-        //     case FetchMethod.PUT:
-        //         response = await axios.put(url, headers, body);
-        //         break;
-        //     case FetchMethod.DELETE:
-        //         response = await axios.delete(url, headers);
-        //         break;
-        //     default:
-        //         break;
-        // }
-        return await fetch(url, {
+        const access_token = localStorage.getItem("access_token");
+        const response = await fetch(url, {
             method: method,
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${access_token}`
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${access_token}`,
             },
-            body: JSON.stringify(body)
-        }).then((response) => response.json())
+            body: body ? JSON.stringify(body) : undefined,
+        });
+        if (response.status === 401) {
+            const errorMessage = await response.json();
+            handleUnauthorized?.(errorMessage.message);
+            throw new Error(errorMessage.message);
+        } else {
+            return await response.json();
+        }
     } catch (error: any) {
-        return error
+        return error;
     }
 };

@@ -1,0 +1,28 @@
+.g-favorite-card {
+    max-width: 100%;
+
+    .g-card-action-area {
+        cursor: auto;
+
+        .g-card-title {
+            font-size: 18px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-weight: 600;
+        }
+
+        .g-card-sub-title {
+            font-size: 14px;
+            font-weight: 500;
+            font-style: italic;
+        }
+    }
+
+    .g-card-footer-action {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: .5rem;
+    }
+}

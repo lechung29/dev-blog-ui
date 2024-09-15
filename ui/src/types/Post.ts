@@ -14,11 +14,6 @@ export interface ISingleDeletePost {
     postId: string
 }
 
-export interface IUpdatePostStatus {
-    status: IPostStatus;
-    postId: string;
-}
-
 export interface IPostDataProps {
     _id: string;
     title: string;
@@ -31,8 +26,10 @@ export interface IPostDataProps {
     comments: IReferenceComments[]
     status: string;
     like: string[];
+    isFavorite: boolean;
     isLike: boolean;
     totalLikes: number;
+    totalFavorites: number;
     createdAt: string;
     updatedAt: string;
 }
@@ -53,6 +50,8 @@ export interface IPostProps {
     updatedAt: string;
     like: string[];
     isLike: boolean;
+    isFavorite: boolean;
+    totalFavorites: number;
 }
 
 export interface IIdentityProps {
@@ -63,6 +62,25 @@ export enum IPostStatus {
     Public = "Public",
     Pending = "Pending",
     Hide = "Hide",
+}
+
+export interface IOverViewProps {
+    totalPosts: number;
+    totalLikes: number;
+    postInCurrentMonth: number;
+    postByMonth: IPostByMonthProps[];
+    postByCategory: IPostByCategoryProps[];
+}
+
+export interface IPostByCategoryProps {
+    label: string;
+    value: number;
+    id: number
+}
+
+export interface IPostByMonthProps {
+    month: string;
+    post: number
 }
 
 

@@ -11,15 +11,15 @@ export interface IDefaultButtonProps extends ButtonProps {
 }
 
 const DefaultButtonView: React.FunctionComponent<IDefaultButtonProps> = (props) => {
-    const { isLoading, title, style, iconStyle, className, children, disabled, ...rest } = props;
+    const { isLoading, title, iconStyle, className, children, disabled, ...rest } = props;
+
     const onRenderTitle: IFunc<React.ReactNode> = () => {
         return isLoading ? <CircularProgress style={iconStyle} /> : children ? children : title
     }
     return <Button
         {...rest}
         disabled={disabled}
-        style={style}
-        className={classNames(className, { 'g-disable-button': disabled })}
+        className={classNames(className, {'g-disable-button': disabled })}
     >
         {onRenderTitle()}
     </Button>

@@ -1,8 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import * as React from "react";
 import Box from "@mui/material/Box";
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 import "./index.scss";
-import { IFunc, IFunc1 } from "../../types/Function";
+import { IAction, IAction1, IAction2, IFunc, IFunc1 } from "../../types/Function";
 import { Button, Divider, Skeleton, Stack } from "@mui/material";
 import { Label } from "../common/label/Label";
 import CloseIcon from "@mui/icons-material/Close";
@@ -11,6 +12,7 @@ import Filters from "./filters/Filters";
 import { IHomeFilterProps, ISortProps } from "../../pages/home/Home";
 import { PostService } from "../../services/posts/PostService";
 import { delay } from "../../utils/helper";
+import { useImmerState } from "../../hook/useImmerState";
 
 export type Anchor = "top" | "left" | "bottom" | "right";
 
@@ -21,47 +23,125 @@ interface IFilterPanelOwnProps {
     open: boolean;
     onClosePanel: () => void;
     onOpenPanel: () => void;
-    onAplly?: (filter: IHomeFilterProps, sort: ISortProps) => void;
+    onApply?: (filter: IHomeFilterProps, sort: ISortProps) => void;
+}
+
+interface IFilterPanelState {
+    filterValue: IHomeFilterProps;
+    sortInfo: ISortProps;
+    tagList: string[];
+    isLoading: boolean;
 }
 
 
 const FilterPanel: React.FunctionComponent<IFilterPanelOwnProps> = (props) => {
-    const { open, placement, onAplly, onClosePanel, onOpenPanel, filtersValue, sortValue } = props;
-    const [filterValue, setFilterValue] = React.useState<IHomeFilterProps>(filtersValue)
-    const [sortInfo, setSortInfo] = React.useState<ISortProps>(sortValue)
-    const [tagList, setTagList] = React.useState<string[]>([])
-    const [isLoading, setIsLoading] = React.useState(false)
+    const { open, placement, onApply: onAplly, onClosePanel, onOpenPanel, filtersValue, sortValue } = props;
+    const initialState: IFilterPanelState = {
+        filterValue: filtersValue,
+        sortInfo: sortValue,
+        tagList: [],
+        isLoading: false,
+    }
+    const [state, setState] = useImmerState<IFilterPanelState>(initialState)
+    const { filterValue, isLoading, sortInfo, tagList } = state
 
     React.useEffect(() => {
         Promise.all([getTagList(), delay(500)])
             .then(([tags, ..._other]) => {
-                setTagList(tags.data || [])
-                setIsLoading(false)
+                setState((draft) => {
+                    draft.isLoading = false;
+                    draft.tagList = tags.data || []
+                })
             })
     }, [])
 
-    const getTagList = () => {
-        setIsLoading(true)
-        return PostService.getAllTags()
+    const getTagList = async () => {
+        setState({ isLoading: true })
+        return await PostService.getAllTags()
+    }
+
+    const onClose: IAction = () => {
+        setState((draft) => {
+            draft.filterValue = filtersValue
+            draft.sortInfo = sortValue
+        })
+        onClosePanel()
+    }
+
+    const onApplyFilter: IAction = () => {
+        onAplly?.(filterValue, sortInfo)
+        onClosePanel()
+    }
+
+    const getSortValue: IFunc1<Object, keyof Object> = (object) => {
+        for (const key in object) {
+            return object[key]
+        }
+    }
+
+    const onChangeSort: IAction2<string, string> = (field, value) => {
+        let newSortInfo: ISortProps = {}
+        newSortInfo[field] = value
+        setState({ sortInfo: newSortInfo })
+    }
+
+    const onChangeCategoryFilter: IAction1<string> = (value) => {
+        const tempCategory: string[] = [...filterValue.category]
+        if (tempCategory.includes(value)) {
+            tempCategory.splice(tempCategory.indexOf(value), 1);
+            setState((draft) => {
+                draft.filterValue = {
+                    ...filterValue,
+                    category: [...tempCategory],
+                }
+            })
+        } else {
+            tempCategory.push(value);
+            setState((draft) => {
+                draft.filterValue = {
+                    ...filterValue,
+                    category: [...tempCategory],
+                }
+            })
+        }
+    }
+
+    const onChangeTagFilter: IAction1<string> = (value) => {
+        const tempTags: string[] = [...filterValue.tags]
+        if (tempTags.includes(value)) {
+            tempTags.splice(tempTags.indexOf(value), 1);
+            setState((draft) => {
+                draft.filterValue = {
+                    ...filterValue,
+                    tags: [...tempTags],
+                }
+            })
+        } else {
+            tempTags.push(value);
+            setState((draft) => {
+                draft.filterValue = {
+                    ...filterValue,
+                    tags: [...tempTags],
+                }
+            })
+        }
     }
 
     const onRenderTitle: IFunc<JSX.Element> = () => {
         return (
-            <Stack display={"flex"} flexDirection={"column"} gap={2}>
-                <Stack
-                    direction={"row"}
-                    display={"flex"}
-                    alignItems={"center"}
-                    height={"2.5rem"}
-                    justifyContent={"space-between"}
-                >
-                    <Label className="g-filter-panel-title" title="Bộ lọc" />
+            <Stack className="g-filter-panel-header">
+                <Stack className="g-filter-panel-header-row">
+                    <Label
+                        className="g-filter-panel-title"
+                        title="Bộ lọc"
+                        bold
+                    />
                     <Button
                         variant="text"
                         className="g-filter-close-button"
-                        onClick={onClosePanel}
+                        onClick={onClose}
                     >
-                        <CloseIcon style={{ color: "#b9b9b9" }} />
+                        <CloseIcon className="g-filter-close-button-icon" />
                     </Button>
                 </Stack>
                 <Divider />
@@ -71,35 +151,21 @@ const FilterPanel: React.FunctionComponent<IFilterPanelOwnProps> = (props) => {
 
     const onRenderFooter: IFunc<JSX.Element> = () => {
         return (
-            <Stack
-                direction={"row"}
-                display={"flex"}
-                alignItems={"center"}
-                height={"2rem"}
-                justifyContent={"flex-end"}
-                gap={2}
-            >
+            <Stack className="g-filter-panel-footer">
                 <Button
                     variant="text"
                     className="g-filter-cancel-button"
-                    onClick={() => {
-                        setFilterValue(filtersValue)
-                        setSortInfo(sortValue)
-                        onClosePanel()
-                    }}
+                    onClick={onClose}
                 >
-                    <span>{"Hủy"}</span>
+                    {"Hủy"}
                 </Button>
                 <Button
                     variant="contained"
                     color="primary"
                     className="g-filter-apply-button"
-                    onClick={() => {
-                        onAplly?.(filterValue, sortInfo)
-                        onClosePanel()
-                    }}
+                    onClick={onApplyFilter}
                 >
-                    <span>{"Áp dụng"}</span>
+                    {"Áp dụng"}
                 </Button>
             </Stack>
         );
@@ -116,25 +182,13 @@ const FilterPanel: React.FunctionComponent<IFilterPanelOwnProps> = (props) => {
         )
     }
 
-    const getSortValue = (object: Object) => {
-        for (const key in object) {
-            return object[key]
-        }
-    }
-
-    const onChangeSort = (field: string, value: string) => {
-        let newSortInfo: ISortProps = {}
-        newSortInfo[field] = value
-        setSortInfo(newSortInfo)
-    }
-
     const onRenderContent: IFunc<JSX.Element> = () => {
-        return <Stack style={{ flex: 1 }}>
+        return <Stack className="g-filter-panel-content">
             {isLoading
                 ? Array(15).fill("").map((_item, id) => {
                     return shimmerElement(id)
                 })
-                : <>
+                : <React.Fragment>
                     <SortByCreated
                         value={getSortValue(sortInfo)}
                         items={[
@@ -143,7 +197,6 @@ const FilterPanel: React.FunctionComponent<IFilterPanelOwnProps> = (props) => {
                         ]}
                         onChangeValue={onChangeSort}
                     />
-
                     <Filters
                         filterTitle="Danh mục"
                         value={filterValue.category}
@@ -152,49 +205,17 @@ const FilterPanel: React.FunctionComponent<IFilterPanelOwnProps> = (props) => {
                             { name: "Câu hỏi", value: "question" },
                             { name: "Thảo luận", value: "discussion" }
                         ]}
-                        onFilterChange={(value) => {
-                            const tempCategory: string[] = [...filterValue.category]
-                            if (tempCategory.includes(value)) {
-                                tempCategory.splice(tempCategory.indexOf(value), 1);
-                                setFilterValue((prev) => ({
-                                    ...prev,
-                                    category: [...tempCategory],
-                                }))
-                            } else {
-                                tempCategory.push(value);
-                                setFilterValue((prev) => ({
-                                    ...prev,
-                                    category: [...tempCategory],
-                                }))
-                            }
-
-                        }}
+                        onFilterChange={onChangeCategoryFilter}
                     />
-
                     <Filters
                         filterTitle="Thẻ"
                         value={filterValue.tags}
                         items={tagList.map((tag) => {
                             return { name: tag, value: tag }
                         })}
-                        onFilterChange={(value) => {
-                            const tempTags: string[] = [...filterValue.tags]
-                            if (tempTags.includes(value)) {
-                                tempTags.splice(tempTags.indexOf(value), 1);
-                                setFilterValue((prev) => ({
-                                    ...prev,
-                                    tags: [...tempTags],
-                                }))
-                            } else {
-                                tempTags.push(value);
-                                setFilterValue((prev) => ({
-                                    ...prev,
-                                    tags: [...tempTags],
-                                }))
-                            }
-                        }}
+                        onFilterChange={onChangeTagFilter}
                     />
-                </>
+                </React.Fragment>
             }
         </Stack>;
     };
@@ -207,14 +228,7 @@ const FilterPanel: React.FunctionComponent<IFilterPanelOwnProps> = (props) => {
             onOpen={onOpenPanel}
             className="g-filter-panel-section"
         >
-            <Box
-                display={"flex"}
-                gap={3}
-                flexDirection={"column"}
-                justifyContent={"center"}
-                width={"100%"}
-                flex={1}
-            >
+            <Box className="g-filter-panel-box">
                 {onRenderTitle()}
                 {onRenderContent()}
                 {onRenderFooter()}

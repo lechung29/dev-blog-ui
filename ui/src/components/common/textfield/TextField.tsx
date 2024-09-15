@@ -1,6 +1,7 @@
 import React, { Fragment, useMemo } from "react";
 import { IAction1 } from "../../../types/Function";
 import { FormHelperText, OutlinedInput, OutlinedInputProps } from "@mui/material";
+import { classNames } from "../../../utils/helper";
 
 export interface ITextFieldProps extends OutlinedInputProps {
     bold?: boolean;
@@ -10,8 +11,9 @@ export interface ITextFieldProps extends OutlinedInputProps {
 }
 
 const TextFieldView: React.FunctionComponent<ITextFieldProps> = (props) => {
-    const {bold, helpText, errorMessage, onValueChange, ...rest} = props;
-    const onChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { bold, helpText, errorMessage, onValueChange, onChange, className, type, ...rest } = props;
+
+    const onHandleChange: IAction1<React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>> = (event) => {
         const newValue = event.target.value;
         if (props.type === "number") {
             const numberRegex: RegExp = /^[0-9]\d*$/g;
@@ -24,36 +26,46 @@ const TextFieldView: React.FunctionComponent<ITextFieldProps> = (props) => {
         }
 
         if (onValueChange) {
-           onValueChange(event.target.value || "");
+            onValueChange(event.target.value || "");
         }
 
-        if (props.onChange) {
-            props.onChange(event);
+        if (onChange) {
+            onChange(event);
         }
     }
 
+
+    const inputType = useMemo(() => {
+        return type !== "number"
+            ? type
+            : ""
+    }, [type])
+
+
     const onRenderMessage: JSX.Element = useMemo(() => {
         return !!errorMessage || !!helpText
-            ? <FormHelperText 
+            ? <FormHelperText
                 error={!!errorMessage}
-                className={`g-helpText-message ${!!errorMessage && "g-helpText-error-message"}`}
+                className={classNames("g-helpText-message", { "g-helpText-error-message": errorMessage })}
             >
                 {errorMessage || helpText}
             </FormHelperText>
             : <Fragment></Fragment>
-    }, [errorMessage, helpText])      
+    }, [errorMessage, helpText])
+    
+
     return (
         <div className="g-form-textfield g-form-outline-textfield">
-            <OutlinedInput 
-                {...rest} 
-                className={`${props.className} ${props.errorMessage && "g-input-error"}`}
-                type={props.type === "number" ? "" : props.type}
+            <OutlinedInput
+                {...rest}
+                className={classNames(className, { "g-input-error": errorMessage })}
+                type={inputType}
                 error={!!errorMessage}
-                onChange={onChange}
+                onChange={onHandleChange}
             />
             {onRenderMessage}
         </div>
-        
+
     )
 };
 

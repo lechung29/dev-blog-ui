@@ -14,8 +14,9 @@ import { AuthService } from "../../services/auth/AuthService";
 import { IRequestStatus } from "../../types/IResponse";
 import { delay } from "../../utils/helper";
 import { useNavigate } from "react-router-dom";
-import { Alert } from "../../components/common/alert/Alert";
-interface IProfilePageOwnProps {}
+import { Alert, ISeverity } from "../../components/common/alert/Alert";
+import { useAuth } from "../../context/AuthContext";
+interface IProfilePageOwnProps { }
 
 interface IProfilePageState {
     isUpdating: boolean;
@@ -34,6 +35,7 @@ const Profile: React.FunctionComponent<IProfilePageOwnProps> = (_props) => {
     const { user } = useAppSelector(userState)
     const dispatch = useAppDispatch()
     const navigate = useNavigate()
+    const {handleUnauthorized} = useAuth()
     const initialState: IProfilePageState = {
         imageFileUrl: user?.avatar || "",
         displayName: user?.displayName || "",
@@ -52,12 +54,12 @@ const Profile: React.FunctionComponent<IProfilePageOwnProps> = (_props) => {
     const emailRef = useRef<HTMLInputElement>();
     const displayNameRef = useRef<HTMLInputElement>();
     const iconStyle: React.CSSProperties = useMemo(() => {
-      return {
-          width: 20,
-          height: 20,
-          color: "#fff",
-      }
-  }, [])
+        return {
+            width: 20,
+            height: 20,
+            color: "#fff",
+        }
+    }, [])
 
     const onChangeValue: React.ChangeEventHandler<HTMLInputElement> = (event) => {
         switch (event.target.name) {
@@ -98,12 +100,12 @@ const Profile: React.FunctionComponent<IProfilePageOwnProps> = (_props) => {
     };
 
     const handleSubmit = async () => {
-        setState({ isUpdating: true})
+        setState({ isUpdating: true })
         const updatedUser = await AuthService.updateUserInfo(user?._id!, {
-          avatar: imageFileUrl,
-          displayName: displayName,
-          email: email
-        })
+            avatar: imageFileUrl,
+            displayName: displayName,
+            email: email
+        }, handleUnauthorized)
 
         if (updatedUser.requestStatus === IRequestStatus.Error) {
             switch (updatedUser.fieldError) {
@@ -131,7 +133,7 @@ const Profile: React.FunctionComponent<IProfilePageOwnProps> = (_props) => {
                     draft.isUpdating = false;
                     draft.isOpenAlert = true;
                     draft.message = updatedUser.message;
-                }); 
+                });
             })
             await delay(2000).then(() => {
                 navigate("/")
@@ -142,42 +144,42 @@ const Profile: React.FunctionComponent<IProfilePageOwnProps> = (_props) => {
     return (
         <AppLayout>
             <Container className="g-profile-section">
-                <Box 
-                    className="g-profile-update-form" 
+                <Box
+                    className="g-profile-update-form"
                     component={"section"}
                 >
                     <Stack className="g-profile-title-section">
-                        <Label 
-                            className="g-profile-primary-title" 
-                            title={"Thông tin cá nhân"} 
-                          />
-                        <Label 
-                            className="g-profile-sub-title" 
-                            title={"Quản lý thông tin cá nhân của bạn"} 
+                        <Label
+                            className="g-profile-primary-title"
+                            title={"Thông tin cá nhân"}
+                        />
+                        <Label
+                            className="g-profile-sub-title"
+                            title={"Quản lý thông tin cá nhân của bạn"}
                         />
                     </Stack>
                     <Stack className="g-profile-content">
                         <Box className="g-profile-content-form">
                             <Stack className="g-profile-content-image">
-                                <input 
-                                    type="file" 
-                                    accept="image/*" 
-                                    hidden 
-                                    onChange={handleImageChange} 
-                                    ref={avatarPickerRef} 
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    hidden
+                                    onChange={handleImageChange}
+                                    ref={avatarPickerRef}
                                 />
                                 <div onClick={() => avatarPickerRef.current?.click()}>
-                                    <Avatar 
-                                        alt={displayName} 
-                                        src={imageFileUrl || user?.avatar} 
-                                        sx={{ width: 80, height: 80 }} 
+                                    <Avatar
+                                        alt={displayName}
+                                        src={imageFileUrl || user?.avatar}
+                                        sx={{ width: 80, height: 80 }}
                                     />
                                 </div>
                             </Stack>
-                            <Grid 
-                                className="g-update-field-container" 
-                                container 
-                                rowSpacing={2} 
+                            <Grid
+                                className="g-update-field-container"
+                                container
+                                rowSpacing={2}
                                 columnSpacing={2}
                             >
                                 <Grid className="g-update-field-label" item xs={4} md={3}>
@@ -212,12 +214,12 @@ const Profile: React.FunctionComponent<IProfilePageOwnProps> = (_props) => {
                                     <Label title={"Email"} />
                                 </Grid>
                                 <Grid className="g-update-field-input" item xs={8} md={9}>
-                                    <TextField 
-                                        id="g-update-field-email" 
-                                        className="g-update-section-input-item" 
-                                        size="small" 
+                                    <TextField
+                                        id="g-update-field-email"
+                                        className="g-update-section-input-item"
+                                        size="small"
                                         name="email"
-                                        value={email} 
+                                        value={email}
                                         onChange={onChangeValue}
                                         inputRef={emailRef}
                                         helperText={emailError}
@@ -248,7 +250,7 @@ const Profile: React.FunctionComponent<IProfilePageOwnProps> = (_props) => {
                                 />
                                 {isOpenAlert && <Alert
                                     open={isOpenAlert}
-                                    severity={"success"}
+                                    severity={ISeverity.success}
                                     message={message}
                                     onClose={() => setState({ isOpenAlert: false })}
                                 />}

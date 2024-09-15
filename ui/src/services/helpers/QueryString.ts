@@ -14,6 +14,9 @@ const getMaxPages = "get-max-pages";
 const getSinglePost = "get-single-post";
 const likePost = "like-post";
 const getAllTags = "get-all-tags";
+const addFavorite = "add-favorite";
+const getFavorite = "get-favorite";
+const getOverview = "get-overview"
 
 //Auth
 const login = "login";
@@ -21,6 +24,9 @@ const register = "register";
 const googleLogin = "google";
 const updateUser = "update";
 const updatePassword = "update-password";
+const allUser = "all-users";
+const multiDelete = "multi-delete"
+const updateUserStatus = "update-status"
 
 //Comment
 const createComment = "create-comment";
@@ -53,5 +59,11 @@ export {
     likePost,
     updateComment,
     deleteComment,
-    getAllTags
+    getAllTags,
+    allUser,
+    multiDelete,
+    updateUserStatus,
+    addFavorite,
+    getFavorite,
+    getOverview
 }

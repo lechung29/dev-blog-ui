@@ -1,0 +1,12 @@
+.g-bar-chart-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 1rem;
+
+    .g-bar-chart-title {
+        color: "#141522";
+        font-size: 20px;
+    }
+}

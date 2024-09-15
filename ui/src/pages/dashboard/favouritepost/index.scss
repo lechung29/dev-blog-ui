@@ -1,11 +1,7 @@
-.g-favourite-filter-button {
-    color: #fff!important;
-    font-size: 13px;
-    text-transform: none!important;
-    line-height: 100%;
-    background-color: #5488c7!important;
-}
-
 .g-none-border-button {
-    text-transform: none!important;
+    text-transform: none !important;
+
+    &:hover {
+        background-color: transparent !important;
+    }
 }

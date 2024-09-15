@@ -1,44 +1,105 @@
-import React, { useMemo, useRef } from 'react'
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect, useMemo, useRef } from 'react'
 import DashboardLayout from '../../../layout/DashboardLayout'
 import { Stack } from '@mui/material'
 import { IconButton } from '../../../components/common/button/iconbutton/IconButton'
-import DeleteIcon from "@mui/icons-material/Delete";
 import { useImmerState } from '../../../hook/useImmerState';
-import DataTable, { IDataTabelRef } from '../../../components/datatable/DataTable';
+import DataTable, { IDataTableRef } from '../../../components/datatable/DataTable';
 // import { PostService } from '../../../services/posts/PostService';
-import { postManagementColumn } from '../../../components/datatable/utils';
+import { userManagementColumn } from '../../../components/datatable/utils';
 import ConfirmDialog from '../../../components/common/confirmDialog/ConfirmDialog';
+import { IUserInformationWithId, userStatus } from '../../../types/IAuth';
+import { AuthService } from '../../../services/auth/AuthService';
+import { useAppSelector } from '../../../redux/store/store';
+import { userState } from '../../../redux/reducers/users/UserSlice';
+import { Alert, ISeverity } from '../../../components/common/alert/Alert';
+import LockIcon from '@mui/icons-material/Lock';
+import LockOpenIcon from '@mui/icons-material/LockOpen';
+import { useAuth } from '../../../context/AuthContext';
 
 interface IUserManagementProps { }
 
 interface IUserManagementState {
-    users: any[];
+    users: IUserInformationWithId[];
     loading: boolean
-    selectedUsers: any[];
-    isOpenDeleteDialog: boolean;
+    selectedUsers: string[];
+    isOpenLockUserDialog: boolean;
+    isLockLoading: boolean;
+    isOpenAlert: boolean
+    actionMessage: string
+    messageType: ISeverity
+    lockStatus: userStatus
 }
 
 const initialState: IUserManagementState = {
     users: [],
     loading: false,
     selectedUsers: [],
-    isOpenDeleteDialog: false,
+    isOpenLockUserDialog: false,
+    isLockLoading: false,
+    isOpenAlert: false,
+    actionMessage: "",
+    messageType: ISeverity.success,
+    lockStatus: userStatus.active
 }
 
 const UserManagement: React.FunctionComponent<IUserManagementProps> = (props) => {
     const [state, setState] = useImmerState<IUserManagementState>(initialState)
-
-    const dataTableRef = useRef<IDataTabelRef>(null);
-
-    const getData = () => {
+    const { isOpenLockUserDialog, loading, selectedUsers, users, isLockLoading, isOpenAlert, actionMessage, messageType, lockStatus } = state
+    const { user } = useAppSelector(userState)
+    const dataTableRef = useRef<IDataTableRef>(null);
+    const { handleUnauthorized } = useAuth()
+    const getAllUsers = async () => {
         setState({ loading: true });
-        // return PostService.getFilterPosts({ limit: 10 }).then((data) => {
-        //     const rowItems = data.data?.map((item) => ({ ...item, author: item.author.displayName }));
-        //     console.log(rowItems);
-        //     setState({ users: rowItems, loading: false });
-        // });
-        return Promise.resolve([])
+        const allUser = await AuthService.getAllUsers(handleUnauthorized);
+        const formattedUsers = allUser.data?.map((user) => ({
+            ...user,
+            id: user._id,
+        }))
+        setState({ users: formattedUsers, loading: false });
     };
+
+    useEffect(() => {
+        const selectedUserStatus = users.find((user) => user._id === selectedUsers[0])?.status || userStatus.active
+        setState({ lockStatus: selectedUserStatus })
+    }, [selectedUsers])
+
+    const onRenderLockedItem = useMemo(() => {
+        return lockStatus === userStatus.active ? <LockIcon /> : <LockOpenIcon />
+    }, [lockStatus])
+
+    const lockStatusNeedUpdate = () => {
+        return lockStatus === userStatus.active ? userStatus.inactive : userStatus.active
+    }
+
+    const handleDeleteUser = async () => {
+        setState({ isLockLoading: true })
+        const existingCurrentUser = selectedUsers.find((item) => item === user?._id!)
+        if (existingCurrentUser) {
+            setState((draft) => {
+                draft.isLockLoading = false
+                draft.isOpenLockUserDialog = false;
+                draft.isOpenAlert = true;
+                draft.actionMessage = "Bạn không thể khóa tài khoản của chính mình";
+                draft.messageType = ISeverity.error
+            })
+            return Promise.resolve();
+        } else {
+            return AuthService.updateUserStatus(selectedUsers[0], lockStatusNeedUpdate(), handleUnauthorized)
+                .then((data) => {
+                    setState((draft) => {
+                        draft.isLockLoading = false;
+                        draft.isOpenLockUserDialog = false;
+                        draft.isOpenAlert = true;
+                        draft.messageType = data.requestStatus ? ISeverity.success : ISeverity.error
+                        draft.actionMessage = data.message;
+                        draft.selectedUsers = []
+                    })
+                }).then(() => {
+                    dataTableRef.current?.reload()
+                })
+        }
+    }
 
     const handleChangeSelection = (selection) => {
         setState({ selectedUsers: selection });
@@ -49,41 +110,43 @@ const UserManagement: React.FunctionComponent<IUserManagementProps> = (props) =>
     };
 
     const deleteItemText = useMemo(() => {
-        return `Bạn chắc chắn muốn xóa ${state.selectedUsers.length > 1 ? state.selectedUsers.length : ""} bài viết đã chọn?`
-    }, [state.selectedUsers])
+        return `Bạn chắc chắn muốn xóa ${selectedUsers.length} người dùng đã chọn?`
+    }, [selectedUsers])
 
     return (
         <DashboardLayout title='Quản lý người dùng'>
             <div className="g-dashboard-content-section">
                 <Stack marginBottom={"0.5rem"} flexDirection={"row"} display={"flex"} alignItems={"center"} justifyContent={"flex-end"} gap={3}>
-                    {state.selectedUsers.length > 0 && <IconButton size="small" className="g-delete-action-button" icon={<DeleteIcon />} onClick={() => setState({ isOpenDeleteDialog: true })} />}
-                    <IconButton size="small" isReloadButton rotate={state.loading} className="g-reload-action-button" onClick={handleReload} />
+                    {selectedUsers.length === 1 && <IconButton size="small" className="g-delete-action-button" icon={onRenderLockedItem} onClick={() => setState({ isOpenLockUserDialog: true })} />}
+                    <IconButton size="small" isReloadButton rotate={loading} className="g-reload-action-button" onClick={handleReload} />
                 </Stack>
                 <DataTable
-                    isLoading={state.loading}
+                    isLoading={loading}
                     onSelection={handleChangeSelection}
                     ref={dataTableRef}
-                    columns={postManagementColumn}
-                    items={state.users}
-                    getData={getData}
+                    columns={userManagementColumn}
+                    items={users}
+                    getData={() => getAllUsers()}
                     tableHeight={400}
                     tableWidth={"100%"}
-                    selectionItems={[]}
+                    selectionItems={selectedUsers}
                 />
-                {state.isOpenDeleteDialog && (
+                {isOpenLockUserDialog && (
                     <ConfirmDialog
-                        open={state.isOpenDeleteDialog}
-                        title="Xác nhận xóa bài viết"
+                        open={isOpenLockUserDialog}
+                        title="Xác nhận xóa người dùng"
                         content={deleteItemText}
-                        isLoading
-                        handleConfirm={() => {
-                            // Xử lý xóa bài viết
-                            setState({ isOpenDeleteDialog: false });
-                            dataTableRef.current?.reload();
-                        }}
-                        onClose={() => setState({ isOpenDeleteDialog: false })}
+                        isLoading={isLockLoading}
+                        handleConfirm={handleDeleteUser}
+                        onClose={() => setState({ isOpenLockUserDialog: false })}
                     />
                 )}
+                {isOpenAlert && <Alert
+                    open={isOpenAlert}
+                    severity={messageType}
+                    message={actionMessage}
+                    onClose={() => setState({ isOpenAlert: false })}
+                />}
             </div>
         </DashboardLayout>
     )

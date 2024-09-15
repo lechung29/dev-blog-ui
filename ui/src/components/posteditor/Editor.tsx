@@ -16,14 +16,15 @@ export interface EditorProps {
 }
 
 export default function Editor(props: EditorProps) {
-	const [value, setValue] = useState<string>(markdownToHtml(props.value || ""));
+	const { onChange, value } = props
+	const [editorValue, setEditorValue] = useState<string>(markdownToHtml(value || ""));
 	const reactQuillRef = useRef<ReactQuill>(null);
 
-	const onChange = (content: string) => {
-		setValue(content);
+	const onChangeEditor = (content: string) => {
+		setEditorValue(content);
 
-		if (props.onChange) {
-			props.onChange({
+		if (onChange) {
+			onChange({
 				html: content,
 				markdown: htmlToMarkdown(content),
 			});
@@ -73,8 +74,8 @@ export default function Editor(props: EditorProps) {
 				},
 			}}
 			formats={["header", "font", "size", "bold", "italic", "underline", "strike", "blockquote", "list", "bullet", "indent", "link", "image", "code-block"]}
-			value={value}
-			onChange={onChange}
+			value={editorValue}
+			onChange={onChangeEditor}
 		/>
 	);
 }

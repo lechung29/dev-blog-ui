@@ -2,7 +2,7 @@
 import * as React from "react";
 import { DataGrid, GridColDef, GridRowSelectionModel } from "@mui/x-data-grid";
 
-export interface IDataTabelRef {
+export interface IDataTableRef {
 	reload: () => void;
 }
 
@@ -12,7 +12,7 @@ interface IDataTabelProps {
 	tableWidth: number | string;
 	tableHeight: number | string;
 	getData: () => Promise<any>;
-	ref: React.ForwardedRef<IDataTabelRef>;
+	ref: React.ForwardedRef<IDataTableRef>;
 	onSelection?: (selection: GridRowSelectionModel) => void;
 	isLoading: boolean
 	selectionItems: string[]

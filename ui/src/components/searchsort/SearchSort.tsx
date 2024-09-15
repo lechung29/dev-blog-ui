@@ -6,6 +6,7 @@ import { Label } from "../common/label/Label";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { ILabelItemProps } from "../filterPanel/sortByCreated/SortByCreated";
 import { ISearchSortValue } from "../../pages/search/SearchPage";
+import { IAction1, IFunc, IFunc1 } from "../../types/Function";
 
 interface ISearchSortProps {
     open: HTMLElement | null;
@@ -78,7 +79,8 @@ export const SortList: ILabelItemProps[] = [
 const SearchSort: React.FunctionComponent<ISearchSortProps> = (props) => {
     const { onClose, open, sortValue, onOpen, onChangeSortValue} = props
     const [currentSort, setCurrentSort] = React.useState<ISearchSortValue>(sortValue);
-    const onChangeSort = (item: ILabelItemProps) => {
+
+    const onChangeSort: IAction1<ILabelItemProps> = (item) => {
         if (item.field !== currentSort.field || item.value !== currentSort.value) {
           setCurrentSort((prev) => ({
               ...prev,
@@ -92,29 +94,21 @@ const SearchSort: React.FunctionComponent<ISearchSortProps> = (props) => {
         onChangeSortValue(currentSort)
     }, [currentSort])
 
-    const checkSelected = (item: ILabelItemProps) => {
+    const checkSelected: IFunc1<ILabelItemProps, boolean> = (item) => {
         return item.field === currentSort.field && item.value === currentSort.value
     }
 
-    const getSortLabel = () => {
+    const getSortLabel: IFunc<string> = () => {
         return SortList.find((i) => i.field === currentSort.field && i.value === currentSort.value)?.name || ""
     }
     return (
         <React.Fragment>
-            <Box sx={{ flex: 1, display: "flex", justifyContent: "flex-end", alignItems: "center", textAlign: "center", padding: "12px 16px" }}>
+            <Box className="g-search-sort-box">
                 <Label
                     title={`Sắp xếp theo: ${getSortLabel()}`}
+                    className="g-search-sort-box-label"
                     subTitle={getSortLabel()}
                     endIcon={<ArrowDropDownIcon />}
-                    style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        color: "#9b9b9b",
-                        fontWeight: 500,
-                        fontSize: 14,
-                        cursor: "pointer",
-                    }}
                     subTitleStyle={{
                         color: "#5488c7",
                         fontWeight: 600,

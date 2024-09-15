@@ -1,6 +1,6 @@
 .MuiDialog-container {
     .MuiDialog-paper {
-        height: 100%;
+        height: auto;
         max-height: 18rem;
         display: flex;
         flex-direction: column;
@@ -17,7 +17,7 @@
 }
 
 .g-update-form-submit-button {
-    background-color: #409eff!important;
+    background-color: #409eff !important;
     color: #fff;
     text-transform: capitalize !important;
     font-size: 13px;

@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useMemo, useRef } from "react";
 import DashboardLayout from "../../../../layout/DashboardLayout";
-import DataTable, { IDataTabelRef } from "../../../../components/datatable/DataTable";
+import DataTable, { IDataTableRef } from "../../../../components/datatable/DataTable";
 import { postManagementColumn } from "../../../../components/datatable/utils";
 import { useImmerState } from "../../../../hook/useImmerState";
 import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Stack } from "@mui/material";
@@ -15,6 +15,7 @@ import { deletePost, getAllPosts, postState, stopLoading, updatePost } from "../
 import { userState } from "../../../../redux/reducers/users/UserSlice";
 import { IAction, IFunc } from "../../../../types/Function";
 import { IPostStatus } from "../../../../types/Post";
+import { useAuth } from "../../../../context/AuthContext";
 
 interface IPostManagementProps {
 
@@ -39,15 +40,16 @@ const UserPostManagement: React.FunctionComponent<IPostManagementProps> = (props
 	const { isOpenDeleteDialog, isOpenUpdateDialog, itemStatus, selectedItems } = state
 	const { user } = useAppSelector(userState)
 	const { allPosts, isLoading, isUpdateAndDeleteLoading } = useAppSelector(postState)
+	const { handleUnauthorized } = useAuth()
 	const dispatch = useAppDispatch()
-	const dataTableRef = useRef<IDataTabelRef>(null);
+	const dataTableRef = useRef<IDataTableRef>(null);
 
 	const handleChange = (event: SelectChangeEvent) => {
 		setState({ itemStatus: event.target.value as IPostStatus })
 	};
 
 	const getData = () => {
-		return dispatch(getAllPosts())
+		return dispatch(getAllPosts(handleUnauthorized))
 	};
 
 	const handleChangeSelection = (selection) => {
@@ -136,7 +138,10 @@ const UserPostManagement: React.FunctionComponent<IPostManagementProps> = (props
 						content={deleteItemText}
 						isLoading={isUpdateAndDeleteLoading}
 						handleConfirm={() => {
-							dispatch(deletePost(selectedItems)).then(() => {
+							dispatch(deletePost({
+								postIds: selectedItems,
+								handleUnauthorized: handleUnauthorized
+							})).then(() => {
 								setState({ isOpenDeleteDialog: false, selectedItems: [] });
 								setTimeout(() => {
 									dispatch(stopLoading())
@@ -155,7 +160,8 @@ const UserPostManagement: React.FunctionComponent<IPostManagementProps> = (props
 						handleConfirm={() => {
 							dispatch(updatePost({
 								postId: selectedItems[0],
-								status: itemStatus
+								status: itemStatus,
+								handleUnauthorized: handleUnauthorized
 							})).then(() => {
 								setState({ isOpenUpdateDialog: false, selectedItems: [] });
 								setTimeout(() => {
@@ -163,9 +169,9 @@ const UserPostManagement: React.FunctionComponent<IPostManagementProps> = (props
 								}, 2000)
 							})
 						}}
-						onClose={() => setState({ 
+						onClose={() => setState({
 							isOpenUpdateDialog: false,
-                            itemStatus: allPosts.find((post) => post.id === selectedItems[0])?.status
+							itemStatus: allPosts.find((post) => post.id === selectedItems[0])?.status
 						})}
 					/>
 				)}
