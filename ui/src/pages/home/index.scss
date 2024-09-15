@@ -21,7 +21,7 @@
 }
 
 .g-homepage-section {
-    display: flex!important;
+    display: flex !important;
     align-items: flex-start;
     margin: 2rem 1.5rem;
     padding: 0 1rem;
@@ -51,7 +51,22 @@
                 background-color: #5488c7;
             }
         }
-        
+
+        .g-home-page-section-post-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            width: 100%;
+        }
+
+        .g-home-page-section-post-pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            flex-direction: row;
+            margin-top: 32px;
+        }
     }
 
     .g-homepage-right-section {
@@ -69,4 +84,8 @@
             top: 0;
         }
     }
+}
+
+.g-post-no-item-label {
+    text-align: center;
 }
