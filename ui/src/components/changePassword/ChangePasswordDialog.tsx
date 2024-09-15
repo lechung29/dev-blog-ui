@@ -1,8 +1,8 @@
 import React, { Fragment, useMemo, useRef } from 'react'
 import { useImmerState } from '../../hook/useImmerState';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
-import { Alert } from '../common/alert/Alert';
-import { IFunc } from '../../types/Function';
+import { Alert, ISeverity } from '../common/alert/Alert';
+import { IAction1, IFunc } from '../../types/Function';
 import { DefaultButton } from '../common/button/defaultbutton/DefaultButton';
 import "./index.scss"
 import { useAppSelector } from '../../redux/store/store';
@@ -10,6 +10,7 @@ import { userState } from '../../redux/reducers/users/UserSlice';
 import { AuthService } from '../../services/auth/AuthService';
 import { IRequestStatus } from '../../types/IResponse';
 import { delay } from '../../utils/helper';
+import { useAuth } from '../../context/AuthContext';
 
 interface IChangePasswordDialogProps {
     open: boolean;
@@ -37,9 +38,10 @@ const initialState: IChangePasswordDialogState = {
 }
 
 const ChangePasswordDialog: React.FunctionComponent<IChangePasswordDialogProps> = (props) => {
-    const [state, setState] = useImmerState<IChangePasswordDialogState>(initialState)
-    const { user } = useAppSelector(userState)
     const { onClose, open } = props
+    const { handleUnauthorized } = useAuth()
+    const { user } = useAppSelector(userState)
+    const [state, setState] = useImmerState<IChangePasswordDialogState>(initialState)
     const { currentPassword, currentPasswordError, newPassword, newPasswordError, isOpenAlert, isUpdating, message } = state
     const currentPasswordRef = useRef<HTMLInputElement>();
     const newPasswordRef = useRef<HTMLInputElement>();
@@ -52,7 +54,7 @@ const ChangePasswordDialog: React.FunctionComponent<IChangePasswordDialogProps> 
         }
     }, [])
 
-    const onChangeValue: React.ChangeEventHandler<HTMLInputElement> = (event) => {
+    const onChangeValue: IAction1<React.ChangeEvent<HTMLInputElement>> = (event) => {
         switch (event.target.name) {
             case "currentPassword":
                 setState((draft) => {
@@ -104,16 +106,16 @@ const ChangePasswordDialog: React.FunctionComponent<IChangePasswordDialogProps> 
         return isValid;
     };
 
-    const handleSubmit = async () => {
+    const handleSubmit: IFunc<Promise<void>> = async () => {
         setState({ isUpdating: true })
         if (!validation()) {
             setState({ isUpdating: false })
-            return;
+            return Promise.resolve()
         }
         const updatedUser = await AuthService.updatePassword(user?._id!, {
             currentPassword: currentPassword,
             newPassword: newPassword
-        })
+        }, handleUnauthorized)
         if (updatedUser.requestStatus === IRequestStatus.Error) {
             switch (updatedUser.fieldError) {
                 case "currentPassword":
@@ -205,7 +207,7 @@ const ChangePasswordDialog: React.FunctionComponent<IChangePasswordDialogProps> 
         </Dialog>
         {isOpenAlert && <Alert
             open={isOpenAlert}
-            severity={"success"}
+            severity={ISeverity.success}
             message={message}
             onClose={() => setState({ isOpenAlert: false })}
         />}

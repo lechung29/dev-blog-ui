@@ -4,20 +4,20 @@ import { FetchApi, FetchMethod } from "../helpers/FetchApi";
 import { createComment, deleteComment, likeComment, root, updateComment, v1 } from "../helpers/QueryString";
 
 class CommentService {
-    public static createComment(params: ICreateCommentParams): Promise<IResponseType<any>> {
-        return FetchApi(`${root}/${v1}/comment/${createComment}`, FetchMethod.POST, params);
+    public static createComment(params: ICreateCommentParams, handleUnauthorized: Function): Promise<IResponseType<any>> {
+        return FetchApi(`${root}/${v1}/comment/${createComment}`, FetchMethod.POST, params, handleUnauthorized);
     }
 
-    public static updateComment(commentId: string, userId: string, content: string): Promise<IResponseType<any>> {
-        return FetchApi(`${root}/${v1}/comment/${updateComment}/${commentId}`, FetchMethod.PUT, { commentator: userId, content });
+    public static updateComment(commentId: string, userId: string, content: string, handleUnauthorized: Function): Promise<IResponseType<any>> {
+        return FetchApi(`${root}/${v1}/comment/${updateComment}/${commentId}`, FetchMethod.PUT, { commentator: userId, content }, handleUnauthorized);
     }
 
-    public static deleteComment(commentId: string, userId: string): Promise<IResponseType<any>> {
-        return FetchApi(`${root}/${v1}/comment/${deleteComment}/${commentId}`, FetchMethod.DELETE, { commentator: userId });
+    public static deleteComment(commentId: string, userId: string, handleUnauthorized: Function): Promise<IResponseType<any>> {
+        return FetchApi(`${root}/${v1}/comment/${deleteComment}/${commentId}`, FetchMethod.DELETE, { commentator: userId }, handleUnauthorized);
     }
 
-    public static likeComment(commentId: string): Promise<IResponseType<any>> {
-        return FetchApi(`${root}/${v1}/comment/${likeComment}/${commentId}`, FetchMethod.PUT);
+    public static likeComment(commentId: string, handleUnauthorized: Function): Promise<IResponseType<any>> {
+        return FetchApi(`${root}/${v1}/comment/${likeComment}/${commentId}`, FetchMethod.PUT, null, handleUnauthorized);
     }
 }
 

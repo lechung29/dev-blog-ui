@@ -17,6 +17,9 @@ import { useAppSelector } from '../../redux/store/store';
 import { userState } from '../../redux/reducers/users/UserSlice';
 import { IToastProps, renderToast } from '../../utils/utils';
 import { IRequestStatus } from '../../types/IResponse';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
+import { useAuth } from '../../context/AuthContext';
 interface IPostPageProps {
 
 }
@@ -24,13 +27,17 @@ interface IPostPageProps {
 const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
     const params = useParams()
     const { postId } = params
-    const user = useAppSelector(userState)
+    const { handleUnauthorized } = useAuth()
+    const { user } = useAppSelector(userState)
     const [isLoading, setIsLoading] = useState(false)
     const [showComment, setShowComment] = useState(false)
     const [commentValue, setCommentValue] = useState("")
     const [post, setPost] = useState<IPostDataProps>()
     const [isLike, setIsLike] = useState(false)
+    const [isFavorite, setIsFavorite] = useState(false)
     const [disableLike, setDisableLike] = useState(false)
+    const [disableFavorite, setDisableFavorite] = useState(false)
+   
 
     useEffect(() => {
         setIsLoading(true)
@@ -42,10 +49,11 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
     }, [])
 
     const getPostDetails = async () => {
-        const post = await PostService.getSinglePost(postId!, user.user?._id)
+        const post = await PostService.getSinglePost(postId!, user?._id)
         if (post.data) {
             setPost(post.data)
             setIsLike(post.data.isLike)
+            setIsFavorite(post.data.isFavorite)
         }
     }
 
@@ -53,39 +61,53 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
         return CommentService.createComment({
             post: postId!,
             content: commentValue,
-            commentator: user.user?._id!
-        }).then((data) => {
+            commentator: user?._id!
+        }, handleUnauthorized).then((data) => {
             if (data.requestStatus === IRequestStatus.Success) {
                 setShowComment(false)
                 setCommentValue("")
                 renderToast(IToastProps.success, data.message);
                 getPostDetails()
-            } else {
-                renderToast(IToastProps.error, data.message);
             }
         })
     }
 
     const handleLikePost = () => {
         if (disableLike) {
-            return
+            return;
         } else {
             setDisableLike(true)
-            return PostService.likePost(postId!)
+            return PostService.likePost(postId!, handleUnauthorized)
                 .then((data) => {
                     if (data.requestStatus === IRequestStatus.Success) {
                         renderToast(IToastProps.success, data.message)
                         getPostDetails().then(() => {
                             setDisableLike(false)
                         })
+                    }
+                })
+        }
+    }
+
+    const handleFavoritePost = () => {
+        if (disableFavorite) {
+            return
+        } else {
+            setDisableFavorite(true)
+            return PostService.addOrRemoveFavorites(user?._id!, postId!, !isFavorite, handleUnauthorized)
+                .then((data) => {
+                    if (data.requestStatus === IRequestStatus.Success) {
+                        renderToast(IToastProps.success, data.message)
+                        getPostDetails().then(() => {
+                            setDisableFavorite(false)
+                        })
                     } else {
                         renderToast(IToastProps.error, data.message);
                     }
                 })
         }
-
-
     }
+
     return (
         <AppLayout>
             <div className='g-post-page-content-section'>
@@ -175,8 +197,12 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
                             style={{ borderRadius: 20 }}
                         />
                         : <img
-                            src='/assets/thumbnail.JPG'
-                            width={"100%"}
+                            src={post?.thumbnail}
+                            style={{
+                                width: "100%",
+                                height: 400,
+                                objectFit: "cover"
+                            }}
                             alt='img'
                         />}
                 </Stack>
@@ -226,6 +252,7 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
                         : <div
                             style={{
                                 margin: "1rem 0",
+                                padding: "0 1rem",
                                 width: "100%"
                             }}
                             dangerouslySetInnerHTML={{ __html: post?.content as string }}
@@ -262,11 +289,11 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
                                 }} />
                                 : <ThumbUpOutlinedIcon />}
 
-                            <span 
-                                style={{ 
+                            <span
+                                style={{
                                     fontSize: 18,
                                     fontWeight: 500,
-                                    color: post?.isLike? "#5488c7" : "#000"
+                                    color: post?.isLike ? "#5488c7" : "#000"
                                 }}
                             >
                                 {post?.like?.length}
@@ -282,7 +309,7 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
                                 }} />
                                 : <ModeCommentOutlinedIcon />}
                             <span
-                                style={{ 
+                                style={{
                                     fontSize: 16,
                                     fontWeight: 500,
                                     color: showComment ? "#5488c7" : "#000"
@@ -290,6 +317,17 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
                             >
                                 {post?.comments.length}
                             </span>
+                        </Button>
+                        <Button
+                            onClick={handleFavoritePost}
+                            className='g-post-action-button'
+                        >
+                            {isFavorite
+                                ? <FavoriteIcon style={{
+                                    color: "red"
+                                }} />
+                                : <FavoriteBorderOutlinedIcon />
+                            }
                         </Button>
                     </ButtonGroup>}
 

@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { IIdentityProps, IPostProps, IUpdatePostStatus } from "../../../types/Post";
+import { IIdentityProps, IPostProps, IPostStatus } from "../../../types/Post";
 import { PostService } from "../../../services/posts/PostService";
 import { RootState } from "../../store/store";
 import { IToastProps, renderToast } from "../../../utils/utils";
@@ -19,16 +19,27 @@ const initialState: IPostState = {
     allPosts: [],
 };
 
-export const getAllPosts = createAsyncThunk("posts/getAllPosts", async () => {
-    return await PostService.getAllPosts();
+export const getAllPosts = createAsyncThunk("posts/getAllPosts", async (callback: Function) => {
+    return await PostService.getAllPosts(callback);
 });
 
-export const deletePost = createAsyncThunk("posts/deletePost", async (postIds: string[]) => {
-    return await PostService.deleteMultiPost(postIds);
+interface IDeletePostProps {
+    postIds: string[];
+    handleUnauthorized: (message) => void
+}
+
+export const deletePost = createAsyncThunk("posts/deletePost", async (data: IDeletePostProps) => {
+    return await PostService.deleteMultiPost(data.postIds, data.handleUnauthorized);
 });
+
+export interface IUpdatePostStatus {
+    status: IPostStatus;
+    postId: string;
+    handleUnauthorized : (message: string) => void
+}
 
 export const updatePost = createAsyncThunk("posts/updatePostStatus", async (data: IUpdatePostStatus) => {
-    return await PostService.adminUpdatePostStatus(data.status, data.postId);
+    return await PostService.adminUpdatePostStatus(data.status, data.postId, data.handleUnauthorized);
 });
 
 const postSlice = createSlice({

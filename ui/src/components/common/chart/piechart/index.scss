@@ -1,0 +1,12 @@
+.g-pie-chart-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    grid-area: 1rem;
+
+    .g-pie-chart-title {
+        color: "#141522";
+        font-size: 20px;
+    }
+}

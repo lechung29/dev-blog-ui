@@ -14,6 +14,8 @@ import { IRequestStatus } from "../../../types/IResponse";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store/store";
+import uploadToCloudinary from "../../../services/helpers/upload";
+import { useAuth } from "../../../context/AuthContext";
 
 interface ICreatePostOwnProps { }
 
@@ -51,6 +53,7 @@ const initialState: ICreatePostState = {
 };
 
 const CreatePost: React.FunctionComponent<ICreatePostOwnProps> = (props) => {
+	const {handleUnauthorized} = useAuth()
 	const [state, setState] = useImmerState<ICreatePostState>(initialState);
 	const {
 		categoryInput,
@@ -95,10 +98,11 @@ const CreatePost: React.FunctionComponent<ICreatePostOwnProps> = (props) => {
 		}
 	};
 
-	const handlePostThumbailsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+	const handlePostThumbailsChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0];
 		if (file) {
-			setState({ postThumbnails: URL.createObjectURL(file) });
+			const url = await uploadToCloudinary(file)
+			setState({ postThumbnails: url });
 		}
 	};
 
@@ -162,7 +166,7 @@ const CreatePost: React.FunctionComponent<ICreatePostOwnProps> = (props) => {
 				tags: tags,
 				content: postContent,
 				thumbnail: postThumbnails ?? "",
-			})
+			}, handleUnauthorized)
 			if (data.requestStatus === IRequestStatus.Error) {
 				switch (data.fieldError) {
 					case "title":

@@ -1,74 +1,74 @@
-import { Button, Card, CardActionArea, CardActions, CardContent, CardMedia, IconButton, Typography } from "@mui/material";
-import React, { useState } from "react";
+import { Card, CardActionArea, CardActions, CardContent, CardMedia, Typography } from "@mui/material";
+import React, { useMemo } from "react";
 import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 import { TooltipHost } from "../common/tooltiphost/TooltipHost";
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import { IPostDataProps } from "../../types/Post";
+import { useNavigate } from "react-router-dom";
+import "./index.scss"
+import { IconButton } from "../common/button/iconbutton/IconButton";
+import { DefaultButton } from "../common/button/defaultbutton/DefaultButton";
 
 interface IFavouriteCardProps {
+    item: IPostDataProps
+    onChangeFavorite: (item: IPostDataProps) => void
 }
 
 const FavouriteCard: React.FunctionComponent<IFavouriteCardProps> = (props) => {
-    const [isFavourite, setFavourite] = useState<boolean>(true)
-    const onChangeFavourite = () => {
-        setFavourite(!isFavourite)
-    }
-	return (
-		<Card sx={{ maxWidth: "100%" }}>
-			<CardActionArea style={{cursor: "auto"}}>
-				<CardMedia component="img" height="100" image="/static/images/cards/contemplative-reptile.jpg" alt="green iguana" />
-				<CardContent>
-					<TooltipHost title={"Lizard Lizard Lizard Lizard Lizard Lizard"}>
-                        <Typography 
-                            style={{
-                                fontSize: 18,
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                                whiteSpace: "nowrap"
-                            }} 
-                            gutterBottom 
+    const { item, onChangeFavorite } = props
+    const navigate = useNavigate();
+    const favoriteIcon = useMemo(() => {
+        return item.isFavorite
+            ? <FavoriteIcon style={{
+                color: "red"
+            }} />
+            : <FavoriteBorderIcon />
+    }, [item.isFavorite])
+    return (
+        <Card className="g-favorite-card">
+            <CardActionArea className="g-card-action-area">
+                <CardMedia
+                    component="img"
+                    height="100"
+                    image={item.thumbnail}
+                    alt={item.title} />
+                <CardContent>
+                    <TooltipHost title={item.title}>
+                        <Typography
+                            className="g-card-title"
+                            gutterBottom
                             component="div"
                         >
-                            Lizard Lizard Lizard Lizard Lizard Lizard
+                            {item.title}
                         </Typography>
                     </TooltipHost>
-					<Typography variant="body2" color="text.secondary">
-                        Tác giả: admin
-					</Typography>
-                    <Typography variant="body2" color="text.secondary">
-                        Thể loại: Reactjs
-					</Typography>
-				</CardContent>
-			</CardActionArea>
-			<CardActions style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                gap: "0.5rem"
-            }}>
-				<Button 
-                    size="small" 
+                    <Typography className="g-card-sub-title">
+                        {`Tác giả: ${item.author.displayName}`}
+                    </Typography>
+                    <Typography className="g-card-sub-title">
+                        {`Thể loại: ${item.category}`}
+                    </Typography>
+                </CardContent>
+            </CardActionArea>
+            <CardActions className="g-card-footer-action">
+                <DefaultButton
+                    size="small"
                     color="primary"
                     endIcon={<ArrowRightAltIcon />}
                     className="g-none-border-button"
-                >
-					Xem bài viết
-				</Button>
-                <IconButton 
+                    title={"Xem bài viết"}
+                    onClick={() => navigate(`/post/${item._id}`)}
+                />
+                <IconButton
                     size="small"
-                    className="g-favourite-icon-button" 
-                    onClick={onChangeFavourite}
-                >
-                    {isFavourite 
-                        ? <FavoriteIcon style={{
-                            color: "red"
-                        }}/> 
-                        : <FavoriteBorderIcon />
-                    }
-                </IconButton>
-			</CardActions>
-		</Card>
-	);
+                    className="g-favorite-icon-button"
+                    icon={favoriteIcon}
+                    onClick={() => onChangeFavorite(item)}
+                />
+            </CardActions>
+        </Card>
+    );
 };
 
 export default FavouriteCard;

@@ -17,6 +17,7 @@ import { Pagination } from "../../components/pagination/Pagination";
 import { IPostDataProps } from "../../types/Post";
 import PostShimmer from "../../components/postCardShimmer/PostShimmer";
 import { ObjectToFilterQuery } from "../../utils/helper";
+import QuestionShimmer from "../../components/postCardShimmer/QuestionShimmer";
 
 interface IHomePageOwnProps {
 
@@ -62,7 +63,7 @@ const initialState: IHomePageState = {
     isLoadingPost: false,
     isLoadingLastQuestions: false,
     isLoadingMaxPages: false,
-    maxPages: 0,
+    maxPages: 1,
     filtersObject: {
         status: defaultPostStatus,
         tags: [],
@@ -127,25 +128,29 @@ const Home: React.FunctionComponent<IHomePageOwnProps> = (_props) => {
         
         if (runAfter) {
             if (currentPage === 1) {
-                console.log("chạy 1")
-                getPosts().then(() => setState({ isLoadingPost: false }))
+                Promise.all([getPosts(), getMaxPages()]).then(([..._other]) => {
+                    setState((draft) => {
+                        draft.isLoadingMaxPages = false;
+                        draft.isLoadingPost = false
+                    })
+                })
             } else {
+                getMaxPages().then(() => {
+                    setState({ isLoadingMaxPages: false })
+                })
                 setState({ currentPage: 1})
             }
         } else {
-            console.log("chạy 2")
+            getMaxPages().then(() => {
+                setState({ isLoadingMaxPages: false })
+            })
             setState({ runAfter: true })
         }
     }, [filtersObject, sortObject])
 
     useEffect(() => {
-        console.log("chạy 3")
         getPosts().then(() => setState({ isLoadingPost: false }))
     }, [currentPage])
-        
-    useEffect(() => {
-        getMaxPages().then(() => setState({ isLoadingMaxPages: false}))
-    }, [filtersObject, sortObject])
 
     useEffect(() => {
         getLikelyQuestions().then(() => setState({ isLoadingLastQuestions: false }))
@@ -183,9 +188,8 @@ const Home: React.FunctionComponent<IHomePageOwnProps> = (_props) => {
                             placement={"right"}
                             onClosePanel={() => setState({ isFilterPanelOpen: false })}
                             onOpenPanel={() => setState({ isFilterPanelOpen: true })}
-                            onAplly={(filter, sort) => {
+                            onApply={(filter, sort) => {
                                 setState((draft) => {
-                                    draft.currentPage = 1
                                     draft.filtersObject = filter
                                     draft.sortObject = sort
                                 })
@@ -207,7 +211,7 @@ const Home: React.FunctionComponent<IHomePageOwnProps> = (_props) => {
                             />)) : <span style={{ textAlign: "center" }}>Không có bài viết phù hợp</span>
                         }
                     </Stack>
-                    {!!posts.length && <Stack
+                    {maxPages > 0 && <Stack
                         display={"flex"}
                         justifyContent={"center"}
                         alignItems={"center"}
@@ -217,7 +221,7 @@ const Home: React.FunctionComponent<IHomePageOwnProps> = (_props) => {
                         <Pagination
                             loading={isLoadingMaxPages}
                             maxPages={maxPages}
-                            currentPage={state.currentPage}
+                            currentPage={currentPage}
                             onChangePage={(page) => setState({ currentPage: page })}
                         />
                     </Stack>}
@@ -241,7 +245,7 @@ const Home: React.FunctionComponent<IHomePageOwnProps> = (_props) => {
                         spacing={1}
                     >
                         {isLoadingLastQuestions ? shimmerArray.map((_item, id) => (
-                            <PostShimmer key={id} />
+                            <QuestionShimmer key={id} />
                         )) : lastQuestions.length ? lastQuestions?.map((post: IPostDataProps) => (
                             <QuestionCard
                                 key={post._id}

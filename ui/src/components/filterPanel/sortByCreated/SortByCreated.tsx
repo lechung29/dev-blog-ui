@@ -1,6 +1,6 @@
 import { FormControl, FormControlLabel, FormLabel, Radio, RadioGroup } from '@mui/material';
 import React from 'react'
-import { IFunc } from '../../../types/Function';
+import { IAction1, IFunc } from '../../../types/Function';
 
 export interface ISortByCreated {
     value: string;
@@ -19,7 +19,7 @@ export interface ILabelItemProps {
 const SortByCreated: React.FunctionComponent<ISortByCreated> = (props) => {
     const { value, items, onChangeValue } = props
 
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange: IAction1<React.ChangeEvent<HTMLInputElement>> = (event) => {
         const sortField = items.find(item => item.value === event.target.value)?.field || defaultSortProperty
         onChangeValue(sortField, event.target.value)
     }
@@ -37,9 +37,9 @@ const SortByCreated: React.FunctionComponent<ISortByCreated> = (props) => {
 
     return (
         <FormControl>
-            <FormLabel id="demo-controlled-radio-buttons-group">{"Sắp xếp: "}</FormLabel>
+            <FormLabel id="sort-radio-buttons-group">{"Sắp xếp"}</FormLabel>
             <RadioGroup
-                aria-labelledby="demo-controlled-radio-buttons-group"
+                aria-labelledby="sort-radio-buttons-group"
                 name="controlled-radio-buttons-group"
                 value={value}
                 onChange={handleChange}

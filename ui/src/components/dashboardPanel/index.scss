@@ -12,37 +12,57 @@
         background-color: rgb(245, 245, 247);
         border-radius: 12px;
         overflow-y: auto;
-        .g-dashboard-list-item {
-            display: flex;
-            align-items: center;
-            justify-self: center;
-            margin: 0 16px 20px;
-            padding: 8px;
-            text-decoration: none;
-            font-size: 14px;
-            cursor: pointer;
-            font-weight: 600;
-            gap: 12px;
-            border-radius: 12px;
-            color: rgb(20, 21, 34);
-        }
 
-        .g-dashboard-list-item.active {
-            background-color: #5488c7;
-            color: #fff;
+        .g-dashboard-panel-list {
+            width: 100%;
+            max-width: 360px;
 
-            svg {
-                color: #fff!important;
-            }
-        }
+            .g-dashboard-list-item {
+                display: flex;
+                align-items: center;
+                justify-self: center;
+                margin: 0 16px 20px;
+                padding: 8px;
+                text-decoration: none;
+                font-size: 14px;
+                cursor: pointer;
+                font-weight: 600;
+                gap: 12px;
+                border-radius: 12px;
+                color: rgb(20, 21, 34);
 
-        .g-dashboard-list-item:hover {
-            background-color: #5488c7;
-            color: #fff;
+                &.active {
+                    background-color: #5488c7 !important;
+                    color: #fff;
 
-            svg {
-                color: #fff!important;
+                    svg {
+                        color: #fff !important;
+                    }
+                }
+
+                &:hover {
+                    background-color: #5488c7;
+                    color: #fff;
+
+                    svg {
+                        color: #fff !important;
+                    }
+                }
+
+                .g-dashboard-item-icon {
+                    width: 32px;
+                    min-width: unset;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+                .g-dashboard-item-title {
+                    text-align: start;
+                    flex: 1;
+                    cursor: pointer;
+                }
             }
         }
     }
-}   
+}

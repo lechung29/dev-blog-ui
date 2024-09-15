@@ -10,6 +10,7 @@ export interface IImageProps extends AllHTMLAttributes<HTMLImageElement> {
 
 const ImageView: React.FunctionComponent<IImageProps> = (props) => {
     const { objectFit, ...rest } = props;
+    
     const imageStyle: React.CSSProperties = {
         ...props.style,
         objectFit: objectFit

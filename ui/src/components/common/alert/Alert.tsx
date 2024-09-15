@@ -1,25 +1,36 @@
 import { Alert, Snackbar } from "@mui/material";
 import React from "react";
+import { IAction } from "../../../types/Function";
 
+export enum ISeverity {
+	error = "error",
+    warning = "warning",
+    info = "info",
+    success = "success",
+}
 interface IAlertProps {
 	open: boolean;
 	message: string;
-	severity: "error" | "warning" | "info" | "success";
-	onClose: () => void;
+	severity: ISeverity;
+	onClose: IAction
 }
 const AlertView: React.FunctionComponent<IAlertProps> = (props) => {
+	const { message, onClose, open, severity} = props
 	return (
 		<Snackbar 
 			anchorOrigin={{
 				vertical: "bottom", 
 				horizontal: "right"
 			}}  
-			open={props.open} 
+			open={open} 
 			autoHideDuration={5000} 
-			onClose={props.onClose}
+			onClose={onClose}
 		>
-			<Alert severity={props.severity} onClose={props.onClose}>
-				{props.message}
+			<Alert 
+				severity={severity} 
+				onClose={onClose}
+			>
+				{message}
 			</Alert>
 		</Snackbar>
 	);

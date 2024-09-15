@@ -5,9 +5,14 @@ import "../postCard/index.scss"
 const PostShimmer: React.FunctionComponent = () => {
     const shimmerHeight = "1rem"
     return (
-        <Stack direction={"row"} className="g-post-card-section">
+        <Stack className="g-post-card-section">
             <div className="g-post-card-user-avatar">
-                <Skeleton animation="wave" variant="circular" width={36} height={36} />
+                <Skeleton 
+                    animation="wave" 
+                    variant="circular"
+                    width={"36px"} 
+                    height={"36px"} 
+                />
             </div>
             <div className="g-post-card-content">
                 <div className="g-post-card-basic-info">

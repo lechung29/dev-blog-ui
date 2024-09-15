@@ -1,8 +1,14 @@
 .g-icon-button {
     position: relative;
     display: inline-block;
-    padding: .5rem!important;
+    padding: 0.5rem!important;
+    min-width: 2rem !important;
+    margin-left: 0!important;
     cursor: pointer;
+
+    &:hover {
+        background-color: transparent!important;
+    }
 
     .g-rotate {
         animation: rotate 1s linear infinite;

@@ -27,13 +27,14 @@ const Header: React.FunctionComponent<IHeaderOwnProps> = (_props) => {
     const logoWidth: Readonly<number> = 220;
     const navigate = useNavigate()
     const { searchText } = useParams()
-    const { user, isLoggedIn } = useAppSelector(userState)
+    const { user } = useAppSelector(userState)
     const initialState: IHeaderState = {
         isNavigatePanelOpen: false,
         search: searchText || "",
     };
     const [state, setState] = useImmerState<IHeaderState>(initialState);
     const { isNavigatePanelOpen, search } = state;
+    const token = localStorage.getItem("access_token");
 
 
     const onChangeSearch: IAction1<React.ChangeEvent<HTMLInputElement>> = (event) => {
@@ -48,7 +49,6 @@ const Header: React.FunctionComponent<IHeaderOwnProps> = (_props) => {
         }
     }
 
-
     const onSearchSubmit: IAction = () => {
         if (search) {
             navigate(`/search/${search}`)
@@ -56,24 +56,20 @@ const Header: React.FunctionComponent<IHeaderOwnProps> = (_props) => {
     };
 
     const onRenderAvatar: IFunc<JSX.Element> = useCallback(() => {
-        return isLoggedIn ? (
-            <TooltipHost title={user?.displayName} >
+        return token
+            ? (<TooltipHost title={user?.displayName} >
                 <Avatar
-                    style={{
-                        cursor: "pointer"
-                    }}
+                    className="g-header-avatar"
                     alt={user?.displayName}
                     src={user?.avatar}
                     onClick={() => setState({ isNavigatePanelOpen: true })}
                 />
-            </TooltipHost>
-        ) : (
-            <Link className="g-header-main-right-link-auth" to={"/login"}>
+            </TooltipHost>)
+            : (<Link className="g-header-main-right-link-auth" to={"/login"}>
                 <LoginIcon fontSize={"small"} />
-                <span>{"Đăng nhập/Đăng ký"}</span>
-            </Link>
-        );
-    }, [isLoggedIn])
+                <span>{"Đăng nhập / Đăng ký"}</span>
+            </Link>);
+    }, [token])
 
     const handleOpenClosePanel: IAction1<boolean> = (status) => {
         setState((draft) => {

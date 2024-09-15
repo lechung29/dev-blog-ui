@@ -4,6 +4,7 @@ import { axisClasses } from "@mui/x-charts/ChartsAxis";
 import { Stack } from "@mui/material";
 import { Label } from "../../label/Label";
 import { ITooltipHostPlacement } from "../../tooltiphost/TooltipHost";
+import "./index.scss"
 
 interface IBarChartDataProps {
 	dataKey: string;
@@ -13,21 +14,24 @@ interface IBarChartDataProps {
 interface IBarChartProps {
 	chartTitle: string;
 	chartCategoryLabel: string;
-	width: number;
-	height: number;
+	width?: number;
+	height?: number;
 	dataColumns: IBarChartDataProps[],
-    dataSet: any[]
+	dataSet: any[]
+	className?: string;
 }
 
 const BarChartView: React.FunctionComponent<IBarChartProps> = (props) => {
+	const { chartCategoryLabel, chartTitle, dataColumns, dataSet, height, width, className } = props
+
 	const chartSetting = {
 		yAxis: [
 			{
-				label: props.chartCategoryLabel,
+				label: chartCategoryLabel,
 			},
 		],
-		width: props.width,
-		height: props.height,
+		width: width,
+		height: height,
 		sx: {
 			[`.${axisClasses.left} .${axisClasses.label}`]: {
 				transform: "translate(-20px, 0)",
@@ -35,24 +39,22 @@ const BarChartView: React.FunctionComponent<IBarChartProps> = (props) => {
 		},
 	};
 	return (
-		<Stack display={"flex"} flexDirection={"column"} alignItems={"center"} justifyContent={"center"} gap={1}>
+		<Stack className="g-bar-chart-container">
 			<Label
-                bold 
-                title={props.chartTitle}
-                tooltipProps={{
-                    arrow: true,
-                    placement: ITooltipHostPlacement.Top 
+				bold
+				title={chartTitle}
+				tooltipProps={{
+					arrow: true,
+					placement: ITooltipHostPlacement.Top
 
-                }}
-                style={{
-                    fontSize: 20,
-                    color: "#141522"
-                }}
-            />
-            <BarChart
-				dataset={props.dataSet}
+				}}
+				className="g-bar-chart-title"
+			/>
+			<BarChart
+				dataset={dataSet}
 				xAxis={[{ scaleType: "band", dataKey: "month" }]}
-				series={props.dataColumns}
+				series={dataColumns}
+				className={className}
 				{...chartSetting}
 			/>
 		</Stack>

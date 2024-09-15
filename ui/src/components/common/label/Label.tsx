@@ -2,6 +2,7 @@ import React, { HTMLAttributes } from "react";
 import { ITooltipHostPlacement, TooltipHost } from "../tooltiphost/TooltipHost";
 import "./index.scss";
 import { highlightSubstring } from "../../../utils/utils";
+import { classNames } from "../../../utils/helper";
 
 
 interface ILabelProps extends HTMLAttributes<HTMLLabelElement> {
@@ -19,24 +20,24 @@ interface ILabelProps extends HTMLAttributes<HTMLLabelElement> {
 }
 
 const LabelView: React.FunctionComponent<ILabelProps> = (props) => {
-    const { bold, italic, tooltipProps, subTitle, subTitleStyle, title, endIcon, startIcon,  ...rest } = props;
-    const className = `${props.className ?? ""} ${bold ? "g-label-bold" : ""}${italic ? "g-label-italic" : ""} g-label`;
+    const { bold, italic, tooltipProps, subTitle, subTitleStyle, title, endIcon, startIcon, className, ...rest } = props;
+    const labelClassName = classNames("g-label", className, { "g-label-bold": bold }, { "g-label-italic": italic })
     const onRenderTitle = () => {
         if (subTitle) {
             return highlightSubstring(title, subTitle, subTitleStyle!)
         }
         return title;
-    };  
+    };
 
     if (!!tooltipProps) {
         return (
-            <TooltipHost 
+            <TooltipHost
                 className="g-label-tooltip"
-                title={props.title} 
-                arrow={props.tooltipProps?.arrow} 
-                placement={props.tooltipProps?.placement}
+                title={title}
+                arrow={tooltipProps?.arrow}
+                placement={tooltipProps?.placement}
             >
-                <label {...rest}  className={className}>
+                <label {...rest} className={labelClassName}>
                     {startIcon ?? <></>}
                     {onRenderTitle()}
                     {endIcon ?? <></>}
@@ -45,7 +46,7 @@ const LabelView: React.FunctionComponent<ILabelProps> = (props) => {
         );
     } else {
         return (
-            <label {...rest} className={className}>
+            <label {...rest} className={labelClassName}>
                 {startIcon ?? <></>}
                 {onRenderTitle()}
                 {endIcon ?? <></>}

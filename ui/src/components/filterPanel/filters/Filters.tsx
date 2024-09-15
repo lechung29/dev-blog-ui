@@ -1,7 +1,8 @@
-import { Box, Checkbox, FormControl, FormControlLabel, FormLabel } from '@mui/material';
 import React from 'react'
+import { Box, Checkbox, FormControl, FormControlLabel, FormLabel } from '@mui/material';
 import { ILabelItemProps } from '../sortByCreated/SortByCreated';
 import { IAction1, IFunc } from '../../../types/Function';
+import "./index.scss"
 
 export interface IFilterPartProps {
     filterTitle: string;
@@ -33,11 +34,9 @@ const Filters: React.FunctionComponent<IFilterPartProps> = (props) => {
         ))
     }
     return (
-        <Box sx={{ display: 'flex' }}>
+        <Box className='g-filter-section'>
             <FormControl 
-                sx={{
-                    margin: "12px 0"
-                }} 
+                className='g-filter-form'
                 component="fieldset" 
                 variant="standard"
             >
