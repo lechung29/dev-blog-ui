@@ -9,13 +9,14 @@ import { Label } from "../../components/common/label/Label";
 import { DefaultButton } from "../../components/common/button/defaultbutton/DefaultButton";
 import { Box, IconButton, InputAdornment, Checkbox as CheckboxItem, Link } from "@mui/material";
 import { TextField } from "../../components/common/textfield/TextField";
-import { IAction1, IFunc } from "../../types/Function";
+import { IAction1, IAction2, IFunc } from "../../types/Function";
 import { AuthService } from "../../services/auth/AuthService";
 import { IRequestStatus } from "../../types/IResponse";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Checkbox } from "../../components/common/checkbox/Checkbox";
 import { Divider } from "../../components/common/divider/Divider";
 import { GoogleAuth } from "../../components/Auth/GoogleAuth";
+import { delay } from "../../utils/helper";
 
 type ISignUpOwnProps = {};
 
@@ -67,20 +68,26 @@ const SignUpView: React.FunctionComponent<ISignUpOwnProps> = (props) => {
         checked: false
     })
 
-    const onRenderTermsAndConditions: IFunc<JSX.Element> = () => {
+    const onRenderTermsAndConditions = useMemo(() => {
         return (
-            <p style={{textWrap: "wrap"}}>
+            <div className="g-register-term-condition">
                 <span className="g-checkbox-policy-label">Tôi đồng ý </span>
-                <Link style={{ fontSize: 13 }} underline="hover" href="/" variant="body2">
+                <Link
+                    underline="none"
+                    href="/"
+                    variant="body2"
+                >
                     Điều khoản và dịch vụ của Devblog
                 </Link>
-            </p>
+            </div>
         )
-    }
+    }, [])
 
     const disableButton: boolean = useMemo(() => {
         return !show.checked
     }, [show.checked])
+
+
     const onChange: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> = (event) => {
         switch (event.target.name) {
             case "email":
@@ -161,22 +168,33 @@ const SignUpView: React.FunctionComponent<ISignUpOwnProps> = (props) => {
         return isValid;
     };
 
+
     const handleClickShowPassword: IAction1<string> = (type) => {
         switch (type) {
             case "password":
-                setShow((prev) => ({...prev, password:!prev.password }));
+                setShow((prev) => ({ ...prev, password: !prev.password }));
                 break;
             case "confirmPassword":
-                setShow((prev) => ({...prev, confirmPassword:!prev.confirmPassword }));
+                setShow((prev) => ({ ...prev, confirmPassword: !prev.confirmPassword }));
                 break;
             default:
                 break;
         }
     }
 
-    const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const handleMouseDownPassword: IAction1<React.MouseEvent<HTMLButtonElement>> = (event) => {
         event.preventDefault();
     };
+
+    const onPolicyCheckboxChange: IAction2<React.SyntheticEvent, boolean> = (_, checked) => {
+        setShow((prev) => ({ ...prev, checked: checked }))
+        if (checked) {
+            setState({ policyCheckboxErrorMessage: "" })
+        } else {
+            setState({ policyCheckboxErrorMessage: "Vui lòng đồng ý với Điều khoản dịch vụ của chúng tôi" })
+        }
+    }
+
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -185,52 +203,71 @@ const SignUpView: React.FunctionComponent<ISignUpOwnProps> = (props) => {
             setState({ isLoading: false });
             return;
         }
-        const data = await AuthService.registerUser({ email, displayName, password });
-        if (data.requestStatus === IRequestStatus.Error) {
-            switch (data.fieldError) {
-                case "email":
-                    setState({ emailError: data.message, passwordError: "", displayNameError: "", isLoading: false });
-                    emailRef.current?.focus();
-                    break;
-                case "displayName":
-                    setState({ displayNameError: data.message, emailError: "", passwordError: "", isLoading: false });
-                    displayNameRef.current?.focus();
-                    break;
-                case "password":
-                    setState({ passwordError: data.message, emailError: "", displayNameError: "", isLoading: false });
-                    passwordRef.current?.focus();
-                    break;
-                default:
-                    break;
-            }
-        } else {
+
+        try {
+            const data = await AuthService.registerUser({ email, displayName, password });
             setState({ isLoading: false });
-            setTimeout(() => {
-                navigate("/login");
-            }, 3000);
+            if (data.requestStatus === IRequestStatus.Error) {
+                switch (data.fieldError) {
+                    case "email":
+                        setState({ emailError: data.message, passwordError: "", displayNameError: "", isLoading: false });
+                        emailRef.current?.focus();
+                        break;
+                    case "displayName":
+                        setState({ displayNameError: data.message, emailError: "", passwordError: "", isLoading: false });
+                        displayNameRef.current?.focus();
+                        break;
+                    case "password":
+                        setState({ passwordError: data.message, emailError: "", displayNameError: "", isLoading: false });
+                        passwordRef.current?.focus();
+                        break;
+                    default:
+                        break;
+                }
+            } else {
+                await delay(2000).then(() => navigate("/login"))
+            }
+        } catch (error) {
+            console.log(error)
         }
     };
+
 
     return (
         <AppLayout title={signUpTitle}>
             <div className="g-auth-section">
                 <div className="g-auth-section-row">
                     <div className="g-register-section-logo">
-                        <Image src={logoSrc} objectFit={ImageFit.COVER} width={logoWidth} height={logoHeight} alt={"logo"} />
+                        <Image
+                            src={logoSrc}
+                            objectFit={ImageFit.COVER}
+                            width={logoWidth}
+                            height={logoHeight}
+                            alt={"logo"}
+                        />
                     </div>
                     <div className="g-register-section-form">
                         <div className="g-register-section-form-description-label">
-                            <Label title={"Đăng ký tài khoản Devblog"} className="g-register-section-description-label" />
-                        </div>
-                        <div className="g-register-section-form-description-content">
-                            <Label 
-                                title={registerDescription} 
-                                subTitle={registerHighlightDes} 
-                                subTitleStyle={{fontWeight: 600}} 
-                                className="g-register-section-description-content" 
+                            <Label
+                                className="g-register-section-description-label"
+                                title={"Đăng ký tài khoản Devblog"}
                             />
                         </div>
-                        <Box className="g-register-section-form-input-group" onSubmit={handleSubmit} component={"form"} noValidate autoComplete="off">
+                        <div className="g-register-section-form-description-content">
+                            <Label
+                                className="g-register-section-description-content"
+                                title={registerDescription}
+                                subTitle={registerHighlightDes}
+                                subTitleStyle={{ fontWeight: 600 }}
+                            />
+                        </div>
+                        <Box
+                            className="g-register-section-form-input-group"
+                            component={"form"}
+                            noValidate
+                            autoComplete="off"
+                            onSubmit={handleSubmit}
+                        >
                             <div className="g-register-section-form-input-row">
                                 <TextField
                                     id="g-register-section-input-username"
@@ -269,13 +306,7 @@ const SignUpView: React.FunctionComponent<ISignUpOwnProps> = (props) => {
                                     onChange={onChange}
                                     endAdornment={
                                         <InputAdornment
-                                            style={{
-                                                display: "flex",
-                                                alignItems: "center",
-                                                justifyContent: "center",
-                                                color: "#909399",
-                                                marginRight: "0.75rem",
-                                            }}
+                                            className="g-password-end-adornment"
                                             position="end"
                                         >
                                             <IconButton
@@ -303,13 +334,7 @@ const SignUpView: React.FunctionComponent<ISignUpOwnProps> = (props) => {
                                     onChange={onChange}
                                     endAdornment={
                                         <InputAdornment
-                                            style={{
-                                                display: "flex",
-                                                alignItems: "center",
-                                                justifyContent: "center",
-                                                color: "#909399",
-                                                marginRight: "0.75rem",
-                                            }}
+                                            className="g-password-end-adornment"
                                             position="end"
                                         >
                                             <IconButton
@@ -324,32 +349,19 @@ const SignUpView: React.FunctionComponent<ISignUpOwnProps> = (props) => {
                                     }
                                 />
                             </div>
-                            <Checkbox 
+                            <Checkbox
                                 className="g-checkbox-policy"
-                                checked={show.checked} 
-                                onChange={(_, checked) => {
-                                    setShow((prev) => ({...prev, checked: checked}))
-                                    if (checked) {
-                                        setState({policyCheckboxErrorMessage: ""})
-                                    } else {
-                                        setState({policyCheckboxErrorMessage: "Vui lòng đồng ý với Điều khoản dịch vụ của chúng tôi"})
-                                    }
-                                }}
+                                checked={show.checked}
+                                onChange={onPolicyCheckboxChange}
                                 control={<CheckboxItem />}
                                 errorMessage={policyCheckboxErrorMessage}
-                                label={onRenderTermsAndConditions()} 
+                                label={onRenderTermsAndConditions}
                             />
                             <DefaultButton
+                                className="g-register-button"
                                 variant="contained"
                                 type="submit"
                                 disabled={disableButton}
-                                style={{
-                                    backgroundColor: "#409eff",
-                                    textTransform: "capitalize",
-                                    fontSize: 13,
-                                    height: 36,
-                                    marginBottom: "1rem"
-                                }}
                                 iconStyle={{
                                     width: 20,
                                     height: 20,
@@ -359,12 +371,12 @@ const SignUpView: React.FunctionComponent<ISignUpOwnProps> = (props) => {
                                 title={"Đăng ký"}
                             />
                         </Box>
-                        <Divider 
-                                title="Đăng nhập bằng" 
-                                textAlign="center" 
-                                textFontSize={16} 
-                                margin="16px 0" 
-                            />
+                        <Divider
+                            title="Đăng nhập bằng"
+                            textAlign="center"
+                            textFontSize={16}
+                            margin="16px 0"
+                        />
                         <GoogleAuth />
                     </div>
                 </div>

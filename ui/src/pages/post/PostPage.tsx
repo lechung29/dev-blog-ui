@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { Fragment, useEffect, useState } from 'react'
+import React, { Fragment, useEffect, useMemo } from 'react'
 import AppLayout from '../../layout/Layout'
 import "./index.scss"
 import { Button, ButtonGroup, Chip, Skeleton, Stack, Typography } from '@mui/material'
@@ -15,13 +15,44 @@ import { IPostDataProps } from '../../types/Post';
 import { CommentService } from '../../services/comments/CommentService';
 import { useAppSelector } from '../../redux/store/store';
 import { userState } from '../../redux/reducers/users/UserSlice';
-import { IToastProps, renderToast } from '../../utils/utils';
 import { IRequestStatus } from '../../types/IResponse';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
 import { useAuth } from '../../context/AuthContext';
+import { useImmerState } from '../../hook/useImmerState';
+import { Alert, ISeverity } from '../../components/common/alert/Alert';
+import { classNames, formatDate } from '../../utils/helper';
+import { DefaultButton } from '../../components/common/button/defaultbutton/DefaultButton';
 interface IPostPageProps {
 
+}
+
+interface IPostPageState {
+    isLoading: boolean;
+    showComment: boolean;
+    commentValue: string;
+    post: IPostDataProps | null;
+    isLike: boolean;
+    isFavorite: boolean;
+    disableLike: boolean;
+    disableFavorite: boolean;
+    alertMessage: string;
+    isAlertOpen: boolean;
+    alertType: ISeverity
+}
+
+const initialState: IPostPageState = {
+    isLoading: false,
+    showComment: false,
+    commentValue: "",
+    post: null,
+    isLike: false,
+    isFavorite: false,
+    disableLike: false,
+    disableFavorite: false,
+    alertMessage: "",
+    isAlertOpen: false,
+    alertType: ISeverity.success
 }
 
 const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
@@ -29,374 +60,329 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
     const { postId } = params
     const { handleUnauthorized } = useAuth()
     const { user } = useAppSelector(userState)
-    const [isLoading, setIsLoading] = useState(false)
-    const [showComment, setShowComment] = useState(false)
-    const [commentValue, setCommentValue] = useState("")
-    const [post, setPost] = useState<IPostDataProps>()
-    const [isLike, setIsLike] = useState(false)
-    const [isFavorite, setIsFavorite] = useState(false)
-    const [disableLike, setDisableLike] = useState(false)
-    const [disableFavorite, setDisableFavorite] = useState(false)
-   
+    const [state, setState] = useImmerState<IPostPageState>(initialState)
+    const {
+        isLoading,
+        commentValue,
+        disableFavorite,
+        disableLike,
+        post,
+        isLike,
+        isFavorite,
+        showComment,
+        alertMessage,
+        alertType,
+        isAlertOpen
+    } = state
+
 
     useEffect(() => {
-        setIsLoading(true)
+        setState({ isLoading: true })
         getPostDetails().then(() => {
             setTimeout(() => {
-                setIsLoading(false)
+                setState({ isLoading: false })
             }, 1000)
         })
     }, [])
 
+
     const getPostDetails = async () => {
-        const post = await PostService.getSinglePost(postId!, user?._id)
-        if (post.data) {
-            setPost(post.data)
-            setIsLike(post.data.isLike)
-            setIsFavorite(post.data.isFavorite)
-        }
-    }
-
-    const onSubmitComment = () => {
-        return CommentService.createComment({
-            post: postId!,
-            content: commentValue,
-            commentator: user?._id!
-        }, handleUnauthorized).then((data) => {
-            if (data.requestStatus === IRequestStatus.Success) {
-                setShowComment(false)
-                setCommentValue("")
-                renderToast(IToastProps.success, data.message);
-                getPostDetails()
+        try {
+            const post = await PostService.getSinglePost(postId!, user?._id)
+            if (post.data) {
+                setState((draft) => {
+                    draft.post = post.data!
+                    draft.isLike = post.data!.isLike
+                    draft.isFavorite = post.data!.isFavorite
+                })
             }
-        })
+        } catch (error) {
+            console.log(error)
+        }
     }
 
-    const handleLikePost = () => {
+
+    const onSubmitComment = async () => {
+        try {
+            const res = await CommentService.createComment({
+                post: postId!,
+                content: commentValue,
+                commentator: user?._id!
+            }, handleUnauthorized)
+            if (res.requestStatus === IRequestStatus.Success) {
+                setState((draft) => {
+                    draft.showComment = false;
+                    draft.commentValue = "";
+                    draft.alertMessage = res.message;
+                    draft.isAlertOpen = true;
+                    draft.alertType = ISeverity.success;
+                })
+                await getPostDetails()
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+
+    const handleLikePost = async () => {
         if (disableLike) {
-            return;
-        } else {
-            setDisableLike(true)
-            return PostService.likePost(postId!, handleUnauthorized)
-                .then((data) => {
-                    if (data.requestStatus === IRequestStatus.Success) {
-                        renderToast(IToastProps.success, data.message)
-                        getPostDetails().then(() => {
-                            setDisableLike(false)
-                        })
-                    }
+            return Promise.resolve();
+        }
+        try {
+            setState({ disableLike: true })
+            const res = await PostService.likePost(postId!, handleUnauthorized)
+            if (res.requestStatus === IRequestStatus.Success) {
+                setState((draft) => {
+                    draft.alertMessage = res.message
+                    draft.alertType = ISeverity.success
+                    draft.isAlertOpen = true
                 })
+                await getPostDetails()
+                setState({ disableLike: false })
+            } else {
+                setState((draft) => {
+                    draft.alertMessage = res.message
+                    draft.alertType = ISeverity.error
+                    draft.isAlertOpen = true
+                })
+            }
+        } catch (error) {
+            console.log(error)
         }
     }
 
-    const handleFavoritePost = () => {
+
+    const handleFavoritePost = async () => {
         if (disableFavorite) {
-            return
-        } else {
-            setDisableFavorite(true)
-            return PostService.addOrRemoveFavorites(user?._id!, postId!, !isFavorite, handleUnauthorized)
-                .then((data) => {
-                    if (data.requestStatus === IRequestStatus.Success) {
-                        renderToast(IToastProps.success, data.message)
-                        getPostDetails().then(() => {
-                            setDisableFavorite(false)
-                        })
-                    } else {
-                        renderToast(IToastProps.error, data.message);
-                    }
+            return Promise.resolve();
+        }
+        try {
+            setState({ disableFavorite: true })
+            const res = await PostService.addOrRemoveFavorites(user?._id!, postId!, !isFavorite, handleUnauthorized)
+            if (res.requestStatus === IRequestStatus.Success) {
+                setState((draft) => {
+                    draft.alertMessage = res.message
+                    draft.alertType = ISeverity.success
+                    draft.isAlertOpen = true
                 })
+                await getPostDetails()
+                setState({ disableFavorite: false })
+            } else {
+                setState((draft) => {
+                    draft.alertMessage = res.message
+                    draft.alertType = ISeverity.error
+                    draft.isAlertOpen = true
+                })
+            }
+        } catch (error) {
+            console.log(error)
         }
     }
+
+
+    const postTitle = useMemo(() => {
+        return isLoading ? <Skeleton
+            animation="wave"
+            height={60}
+            width="50%"
+            style={{ borderRadius: 16, marginBottom: "0.35em" }}
+        /> : <Typography
+            textAlign={"center"}
+            variant="h4"
+            gutterBottom
+            fontWeight={500}
+        >
+            {post?.title}
+        </Typography>
+    }, [isLoading])
+
+
+    const subTitle = useMemo(() => {
+        return isLoading ? <Skeleton
+            animation="wave"
+            height={30}
+            width="60%"
+            style={{ borderRadius: 8, marginBottom: "0.35rem" }}
+        /> : <Typography
+            variant="caption"
+            fontSize={14}
+            display="block"
+            gutterBottom
+        >
+            {`Post by: ${post?.author.displayName} - Category: ${post?.category} - Created at: ${formatDate(new Date(post?.createdAt as string))}`}
+        </Typography>
+    }, [isLoading])
+
+
+    const postThumbnail = useMemo(() => {
+        return isLoading
+            ? <Skeleton
+                width={"100%"}
+                height={160}
+                animation="wave"
+                variant="rectangular"
+                style={{ borderRadius: 20 }}
+            />
+            : <img
+                src={post?.thumbnail || "/assets/thumbnail.jpg"}
+                style={{
+                    width: "100%",
+                    objectFit: "contain"
+                }}
+                alt='img'
+            />
+    }, [isLoading])
+
+
+    const postContent = useMemo(() => {
+        return isLoading
+            ? <Fragment>
+                {Array(2).fill("").map((_item, id) => (
+                    <Skeleton
+                        key={id}
+                        animation={false}
+                        width={"100%"}
+                        height={30}
+                        style={{ marginBottom: "0.5rem" }}
+                    />
+                ))}
+                {Array(2).fill("").map((_item, id) => (
+                    <Skeleton
+                        key={id}
+                        animation="wave"
+                        width={"100%"}
+                        height={30}
+                        style={{ marginBottom: "0.5rem" }}
+                    />
+                ))}
+                {Array(2).fill("").map((_item, id) => (
+                    <Skeleton
+                        key={id}
+                        width={"100%"}
+                        height={30}
+                        style={{ marginBottom: "0.5rem" }}
+                    />
+                ))}
+            </Fragment>
+            : <div
+                className='g-post-page-content-data-text'
+                dangerouslySetInnerHTML={{ __html: post?.content as string }}
+            />
+    }, [isLoading])
+
+
+    const tagsList = useMemo(() => {
+        return isLoading ? Array(3).fill("").map((_item, id) => (
+            <Skeleton
+                key={id}
+                animation="wave"
+                height={36}
+                width="80px"
+                style={{ borderRadius: 8, marginBottom: "0.35rem" }}
+            />
+        )) : post?.tags.map((item, id) => (
+            <Chip
+                key={id}
+                label={item}
+                aria-label={item}
+                size='small'
+            />
+        ))
+    }, [isLoading])
+
+
+    const postAction = useMemo(() => {
+        return isLoading ? Array(2).fill("").map((_item, id) => (
+            <Skeleton
+                key={id}
+                animation="wave"
+                height={60}
+                width="30%"
+                style={{ borderRadius: 8, marginRight: "0.5rem" }}
+            />
+        )) : <ButtonGroup
+            variant="text"
+            aria-label="post-action -utton"
+            className='g-post-action-button-group'
+        >
+            <Button
+                onClick={handleLikePost}
+                className='g-post-action-button'
+            >
+                {isLike ? <ThumbUpIcon style={{ color: "#5488c7" }} /> : <ThumbUpOutlinedIcon />}
+                <span className={classNames('g-post-action-count', { 'g-post-action-count-active': post?.isLike })}> {post?.like?.length} </span>
+            </Button>
+            <Button
+                className='g-post-action-button'
+                onClick={() => setState({ showComment: !state.showComment })}
+            >
+                {showComment ? <ModeCommentIcon style={{ color: "#5488c7" }} /> : <ModeCommentOutlinedIcon />}
+                <span className={classNames('g-post-action-count', { 'g-post-action-count-active': showComment })}>{post?.comments.length}</span>
+            </Button>
+            <Button
+                className='g-post-action-button'
+                onClick={handleFavoritePost}
+            >
+                {isFavorite ? <FavoriteIcon style={{ color: "red" }} /> : <FavoriteBorderOutlinedIcon />}
+            </Button>
+        </ButtonGroup>
+    }, [isLoading, isLike, showComment, post?.comments, isFavorite])
 
     return (
         <AppLayout>
             <div className='g-post-page-content-section'>
-                <Stack
-                    display={"flex"}
-                    alignItems={"center"}
-                    justifyContent={"center"}
-                    flexDirection={"row"}
-                    width={"75%"}
-                >
-                    {isLoading ? <Skeleton
-                        animation="wave"
-                        height={60}
-                        width="50%"
-                        style={{ borderRadius: 16, marginBottom: "0.35em" }}
-                    /> : <Typography
-                        textAlign={"center"}
-                        variant="h4"
-                        gutterBottom
-                        fontWeight={500}
-                    >
-                        {post?.title}
-                    </Typography>}
+                <Stack className='g-post-page-content-title'>
+                    {postTitle}
                 </Stack>
-                <Stack
-                    display={"flex"}
-                    alignItems={"center"}
-                    justifyContent={"center"}
-                    flexDirection={"row"}
-                    width={"75%"}
-                >
-                    {isLoading ? <Skeleton
-                        animation="wave"
-                        height={30}
-                        width="60%"
-                        style={{ borderRadius: 8, marginBottom: "0.35rem" }}
-                    /> : <Typography
-                        variant="caption"
-                        fontSize={14}
-                        display="block"
-                        gutterBottom
-                    >
-                        {`Post by: ${post?.author.displayName} - Category: ${post?.category} - Created at: ${new Date(post?.createdAt as string).toLocaleString()}`}
-                    </Typography>}
+                <Stack className='g-post-page-content-title'>
+                    {subTitle}
                 </Stack>
-                <Stack
-                    display={"flex"}
-                    alignItems={"center"}
-                    justifyContent={"center"}
-                    flexDirection={"row"}
-                    width={"75%"}
-                    margin={".5rem 0"}
-                    gap={3}
-                >
-                    {isLoading ? Array(3).fill("").map((_item, id) => (
-                        <Skeleton
-                            key={id}
-                            animation="wave"
-                            height={36}
-                            width="80px"
-                            style={{ borderRadius: 8, marginBottom: "0.35rem" }}
-                        />
-                    )) : post?.tags.map((item, id) => (
-                        <Chip
-                            key={id}
-                            label={item}
-                            aria-label={item}
-                            size='small'
-                            onClick={(e) => console.log(e.currentTarget.ariaLabel)}
-                        />
-                    ))}
+                <Stack className='g-post-page-content-tags'>
+                    {tagsList}
                 </Stack>
-                <Stack
-                    display={"flex"}
-                    alignItems={"center"}
-                    justifyContent={"center"}
-                    width={"100%"}
-                    flexDirection={"row"}
-                    margin={"1rem 0"}
-                >
-                    {isLoading
-                        ? <Skeleton
-                            width={"100%"}
-                            height={160}
-                            animation="wave"
-                            variant="rectangular"
-                            style={{ borderRadius: 20 }}
-                        />
-                        : <img
-                            src={post?.thumbnail}
-                            style={{
-                                width: "100%",
-                                height: 400,
-                                objectFit: "cover"
-                            }}
-                            alt='img'
-                        />}
+                <Stack className='g-post-page-content-thumbnail'>
+                    {postThumbnail}
                 </Stack>
-                <Stack
-                    display={"flex"}
-                    flexDirection={"column"}
-                    alignItems={"center"}
-                    justifyContent={"center"}
-                    width={"100%"}
-                    marginTop={"40px"}
-                >
-                    {isLoading
-                        ? <Fragment>
-                            {Array(2).fill("").map((_item, id) => (
-                                <Skeleton
-                                    key={id}
-                                    animation={false}
-                                    width={"100%"}
-                                    height={30}
-                                    style={{
-                                        marginBottom: "0.5rem"
-                                    }}
-                                />
-                            ))}
-                            {Array(2).fill("").map((_item, id) => (
-                                <Skeleton
-                                    key={id}
-                                    animation="wave"
-                                    width={"100%"}
-                                    height={30}
-                                    style={{
-                                        marginBottom: "0.5rem"
-                                    }}
-                                />
-                            ))}
-                            {Array(2).fill("").map((_item, id) => (
-                                <Skeleton
-                                    key={id}
-                                    width={"100%"}
-                                    height={30}
-                                    style={{
-                                        marginBottom: "0.5rem"
-                                    }}
-                                />
-                            ))}
-                        </Fragment>
-                        : <div
-                            style={{
-                                margin: "1rem 0",
-                                padding: "0 1rem",
-                                width: "100%"
-                            }}
-                            dangerouslySetInnerHTML={{ __html: post?.content as string }}
-                        />}
+                <Stack className='g-post-page-content-data'>
+                    {postContent}
                 </Stack>
-                <Stack
-                    display={"flex"}
-                    alignItems={"center"}
-                    justifyContent={"flex-start"}
-                    flexDirection={"row"}
-                    width={"100%"}
-                    margin={"1rem 0"}
-                >
-                    {isLoading ? Array(2).fill("").map((_item, id) => (
-                        <Skeleton
-                            key={id}
-                            animation="wave"
-                            height={60}
-                            width="30%"
-                            style={{ borderRadius: 8, marginRight: "0.5rem" }}
-                        />
-                    )) : <ButtonGroup
-                        variant="text"
-                        aria-label="Post action button"
-                        className='g-post-action-button-group'
-                    >
-                        <Button
-                            onClick={handleLikePost}
-                            className='g-post-action-button'
-                        >
-                            {isLike
-                                ? <ThumbUpIcon style={{
-                                    color: "#5488c7"
-                                }} />
-                                : <ThumbUpOutlinedIcon />}
-
-                            <span
-                                style={{
-                                    fontSize: 18,
-                                    fontWeight: 500,
-                                    color: post?.isLike ? "#5488c7" : "#000"
-                                }}
-                            >
-                                {post?.like?.length}
-                            </span>
-                        </Button>
-                        <Button
-                            className='g-post-action-button'
-                            onClick={() => setShowComment(!showComment)}
-                        >
-                            {showComment
-                                ? <ModeCommentIcon style={{
-                                    color: "#5488c7"
-                                }} />
-                                : <ModeCommentOutlinedIcon />}
-                            <span
-                                style={{
-                                    fontSize: 16,
-                                    fontWeight: 500,
-                                    color: showComment ? "#5488c7" : "#000"
-                                }}
-                            >
-                                {post?.comments.length}
-                            </span>
-                        </Button>
-                        <Button
-                            onClick={handleFavoritePost}
-                            className='g-post-action-button'
-                        >
-                            {isFavorite
-                                ? <FavoriteIcon style={{
-                                    color: "red"
-                                }} />
-                                : <FavoriteBorderOutlinedIcon />
-                            }
-                        </Button>
-                    </ButtonGroup>}
-
+                <Stack className='g-post-page-action-list-button'>
+                    {postAction}
                 </Stack>
-                {!isLoading && showComment && <Stack
-                    display={"flex"}
-                    alignItems={"flex-start"}
-                    justifyContent={"center"}
-                    width={"100%"}
-                    flexDirection={"column"}
-                    gap={2}
-                >
+                {!isLoading && showComment && <Stack className='g-post-page-comment-part'>
                     <Comment
                         className='g-post-comment-textarea'
                         placeholder='Nhập bình luận tại đây'
                         minRows={4}
                         maxRows={4}
                         value={commentValue}
-                        onChange={(e) => {
-                            setCommentValue(e.target.value)
-                        }}
+                        onChange={(e) => setState({ commentValue: e.target.value })}
                     />
-                    <Stack
-                        display={"flex"}
-                        alignItems={"center"}
-                        justifyContent={"flex-end"}
-                        flexDirection={"row"}
-                        width={"70%"}
-                        gap={2}
-                    >
-                        <Button
+                    <Stack className='g-post-page-comment-part-action'>
+                        <DefaultButton
+                            className='g-post-page-comment-part-action-button'
                             variant="outlined"
                             size="small"
-                            style={{
-                                backgroundColor: "transparent",
-                                color: "#9b9b9b",
-                                textTransform: "none",
-                                borderColor: "#9b9b9b"
-                            }}
+                            title='Hủy bỏ'
                             onClick={() => {
-                                setShowComment(false)
-                                setCommentValue("")
+                                setState((draft) => {
+                                    draft.showComment = false
+                                    draft.commentValue = ""
+                                })
                             }}
-                        >
-                            Hủy bỏ
-                        </Button>
-                        <Button
+                        />
+
+                        <DefaultButton
+                            className='g-post-page-comment-part-action-button-active'
                             variant="contained"
                             size="small"
+                            title='Đăng'
                             onClick={onSubmitComment}
-                            style={{
-                                backgroundColor: "#5488c7",
-                                color: "#fff",
-                                textTransform: "none",
-                            }}
-                        >
-                            Đăng
-                        </Button>
+                        />
                     </Stack>
                 </Stack>}
-                {!isLoading && <Stack
-                    display={"flex"}
-                    alignItems={"flex-start"}
-                    flexDirection={"column"}
-                    justifyContent={"center"}
-                    gap={2}
-                    width={"100%"}
-                    marginTop={"1rem"}
-                >
+                {!isLoading && <Stack className='g-post-page-comment-part-list-item'>
                     {post && post?.comments?.map((item, id) => (
                         <CommentItem
                             key={id}
@@ -405,6 +391,12 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
                         />
                     ))}
                 </Stack>}
+                {isAlertOpen && <Alert
+                    open={isAlertOpen}
+                    severity={alertType}
+                    message={alertMessage}
+                    onClose={() => setState({ isAlertOpen: false })}
+                />}
             </div>
         </AppLayout>
     )

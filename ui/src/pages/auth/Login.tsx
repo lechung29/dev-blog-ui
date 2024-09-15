@@ -10,16 +10,17 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import KeyIcon from "@mui/icons-material/Key";
 import { useImmerState } from "../../hook/useImmerState";
 import { DefaultButton } from "../../components/common/button/defaultbutton/DefaultButton";
-import { IFunc } from "../../types/Function";
+import { IAction, IAction1, IFunc } from "../../types/Function";
 import { AuthService } from "../../services/auth/AuthService";
-import { IRequestStatus } from "../../types/IResponse";
 import { useNavigate } from "react-router-dom";
 import { GoogleAuth } from "../../components/Auth/GoogleAuth";
 import { Divider } from "../../components/common/divider/Divider";
 import { useDispatch } from "react-redux";
 import { login } from "../../redux/reducers/users/UserSlice";
+import { delay } from "../../utils/helper";
+import { IRequestStatus } from "../../types/IResponse";
 
-interface ILoginOwnProps {}
+interface ILoginOwnProps { }
 
 interface ILoginFormState {
     email: string;
@@ -42,12 +43,13 @@ const inititalState: ILoginFormState = {
 const Login: React.FunctionComponent<ILoginOwnProps> = (_props) => {
     const logoHeight: Readonly<number> = 75;
     const logoWidth: Readonly<number> = 350;
+    const navigate = useNavigate();
+    const dispatch = useDispatch()
     const [state, setState] = useImmerState<ILoginFormState>(inititalState);
     const { email, password, emailError, passwordError, showPassword, isLoading } = state;
     const emailRef = useRef<HTMLInputElement>();
     const passwordRef = useRef<HTMLInputElement>();
-    const navigate = useNavigate();
-    const dispatch = useDispatch()
+
 
     const onChange: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> = (event) => {
         switch (event.target.name) {
@@ -95,9 +97,11 @@ const Login: React.FunctionComponent<ILoginOwnProps> = (_props) => {
         return isValid;
     };
 
-    const handleClickShowPassword = () => setState({ showPassword: !state.showPassword });
+    const handleClickShowPassword: IAction = () => {
+        setState({ showPassword: !state.showPassword })
+    };
 
-    const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const handleMouseDownPassword: IAction1<React.MouseEvent<HTMLButtonElement>> = (event) => {
         event.preventDefault();
     };
 
@@ -106,42 +110,56 @@ const Login: React.FunctionComponent<ILoginOwnProps> = (_props) => {
         setState({ emailError: "", passwordError: "", isLoading: true });
         if (!validation()) {
             setState({ isLoading: false });
-            return;
+            return Promise.resolve()
         }
-        const response = await AuthService.loginUser({ email, password });
 
-        if (response.requestStatus === IRequestStatus.Error) {
-            switch (response.fieldError) {
-                case "email":
-                    setState({ emailError: response.message, passwordError: "", isLoading: false });
-                    emailRef.current?.focus();
-                    break;
-                case "password":
-                    setState({ passwordError: response.message, emailError: "", isLoading: false });
-                    passwordRef.current?.focus();
-                    break;
-                default:
-                    break;
-            }
-        } else {
+        try {
+            const response = await AuthService.loginUser({ email, password });
             setState({ isLoading: false });
-            setTimeout(() => {
-                // localStorage.setItem("access_token", response.data?.accessToken!)
-                dispatch(login(response.data!))
-                navigate("/");
-            }, 1000);
+            if (response.requestStatus === IRequestStatus.Error) {
+                switch (response.fieldError) {
+                    case "email":
+                        setState({ emailError: response.message, passwordError: "", isLoading: false });
+                        emailRef.current?.focus();
+                        break;
+                    case "password":
+                        setState({ passwordError: response.message, emailError: "", isLoading: false });
+                        passwordRef.current?.focus();
+                        break;
+                    default:
+                        break;
+                }
+            } else {
+                await delay(1000).then(() => {
+                    dispatch(login(response.data!))
+                    navigate("/");
+                })
+            }
+        } catch (error: any) {
+            console.log(error)
         }
     };
+
     return (
         <AppLayout title={loginTitle}>
             <section className="g-auth-section">
                 <div className="g-auth-section-row">
                     <div className="g-login-section-form">
                         <div className="g-login-section-form-label">
-                            <Image src={logoSrc} objectFit={ImageFit.COVER} width={logoWidth} height={logoHeight} alt={"logo"} />
+                            <Image
+                                src={logoSrc}
+                                objectFit={ImageFit.COVER}
+                                width={logoWidth}
+                                height={logoHeight}
+                                alt={"logo"}
+                            />
                         </div>
                         <div className="g-login-section-form-description-label">
-                            <Label bold title={"Đăng nhập vào Devblog"} className="g-login-section-description-label" />
+                            <Label
+                                bold
+                                title={"Đăng nhập vào Devblog"}
+                                className="g-login-section-description-label"
+                            />
                         </div>
                         <Box className="g-login-section-form-input-group" onSubmit={handleSubmit} component={"form"} noValidate autoComplete="off">
                             <TextField
@@ -156,13 +174,7 @@ const Login: React.FunctionComponent<ILoginOwnProps> = (_props) => {
                                 onChange={onChange}
                                 startAdornment={
                                     <InputAdornment
-                                        style={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                            paddingLeft: "1rem",
-                                            color: "#909399",
-                                        }}
+                                        className="g-password-start-adornment"
                                         position="start"
                                     >
                                         <PersonIcon />
@@ -181,13 +193,7 @@ const Login: React.FunctionComponent<ILoginOwnProps> = (_props) => {
                                 onChange={onChange}
                                 startAdornment={
                                     <InputAdornment
-                                        style={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                            paddingLeft: "1rem",
-                                            color: "#909399",
-                                        }}
+                                        className="g-password-start-adornment"
                                         position="start"
                                     >
                                         <KeyIcon />
@@ -195,13 +201,7 @@ const Login: React.FunctionComponent<ILoginOwnProps> = (_props) => {
                                 }
                                 endAdornment={
                                     <InputAdornment
-                                        style={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                            color: "#909399",
-                                            marginRight: "0.75rem",
-                                        }}
+                                        className="g-password-end-adornment"
                                         position="end"
                                     >
                                         <IconButton
@@ -217,14 +217,9 @@ const Login: React.FunctionComponent<ILoginOwnProps> = (_props) => {
                                 }
                             />
                             <DefaultButton
+                                className="g-login-button"
                                 variant="contained"
                                 type="submit"
-                                style={{
-                                    backgroundColor: "#409eff",
-                                    textTransform: "capitalize",
-                                    fontSize: 13,
-                                    height: 36,
-                                }}
                                 iconStyle={{
                                     width: 20,
                                     height: 20,
@@ -235,18 +230,28 @@ const Login: React.FunctionComponent<ILoginOwnProps> = (_props) => {
                             />
                         </Box>
                         <div className="g-login-section-form-action">
-                            <Link style={{ fontSize: 12.8 }} underline="hover" href="/" variant="body2">
+                            <Link
+                                style={{ fontSize: 12.8 }}
+                                underline="hover"
+                                href="/"
+                                variant="body2"
+                            >
                                 Quên mật khẩu
                             </Link>
-                            <Link style={{ fontSize: 12.8 }} underline="hover" href="/register" variant="body2">
+                            <Link
+                                style={{ fontSize: 12.8 }}
+                                underline="hover"
+                                href="/register"
+                                variant="body2"
+                            >
                                 Tạo tài khoản
                             </Link>
                         </div>
-                        <Divider 
-                            title="Đăng nhập bằng" 
-                            textAlign="center" 
-                            textFontSize={16} 
-                            margin="16px 0" 
+                        <Divider
+                            title="Đăng nhập bằng"
+                            textAlign="center"
+                            textFontSize={16}
+                            margin="16px 0"
                         />
                         <GoogleAuth />
                     </div>
