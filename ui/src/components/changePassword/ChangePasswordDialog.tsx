@@ -11,6 +11,7 @@ import { AuthService } from '../../services/auth/AuthService';
 import { IRequestStatus } from '../../types/IResponse';
 import { delay } from '../../utils/helper';
 import { useAuth } from '../../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 interface IChangePasswordDialogProps {
     open: boolean;
@@ -41,6 +42,7 @@ const ChangePasswordDialog: React.FunctionComponent<IChangePasswordDialogProps> 
     const { onClose, open } = props
     const { handleUnauthorized } = useAuth()
     const { user } = useAppSelector(userState)
+    const { t } = useTranslation()
     const [state, setState] = useImmerState<IChangePasswordDialogState>(initialState)
     const { currentPassword, currentPasswordError, newPassword, newPasswordError, isOpenAlert, isUpdating, message } = state
     const currentPasswordRef = useRef<HTMLInputElement>();
@@ -79,19 +81,19 @@ const ChangePasswordDialog: React.FunctionComponent<IChangePasswordDialogProps> 
         let newPasswordError = "";
 
         if (!currentPassword.trim()) {
-            currentPasswordError = "Mật khẩu hiện tại là bắt buộc";
+            currentPasswordError = t("Error.Required.Current.Password");
             setState({ currentPasswordError: currentPasswordError });
             isValid = false;
         }
 
         if (!newPassword.trim()) {
-            newPasswordError = "Mật khẩu mới là bắt buộc";
+            newPasswordError = t("Error.Required.New.Password");
             setState({ newPasswordError: newPasswordError });
             isValid = false;
         }
 
         if (currentPassword.trim() === newPassword.trim()) {
-            newPasswordError = "Mật khẩu mới phải khác mật khẩu hiện tại";
+            newPasswordError = t("Error.Current.Different.New.Password")
             setState({ newPasswordError: newPasswordError });
             isValid = false;
         }
@@ -120,14 +122,14 @@ const ChangePasswordDialog: React.FunctionComponent<IChangePasswordDialogProps> 
             switch (updatedUser.fieldError) {
                 case "currentPassword":
                     setState((draft) => {
-                        draft.currentPasswordError = updatedUser.message;
+                        draft.currentPasswordError = t(updatedUser.message)
                         draft.isUpdating = false;
                     })
                     currentPasswordRef.current?.focus()
                     break;
                 case "newPassword":
                     setState((draft) => {
-                        draft.newPasswordError = updatedUser.message;
+                        draft.newPasswordError = t(updatedUser.message)
                         draft.isUpdating = false;
                     })
                     newPasswordRef.current?.focus()
@@ -139,7 +141,7 @@ const ChangePasswordDialog: React.FunctionComponent<IChangePasswordDialogProps> 
             setState((draft) => {
                 draft.currentPassword = "";
                 draft.newPassword = "";
-                draft.message = updatedUser.message;
+                draft.message = t(updatedUser.message)
                 draft.isUpdating = false;
                 draft.isOpenAlert = true;
             })
@@ -155,13 +157,13 @@ const ChangePasswordDialog: React.FunctionComponent<IChangePasswordDialogProps> 
             maxWidth={"sm"}
             className='g-change-password-dialog'
         >
-            <DialogTitle>Đổi mật khẩu</DialogTitle>
+            <DialogTitle>{t("Change.Password")}</DialogTitle>
             <DialogContent>
                 <TextField
                     required
                     margin="dense"
                     name="currentPassword"
-                    label="Mật khẩu hiện tại"
+                    label={t("Current.Password")}
                     type="password"
                     inputRef={currentPasswordRef}
                     value={currentPassword}
@@ -175,7 +177,7 @@ const ChangePasswordDialog: React.FunctionComponent<IChangePasswordDialogProps> 
                     required
                     margin="dense"
                     name="newPassword"
-                    label="Mật khẩu mới"
+                    label={t("New.Password")}
                     type="password"
                     inputRef={newPasswordRef}
                     value={newPassword}
@@ -200,7 +202,7 @@ const ChangePasswordDialog: React.FunctionComponent<IChangePasswordDialogProps> 
                     disabled={isUpdating}
                     iconStyle={iconStyle}
                     isLoading={isUpdating}
-                    title={"Xác nhận"}
+                    title={t("Common.Confirm")}
                     onClick={handleSubmit}
                 />
             </DialogActions>

@@ -13,6 +13,7 @@ import { IHomeFilterProps, ISortProps } from "../../pages/home/Home";
 import { PostService } from "../../services/posts/PostService";
 import { delay } from "../../utils/helper";
 import { useImmerState } from "../../hook/useImmerState";
+import { useTranslation } from "react-i18next";
 
 export type Anchor = "top" | "left" | "bottom" | "right";
 
@@ -36,6 +37,7 @@ interface IFilterPanelState {
 
 const FilterPanel: React.FunctionComponent<IFilterPanelOwnProps> = (props) => {
     const { open, placement, onApply: onAplly, onClosePanel, onOpenPanel, filtersValue, sortValue } = props;
+    const { t } = useTranslation()
     const initialState: IFilterPanelState = {
         filterValue: filtersValue,
         sortInfo: sortValue,
@@ -133,7 +135,7 @@ const FilterPanel: React.FunctionComponent<IFilterPanelOwnProps> = (props) => {
                 <Stack className="g-filter-panel-header-row">
                     <Label
                         className="g-filter-panel-title"
-                        title="Bộ lọc"
+                        title={t("Common.Filter")}
                         bold
                     />
                     <Button
@@ -157,7 +159,7 @@ const FilterPanel: React.FunctionComponent<IFilterPanelOwnProps> = (props) => {
                     className="g-filter-cancel-button"
                     onClick={onClose}
                 >
-                    {"Hủy"}
+                    {t("Common.Cancel")}
                 </Button>
                 <Button
                     variant="contained"
@@ -165,7 +167,7 @@ const FilterPanel: React.FunctionComponent<IFilterPanelOwnProps> = (props) => {
                     className="g-filter-apply-button"
                     onClick={onApplyFilter}
                 >
-                    {"Áp dụng"}
+                    {t("Common.Apply")}
                 </Button>
             </Stack>
         );
@@ -192,23 +194,23 @@ const FilterPanel: React.FunctionComponent<IFilterPanelOwnProps> = (props) => {
                     <SortByCreated
                         value={getSortValue(sortInfo)}
                         items={[
-                            { name: "Mới nhất", value: "desc" },
-                            { name: "Cũ nhất", value: "asc" }
+                            { name: t("Common.Sort.Latest"), value: "desc" },
+                            { name: t("Common.Sort.Oldest"), value: "asc" }
                         ]}
                         onChangeValue={onChangeSort}
                     />
                     <Filters
-                        filterTitle="Danh mục"
+                        filterTitle={t("Common.Category")}
                         value={filterValue.category}
                         items={[
-                            { name: "Bài viết", value: "post" },
-                            { name: "Câu hỏi", value: "question" },
-                            { name: "Thảo luận", value: "discussion" }
+                            { name: t("Category.Post"), value: "post" },
+                            { name: t("Category.Question"), value: "question" },
+                            { name: t("Category.Discussion"), value: "discussion" }
                         ]}
                         onFilterChange={onChangeCategoryFilter}
                     />
                     <Filters
-                        filterTitle="Thẻ"
+                        filterTitle={t("Common.Post.Tag")}
                         value={filterValue.tags}
                         items={tagList.map((tag) => {
                             return { name: tag, value: tag }

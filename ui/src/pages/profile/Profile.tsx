@@ -16,6 +16,7 @@ import { delay } from "../../utils/helper";
 import { useNavigate } from "react-router-dom";
 import { Alert, ISeverity } from "../../components/common/alert/Alert";
 import { useAuth } from "../../context/AuthContext";
+import { useTranslation } from "react-i18next";
 interface IProfilePageOwnProps { }
 
 interface IProfilePageState {
@@ -35,7 +36,7 @@ const Profile: React.FunctionComponent<IProfilePageOwnProps> = (_props) => {
     const { user } = useAppSelector(userState)
     const dispatch = useAppDispatch()
     const navigate = useNavigate()
-    const {handleUnauthorized} = useAuth()
+    const { handleUnauthorized } = useAuth()
     const initialState: IProfilePageState = {
         imageFileUrl: user?.avatar || "",
         displayName: user?.displayName || "",
@@ -53,6 +54,8 @@ const Profile: React.FunctionComponent<IProfilePageOwnProps> = (_props) => {
     const avatarPickerRef = useRef<HTMLInputElement | null>(null);
     const emailRef = useRef<HTMLInputElement>();
     const displayNameRef = useRef<HTMLInputElement>();
+    const { t } = useTranslation()
+
     const iconStyle: React.CSSProperties = useMemo(() => {
         return {
             width: 20,
@@ -60,6 +63,7 @@ const Profile: React.FunctionComponent<IProfilePageOwnProps> = (_props) => {
             color: "#fff",
         }
     }, [])
+
 
     const onChangeValue: React.ChangeEventHandler<HTMLInputElement> = (event) => {
         switch (event.target.name) {
@@ -82,11 +86,13 @@ const Profile: React.FunctionComponent<IProfilePageOwnProps> = (_props) => {
         }
     }
 
+
     useEffect(() => {
         if (displayName === user?.displayName && email === user.email && imageFileUrl === user.avatar) {
             setState({ isDisabled: true })
         }
     }, [imageFileUrl, displayName, email])
+
 
     const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -99,50 +105,55 @@ const Profile: React.FunctionComponent<IProfilePageOwnProps> = (_props) => {
         }
     };
 
+
     const handleSubmit = async () => {
         setState({ isUpdating: true })
-        const updatedUser = await AuthService.updateUserInfo(user?._id!, {
-            avatar: imageFileUrl,
-            displayName: displayName,
-            email: email
-        }, handleUnauthorized)
+        try {
+            const updatedUser = await AuthService.updateUserInfo(user?._id!, {
+                avatar: imageFileUrl,
+                displayName: displayName,
+                email: email
+            }, handleUnauthorized)
 
-        if (updatedUser.requestStatus === IRequestStatus.Error) {
-            switch (updatedUser.fieldError) {
-                case "email":
+            if (updatedUser.requestStatus === IRequestStatus.Error) {
+                switch (updatedUser.fieldError) {
+                    case "email":
+                        setState((draft) => {
+                            draft.emailError = t(updatedUser.message)
+                            draft.isUpdating = false
+                        });
+                        emailRef.current?.focus();
+                        break;
+                    case "displayName":
+                        setState((draft) => {
+                            draft.displayNameError = t(updatedUser.message)
+                            draft.isUpdating = false
+                        });
+                        displayNameRef.current?.focus();
+                        break;
+                    default:
+                        break;
+                }
+            } else {
+                dispatch(updateUser(updatedUser.data));
+                await delay(1000).then(() => {
                     setState((draft) => {
-                        draft.emailError = updatedUser.message;
-                        draft.isUpdating = false
+                        draft.isUpdating = false;
+                        draft.isOpenAlert = true;
+                        draft.message = t(updatedUser.message)
                     });
-                    emailRef.current?.focus();
-                    break;
-                case "displayName":
-                    setState((draft) => {
-                        draft.displayNameError = updatedUser.message;
-                        draft.isUpdating = false
-                    });
-                    displayNameRef.current?.focus();
-                    break;
-                default:
-                    break;
+                })
+                await delay(2000).then(() => {
+                    navigate("/")
+                })
             }
-        } else {
-            dispatch(updateUser(updatedUser.data));
-            await delay(1000).then(() => {
-                setState((draft) => {
-                    draft.isUpdating = false;
-                    draft.isOpenAlert = true;
-                    draft.message = updatedUser.message;
-                });
-            })
-            await delay(2000).then(() => {
-                navigate("/")
-            })
+        } catch (error) {
+            console.log(error)
         }
     }
 
     return (
-        <AppLayout>
+        <AppLayout title={t("InformationPage.Title")}>
             <Container className="g-profile-section">
                 <Box
                     className="g-profile-update-form"
@@ -151,11 +162,13 @@ const Profile: React.FunctionComponent<IProfilePageOwnProps> = (_props) => {
                     <Stack className="g-profile-title-section">
                         <Label
                             className="g-profile-primary-title"
-                            title={"Thông tin cá nhân"}
+                            title={t("Common.Personal.Information")}
+                            bold
                         />
                         <Label
                             className="g-profile-sub-title"
-                            title={"Quản lý thông tin cá nhân của bạn"}
+                            title={t("Personal.Information.Management")}
+                            bold
                         />
                     </Stack>
                     <Stack className="g-profile-content">
@@ -183,7 +196,7 @@ const Profile: React.FunctionComponent<IProfilePageOwnProps> = (_props) => {
                                 columnSpacing={2}
                             >
                                 <Grid className="g-update-field-label" item xs={4} md={3}>
-                                    <Label title={"ID của bạn"} />
+                                    <Label title={t("Common.Your.Id")} />
                                 </Grid>
                                 <Grid className="g-update-field-input" item xs={8} md={9}>
                                     <TextField
@@ -195,7 +208,7 @@ const Profile: React.FunctionComponent<IProfilePageOwnProps> = (_props) => {
                                     />
                                 </Grid>
                                 <Grid className="g-update-field-label" item xs={4} md={3}>
-                                    <Label title={"Tên hiển thị"} />
+                                    <Label title={t("Common.DisplayName")} />
                                 </Grid>
                                 <Grid className="g-update-field-input" item xs={8} md={9}>
                                     <TextField
@@ -211,7 +224,7 @@ const Profile: React.FunctionComponent<IProfilePageOwnProps> = (_props) => {
                                     />
                                 </Grid>
                                 <Grid className="g-update-field-label" item xs={4} md={3}>
-                                    <Label title={"Email"} />
+                                    <Label title={t("Email.Address")} />
                                 </Grid>
                                 <Grid className="g-update-field-input" item xs={8} md={9}>
                                     <TextField
@@ -231,23 +244,26 @@ const Profile: React.FunctionComponent<IProfilePageOwnProps> = (_props) => {
                                 <DefaultButton
                                     disabled={isUpdating}
                                     className="g-change-password-button"
-                                    title="Đổi mật khẩu"
+                                    title={t("Change.Password")}
                                     onClick={() => setState({ isOpenChangePassword: true })}
                                 />
+
                                 {isOpenChangePassword && (
                                     <ChangePasswordDialog
                                         open={isOpenChangePassword}
                                         onClose={() => setState({ isOpenChangePassword: false })}
                                     />
                                 )}
+
                                 <DefaultButton
                                     disabled={isDisabled}
                                     isLoading={isUpdating}
                                     className="g-update-button"
-                                    title="Cập nhật"
+                                    title={t("Common.Update")}
                                     iconStyle={iconStyle}
                                     onClick={handleSubmit}
                                 />
+
                                 {isOpenAlert && <Alert
                                     open={isOpenAlert}
                                     severity={ISeverity.success}

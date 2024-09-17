@@ -9,6 +9,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import "./index.scss"
 import { DefaultButton } from "../button/defaultbutton/DefaultButton";
 import { IAction1, IFunc } from "../../../types/Function";
+import { useTranslation } from "react-i18next";
 
 interface IConfirmDialogProps {
 	open: boolean;
@@ -22,7 +23,7 @@ interface IConfirmDialogProps {
 
 const ConfirmDialog: React.FunctionComponent<IConfirmDialogProps> = (props) => {
 	const { content, handleConfirm, open, title, isLoading, noCancelButton, onClose } = props
-
+	const { t } = useTranslation()
 	const iconStyle = React.useMemo(() => {
 		return {
 			width: 20,
@@ -64,7 +65,7 @@ const ConfirmDialog: React.FunctionComponent<IConfirmDialogProps> = (props) => {
 					autoFocus
 					iconStyle={iconStyle}
 					isLoading={isLoading}
-					title={"Xác nhận"}
+					title={t("Common.Confirm")}
 				/>
 			</DialogActions>
 		</Dialog>

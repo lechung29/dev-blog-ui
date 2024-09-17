@@ -4,18 +4,21 @@ import "./createpost.scss";
 import { Label } from "../../../components/common/label/Label";
 import { Autocomplete, Chip, FormHelperText, Grid, ListItem, Paper, Stack, TextField } from "@mui/material";
 import { useImmerState } from "../../../hook/useImmerState";
-import { IPostCategoryName, IPostCategoryValue, PostCategoryList } from "./util";
-import { IToastProps, renderToast } from "../../../utils/utils";
+import { IPostCategoryValue } from "./util";
 import "react-quill/dist/quill.snow.css";
 import Editor from "../../../components/posteditor/Editor";
 import { DefaultButton } from "../../../components/common/button/defaultbutton/DefaultButton";
 import { PostService } from "../../../services/posts/PostService";
 import { IRequestStatus } from "../../../types/IResponse";
-import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../redux/store/store";
+import { useAppSelector } from "../../../redux/store/store";
 import uploadToCloudinary from "../../../services/helpers/upload";
 import { useAuth } from "../../../context/AuthContext";
+import { userState } from "../../../redux/reducers/users/UserSlice";
+import { IAction1, IFunc1 } from "../../../types/Function";
+import { useNavigate } from "react-router-dom";
+import { Alert, ISeverity } from "../../../components/common/alert/Alert";
+import { useTranslation } from "react-i18next";
+import { delay } from "../../../utils/helper";
 
 interface ICreatePostOwnProps { }
 
@@ -27,7 +30,7 @@ export interface EditorContentChanged {
 interface ICreatePostState {
 	categoryInput: string;
 	categoryValue: IPostCategoryValue | null;
-	categoryName: IPostCategoryName | null;
+	categoryName: string | null;
 	postTitle: string;
 	tags: string[];
 	tagValue: string
@@ -38,6 +41,9 @@ interface ICreatePostState {
 	categoryError?: string;
 	contentError?: string;
 	isLoading: boolean;
+	isAlertOpen: boolean;
+	alertMessage: string;
+	alertType: ISeverity;
 }
 
 const initialState: ICreatePostState = {
@@ -50,10 +56,13 @@ const initialState: ICreatePostState = {
 	postContent: "",
 	postThumbnails: "",
 	isLoading: false,
+	isAlertOpen: false,
+	alertMessage: "",
+	alertType: ISeverity.success,
 };
 
 const CreatePost: React.FunctionComponent<ICreatePostOwnProps> = (props) => {
-	const {handleUnauthorized} = useAuth()
+	const { handleUnauthorized } = useAuth()
 	const [state, setState] = useImmerState<ICreatePostState>(initialState);
 	const {
 		categoryInput,
@@ -68,38 +77,60 @@ const CreatePost: React.FunctionComponent<ICreatePostOwnProps> = (props) => {
 		tagError,
 		categoryError,
 		contentError,
-		isLoading
+		isLoading,
+		alertMessage,
+		alertType,
+		isAlertOpen
 	} = state
 	const categoryRef = useRef<HTMLInputElement>()
 	const titleRef = useRef<HTMLInputElement>()
 	const tagRef = useRef<HTMLInputElement>()
 	const navigate = useNavigate()
-	const role = useSelector((state: RootState) => state.user.user?.role)
+	const { user } = useAppSelector(userState)
+	const { t } = useTranslation()
+
+	const PostCategoryList: string[] = [t("Category.Post"), t("Category.Question"), t("Category.Discussion")]
 
 	const handleDeleteTags = (tagToDelete: string) => () => {
 		setState({ tags: state.tags.filter((item) => item !== tagToDelete) });
 	};
 
-	const handleKeyDown = (event) => {
+	const handleKeyDown: IAction1<React.KeyboardEvent> = (event) => {
 		if (event.key === "Enter") {
 			if (tagValue.includes(" ")) {
-				renderToast(IToastProps.error, "Tag không thể có khoảng trống, vui lòng thử lại")
+				setState((draft) => {
+					draft.alertMessage = "Error.Tag.Include.Blank";
+					draft.alertType = ISeverity.error
+					draft.isAlertOpen = true
+				})
 			} else {
 				if (tags.includes(tagValue)) {
-					renderToast(IToastProps.error, "Tag này đã tồn tại");
+					setState((draft) => {
+						draft.alertMessage = "Error.Tag.Existed";
+						draft.alertType = ISeverity.error
+						draft.isAlertOpen = true
+					})
 				} else if (tags.length + 1 > 3) {
-					renderToast(IToastProps.error, "Bài viết chỉ có tối đa 3 tag")
+					setState((draft) => {
+						draft.alertMessage = "Error.Tag.MaxLength";
+						draft.alertType = ISeverity.error
+						draft.isAlertOpen = true
+					})
 				} else {
 					setState({ tags: [...state.tags, tagValue], tagError: "", tagValue: "" });
-					renderToast(IToastProps.success, "Thêm tag thành công");
+					setState((draft) => {
+						draft.alertMessage = "Successful.Add.Tag";
+						draft.alertType = ISeverity.success
+						draft.isAlertOpen = true
+					})
 				}
 			}
 
 		}
 	};
 
-	const handlePostThumbailsChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-		const file = e.target.files?.[0];
+	const handlePostThumbnailChange: IFunc1<React.ChangeEvent<HTMLInputElement>, Promise<void>> = async (event) => {
+		const file = event.target.files?.[0];
 		if (file) {
 			const url = await uploadToCloudinary(file)
 			setState({ postThumbnails: url });
@@ -114,29 +145,29 @@ const CreatePost: React.FunctionComponent<ICreatePostOwnProps> = (props) => {
 		let contentError = "";
 
 		if (!postTitle?.trim()) {
-			titleError = "Tiêu đề bài post là bắt buộc";
+			titleError = "Required.Post.Title";
 			setState({ titleError: titleError });
 			isValid = false;
 		}
 
 		if (!categoryName?.trim()) {
-			categoryError = "Danh mục là bắt buộc";
+			categoryError = "Required.Post.Category";
 			setState({ categoryError: categoryError });
 			isValid = false;
 		} else if (!PostCategoryList.includes(categoryName!)) {
-			categoryError = "Danh mục không hợp lệ";
+			categoryError = "Invalid.Post.Category";
 			setState({ categoryError: categoryError });
 			isValid = false;
 		}
 
 		if (tags.length === 0) {
-			tagError = "Thêm tag cho bài post";
+			tagError = "Required.Post.Tag";
 			setState({ tagError: tagError });
 			isValid = false;
 		}
 
 		if (!postContent.trim()) {
-			contentError = "Nội dung bài post là bắt buộc";
+			contentError = "Required.Post.Content";
 			setState({ contentError: contentError });
 			isValid = false;
 		}
@@ -158,7 +189,7 @@ const CreatePost: React.FunctionComponent<ICreatePostOwnProps> = (props) => {
 		setState({ isLoading: true });
 		if (!validatePost()) {
 			setState({ isLoading: false });
-			return;
+			return Promise.resolve();
 		} else {
 			const data = await PostService.createPost({
 				title: postTitle,
@@ -170,41 +201,52 @@ const CreatePost: React.FunctionComponent<ICreatePostOwnProps> = (props) => {
 			if (data.requestStatus === IRequestStatus.Error) {
 				switch (data.fieldError) {
 					case "title":
-						setState({ titleError: data.message, isLoading: false });
+						setState({ titleError: t(data.message), isLoading: false });
 						break;
 					default:
 						break;
 				}
 			} else {
 				setState({ isLoading: false })
-				renderToast(IToastProps.success, data.message)
-				setTimeout(() => {
-					navigate(`/${role}-dashboard/post-management`)
-				}, 3000)
+				setState((draft) => {
+					draft.alertMessage = t(data.message)
+					draft.alertType = ISeverity.success
+					draft.isAlertOpen = true
+				})
+				await delay(2000).then(() => {
+					navigate(`/${user?.role}-dashboard/post-management`)
+				})
 			}
 		}
 	}
 
 	return (
-		<DashboardLayout title="Devblog - Tạo post">
+		<DashboardLayout title={t("CreatePost.Title")}>
 			<div className="g-dashboard-content-section">
 				<Stack className="g-dashboard-content-section-title">
-					<Label className="g-dashboard-content-title" title="Tạo bài post" bold />
+					<Label
+						className="g-dashboard-content-title"
+						title={t("Page.Create.Post.Title")}
+						bold
+					/>
 				</Stack>
 				<Grid container spacing={2}>
 					<Grid className="g-create-post-section-basic-info" item sm={4} xs={12} md={4}>
-						<Label className="g-create-post-info-title" title="Danh mục" />
+						<Label
+							className="g-create-post-info-title"
+							title={t("Common.Category")}
+						/>
 						<Autocomplete
 							value={categoryName}
-							onChange={(_event, newValue: IPostCategoryName | null) => {
+							onChange={(_event, newValue: string | null) => {
 								switch (newValue) {
-									case "Bài viết": 
+									case t("Category.Post"):
 										setState({ categoryName: newValue, categoryValue: "post", categoryError: "" });
-									    break;
-									case "Câu hỏi": 
-										setState({ categoryName: newValue, categoryValue: "question", categoryError: ""})
 										break;
-									case "Thảo luận": 
+									case t("Category.Question"):
+										setState({ categoryName: newValue, categoryValue: "question", categoryError: "" })
+										break;
+									case t("Category.Discussion"):
 										setState({ categoryName: newValue, categoryValue: "discussion", categoryError: "" });
 										break;
 									default:
@@ -230,7 +272,10 @@ const CreatePost: React.FunctionComponent<ICreatePostOwnProps> = (props) => {
 						/>
 					</Grid>
 					<Grid className="g-create-post-section-basic-info" item sm={8} xs={12} md={8}>
-						<Label className="g-create-post-info-title" title="Tên bài post" />
+						<Label
+							className="g-create-post-info-title"
+							title={t("Post.Create.Name")}
+						/>
 						<TextField
 							error={!!titleError}
 							helperText={titleError}
@@ -244,7 +289,10 @@ const CreatePost: React.FunctionComponent<ICreatePostOwnProps> = (props) => {
 					</Grid>
 
 					<Grid className="g-create-post-section-basic-info" item sm={4} xs={12} md={4}>
-						<Label className="g-create-post-info-title" title="Tên thẻ" />
+						<Label
+							className="g-create-post-info-title"
+							title={t("Post.Create.TagName")}
+						/>
 						<TextField
 							onKeyDown={handleKeyDown}
 							value={tagValue}
@@ -259,7 +307,7 @@ const CreatePost: React.FunctionComponent<ICreatePostOwnProps> = (props) => {
 						/>
 					</Grid>
 					<Grid className="g-create-post-section-basic-info" item sm={8} xs={12} md={8}>
-						<Label className="g-create-post-info-title" title="Danh sách thẻ" />
+						<Label className="g-create-post-info-title" title={t("Post.Create.TagList")} />
 						<Paper
 							component="ul"
 							className="g-create-post-tag-list"
@@ -275,9 +323,9 @@ const CreatePost: React.FunctionComponent<ICreatePostOwnProps> = (props) => {
 					</Grid>
 					<Grid className="g-create-post-section-basic-info" item sm={12} xs={12} md={12}>
 						<form className="g-upload-image-form">
-							<span className="g-upload-image-form-title">Tải ảnh thumbnail</span>
+							<span className="g-upload-image-form-title">{t("Post.Create.Thumbmail")}</span>
 							<label htmlFor="file-input" className="g-upload-image-form-drop-container">
-								<input type="file" accept="image/*" id="file-input" onChange={handlePostThumbailsChange} />
+								<input type="file" accept="image/*" id="file-input" onChange={handlePostThumbnailChange} />
 							</label>
 						</form>
 					</Grid>
@@ -288,7 +336,7 @@ const CreatePost: React.FunctionComponent<ICreatePostOwnProps> = (props) => {
 					<Grid className="g-create-post-section-action-button" item sm={12} xs={12} md={12}>
 						<DefaultButton
 							className="g-create-post-submit-btn"
-							title="Xác nhận"
+							title={t("Common.Confirm")}
 							variant="contained"
 							onClick={handleSubmit}
 							iconStyle={{
@@ -299,6 +347,12 @@ const CreatePost: React.FunctionComponent<ICreatePostOwnProps> = (props) => {
 							isLoading={isLoading}
 						/>
 					</Grid>
+					{isAlertOpen && <Alert
+						open={isAlertOpen}
+						severity={alertType}
+						message={alertMessage}
+						onClose={() => setState({ isAlertOpen: false })}
+					/>}
 				</Grid>
 			</div>
 		</DashboardLayout>

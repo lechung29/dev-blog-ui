@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import "./index.scss"
 import { IconButton } from "../common/button/iconbutton/IconButton";
 import { DefaultButton } from "../common/button/defaultbutton/DefaultButton";
+import { useTranslation } from "react-i18next";
 
 interface IFavouriteCardProps {
     item: IPostDataProps
@@ -17,6 +18,7 @@ interface IFavouriteCardProps {
 
 const FavouriteCard: React.FunctionComponent<IFavouriteCardProps> = (props) => {
     const { item, onChangeFavorite } = props
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const favoriteIcon = useMemo(() => {
         return item.isFavorite
@@ -44,10 +46,10 @@ const FavouriteCard: React.FunctionComponent<IFavouriteCardProps> = (props) => {
                         </Typography>
                     </TooltipHost>
                     <Typography className="g-card-sub-title">
-                        {`Tác giả: ${item.author.displayName}`}
+                        {t("Common.Author")} {item.author.displayName}
                     </Typography>
                     <Typography className="g-card-sub-title">
-                        {`Thể loại: ${item.category}`}
+                        {t("Common.Category")} {item.category}
                     </Typography>
                 </CardContent>
             </CardActionArea>
@@ -57,7 +59,7 @@ const FavouriteCard: React.FunctionComponent<IFavouriteCardProps> = (props) => {
                     color="primary"
                     endIcon={<ArrowRightAltIcon />}
                     className="g-none-border-button"
-                    title={"Xem bài viết"}
+                    title={t("Common.Seen.Post")}
                     onClick={() => navigate(`/post/${item._id}`)}
                 />
                 <IconButton

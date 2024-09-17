@@ -11,9 +11,9 @@ import PersonIcon from '@mui/icons-material/Person';
 import LogoutIcon from '@mui/icons-material/Logout';
 import SpaceDashboardIcon from '@mui/icons-material/SpaceDashboard';
 import { Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
 import { logout, userState } from "../../redux/reducers/users/UserSlice";
-import { useAppSelector } from "../../redux/store/store";
+import { useAppDispatch, useAppSelector } from "../../redux/store/store";
+import { useTranslation } from "react-i18next";
 
 interface INavigatePanelOwnProps {
     placement: Anchor;
@@ -33,21 +33,23 @@ export interface IPageRoute {
 const NavigationPanel: React.FunctionComponent<INavigatePanelOwnProps> = (props) => {
     const { open, placement, onClosePanel, onOpenPanel } = props;
     const { user } = useAppSelector(userState)
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
+    const { t } = useTranslation()
+
 
     const pageList: IPageRoute[] = [
         {
-            title: "Thông tin cá nhân",
+            title: t("Common.Information.Page"),
             route: "/profile",
             icon: <PersonIcon style={{ color: "#5488c7" }} />
         },
         {
-            title: "Quản lý hoạt động",
+            title: t("Management.Activity"),
             route: user?.role === "admin" ? "/admin-dashboard/overview" : "/user-dashboard/overview",
             icon: <SpaceDashboardIcon style={{ color: "#5488c7" }} />
         },
         {
-            title: "Đăng xuất",
+            title: t("Common.Logout"),
             route: "/login",
             icon: <LogoutIcon style={{ color: "#5488c7" }} />,
             onClick: () => {
@@ -63,7 +65,7 @@ const NavigationPanel: React.FunctionComponent<INavigatePanelOwnProps> = (props)
                 <Stack className="g-navigate-header-row">
                     <Label
                         className="g-navigate-panel-title"
-                        title="Cài đặt"
+                        title={t("Common.Setting")}
                         bold
                     />
                     <Button
@@ -88,9 +90,9 @@ const NavigationPanel: React.FunctionComponent<INavigatePanelOwnProps> = (props)
                         className="g-navigate-content-row"
                     >
                         {page.icon}
-                        <Link 
-                            to={page.route} 
-                            onClick={page.onClick} 
+                        <Link
+                            to={page.route}
+                            onClick={page.onClick}
                             className="g-panel-navigate-link"
                         >
                             {page.title}

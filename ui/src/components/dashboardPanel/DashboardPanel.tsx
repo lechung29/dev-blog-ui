@@ -7,13 +7,18 @@ import { useAppSelector } from "../../redux/store/store";
 import { userState } from "../../redux/reducers/users/UserSlice";
 import { Label } from "../common/label/Label";
 import { ITooltipHostPlacement } from "../common/tooltiphost/TooltipHost";
+import { useTranslation } from "react-i18next";
 
 const DashboardPanel: React.FunctionComponent = () => {
 	const { user } = useAppSelector(userState)
-	
+	const { t } = useTranslation()
 	const panelList = useMemo(() => {
-		return user?.role === "admin" ? adminPanelList : userPanelList
-	}, [user])
+		const finalPanelList = user?.role === "admin" ? adminPanelList : userPanelList
+		return finalPanelList.map((item) => ({
+			...item,
+			title: t(item.title)
+		}))
+	}, [user, t])
 
 	return (
 		<div className="g-dashboard-panel">

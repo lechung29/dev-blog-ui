@@ -16,6 +16,7 @@ import { Alert, ISeverity } from '../../../components/common/alert/Alert';
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import { useAuth } from '../../../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 interface IUserManagementProps { }
 
@@ -47,8 +48,15 @@ const UserManagement: React.FunctionComponent<IUserManagementProps> = (props) =>
     const [state, setState] = useImmerState<IUserManagementState>(initialState)
     const { isOpenLockUserDialog, loading, selectedUsers, users, isLockLoading, isOpenAlert, actionMessage, messageType, lockStatus } = state
     const { user } = useAppSelector(userState)
+    const { t } = useTranslation()
     const dataTableRef = useRef<IDataTableRef>(null);
     const { handleUnauthorized } = useAuth()
+
+    const finalColumns = userManagementColumn.map((item) => ({
+        ...item,
+        headerName: t(item.headerName as string)
+    }))
+
     const getAllUsers = async () => {
         setState({ loading: true });
         const allUser = await AuthService.getAllUsers(handleUnauthorized);
@@ -80,7 +88,7 @@ const UserManagement: React.FunctionComponent<IUserManagementProps> = (props) =>
                 draft.isLockLoading = false
                 draft.isOpenLockUserDialog = false;
                 draft.isOpenAlert = true;
-                draft.actionMessage = "Bạn không thể khóa tài khoản của chính mình";
+                draft.actionMessage = "Error.Cannot.Lock.Self";
                 draft.messageType = ISeverity.error
             })
             return Promise.resolve();
@@ -110,11 +118,11 @@ const UserManagement: React.FunctionComponent<IUserManagementProps> = (props) =>
     };
 
     const deleteItemText = useMemo(() => {
-        return `Bạn chắc chắn muốn xóa ${selectedUsers.length} người dùng đã chọn?`
+        return t("Confirm.Lock.User.Description", { count: selectedUsers.length })
     }, [selectedUsers])
 
     return (
-        <DashboardLayout title='Quản lý người dùng'>
+        <DashboardLayout title={t("ManageUser.Title")}>
             <div className="g-dashboard-content-section">
                 <Stack marginBottom={"0.5rem"} flexDirection={"row"} display={"flex"} alignItems={"center"} justifyContent={"flex-end"} gap={3}>
                     {selectedUsers.length === 1 && <IconButton size="small" className="g-delete-action-button" icon={onRenderLockedItem} onClick={() => setState({ isOpenLockUserDialog: true })} />}
@@ -124,7 +132,7 @@ const UserManagement: React.FunctionComponent<IUserManagementProps> = (props) =>
                     isLoading={loading}
                     onSelection={handleChangeSelection}
                     ref={dataTableRef}
-                    columns={userManagementColumn}
+                    columns={finalColumns}
                     items={users}
                     getData={() => getAllUsers()}
                     tableHeight={400}
@@ -134,7 +142,7 @@ const UserManagement: React.FunctionComponent<IUserManagementProps> = (props) =>
                 {isOpenLockUserDialog && (
                     <ConfirmDialog
                         open={isOpenLockUserDialog}
-                        title="Xác nhận xóa người dùng"
+                        title={t("Confirm.Lock.User.Title")}
                         content={deleteItemText}
                         isLoading={isLockLoading}
                         handleConfirm={handleDeleteUser}
@@ -144,7 +152,7 @@ const UserManagement: React.FunctionComponent<IUserManagementProps> = (props) =>
                 {isOpenAlert && <Alert
                     open={isOpenAlert}
                     severity={messageType}
-                    message={actionMessage}
+                    message={t(actionMessage)}
                     onClose={() => setState({ isOpenAlert: false })}
                 />}
             </div>

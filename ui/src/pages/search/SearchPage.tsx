@@ -8,7 +8,6 @@ import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import { useImmerState } from '../../hook/useImmerState';
-import { SearchTabList } from './util';
 // import { PostService } from '../../services/posts/PostService';
 import PostCard from '../../components/postCard/PostCard';
 import SearchSort from '../../components/searchsort/SearchSort';
@@ -21,6 +20,9 @@ import { Pagination } from '../../components/pagination/Pagination';
 import { IPostCategoryValue, PostCategoryValue } from '../dashboard/createpost/util';
 import * as _ from "lodash"
 import PostShimmer from '../../components/postCardShimmer/PostShimmer';
+import { Label } from '../../components/common/label/Label';
+import { useTranslation } from 'react-i18next';
+import { ITabListProps } from './util';
 
 interface ISearchPageProps { }
 
@@ -59,8 +61,24 @@ const SearchPage: React.FunctionComponent<ISearchPageProps> = (props) => {
     const [state, setState] = useImmerState<ISearchPageState>(initialState)
     const { tabValue, posts, currentPage, maxPages, runAfter, sortValue, openSortMenu, isMaxPageLoading, isPostLoading } = state
     const navigate = useNavigate()
+    const { t } = useTranslation()
     const { searchText = "" } = useParams()
     const shimmerArray = Array(5).fill('');
+
+    const SearchTabList: ITabListProps[] = [
+        {
+            label: t("Category.Post"),
+            value: "post",
+        },
+        {
+            label: t("Category.Question"),
+            value: "question",
+        },
+        {
+            label: t("Category.Discussion"),
+            value: "discussion",
+        }
+    ]
 
     const getPosts: IFunc3<number, IPostCategoryValue, string, Promise<void>> = (currentPage, category, searchText) => {
         setState((draft) => {
@@ -146,28 +164,34 @@ const SearchPage: React.FunctionComponent<ISearchPageProps> = (props) => {
     };
 
     const onRenderTab: IFunc<JSX.Element[]> = () => {
-        return isPostLoading 
+        return isPostLoading
             ? shimmerArray.map((_item, id) => (
                 <PostShimmer key={id} />
             ))
             : PostCategoryValue.map((item, key) => (
                 <TabPanel key={key} value={item}>
-                    {posts?.map((post: IPostDataProps) => (
-                        <PostCard
-                            key={post._id}
-                            item={post}
-                            subTitle={searchText}
-                            onClick={() => navigate(`/post/${post._id}`)}
+                    {posts.length
+                        ? posts?.map((post: IPostDataProps) => (
+                            <PostCard
+                                key={post._id}
+                                item={post}
+                                subTitle={searchText}
+                                onClick={() => navigate(`/post/${post._id}`)}
+                            />
+                        ))
+                        : <Label
+                            className="g-search-no-item-label"
+                            title={t("Common.Post.NoItem")}
                         />
-                    ))}
+                    }
                 </TabPanel>
-            )) 
+            ))
     }
 
     return (
-        <AppLayout>
+        <AppLayout title={t("SearchPage.Title")}>
             <div className='g-search-page-content-section'>
-                <Box sx={{ flex: 1, typography: 'body1' }}>
+                <Box className='g-search-page-content-box' sx={{ typography: 'body1' }}>
                     <TabContext value={tabValue}>
                         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                             <TabList
@@ -180,23 +204,14 @@ const SearchPage: React.FunctionComponent<ISearchPageProps> = (props) => {
                                         key={index}
                                         label={item.label}
                                         value={item.value}
-                                        style={{
-                                            textTransform: "none",
-                                            color: "#9b9b9b",
-                                            maxWidth: 100,
-                                            width: "100%"
-                                        }}
+                                        className='search-tab-content-button'
                                     />
                                 ))}
                                 <SearchSort
                                     open={openSortMenu}
                                     sortValue={sortValue}
-                                    onOpen={(e) => {
-                                        setState({ openSortMenu: e.target });
-                                    }}
-                                    onClose={() => {
-                                        setState({ openSortMenu: null })
-                                    }}
+                                    onOpen={(e) => setState({ openSortMenu: e.target })}
+                                    onClose={() => setState({ openSortMenu: null })}
                                     onChangeSortValue={(sortValue) => {
                                         setState((draft) => {
                                             draft.sortValue = sortValue
@@ -207,22 +222,13 @@ const SearchPage: React.FunctionComponent<ISearchPageProps> = (props) => {
                         </Box>
                         {onRenderTab()}
                     </TabContext>
-                    <div
-                        style={{
-                            width: '100%',
-                            display: "flex",
-                            justifyContent: 'center',
-                            marginTop: '1rem'
-                        }}
-                    >
-                        {
-                            maxPages > 0 && <Pagination
-                                loading={isMaxPageLoading}
-                                maxPages={maxPages}
-                                currentPage={state.currentPage}
-                                onChangePage={(page) => setState({ currentPage: page })}
-                            />
-                        }
+                    <div className='g-search-pagination'>
+                        {maxPages > 0 && <Pagination
+                            loading={isMaxPageLoading}
+                            maxPages={maxPages}
+                            currentPage={state.currentPage}
+                            onChangePage={(page) => setState({ currentPage: page })}
+                        />}
                     </div>
                 </Box>
             </div>

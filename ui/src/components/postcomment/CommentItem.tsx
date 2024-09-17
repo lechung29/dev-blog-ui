@@ -14,6 +14,8 @@ import { IAction, IFunc } from '../../types/Function';
 import { Alert, ISeverity } from '../common/alert/Alert';
 import { DefaultButton } from '../common/button/defaultbutton/DefaultButton';
 import { classNames, formatDate } from '../../utils/helper';
+import { IRequestStatus } from '../../types/IResponse';
+import { useTranslation } from 'react-i18next';
 
 interface ICommentItemProps {
     item: IReferenceComments
@@ -35,6 +37,7 @@ const CommentItem: React.FunctionComponent<ICommentItemProps> = (props) => {
     const { item, refreshPost } = props
     const { user } = useAppSelector(userState)
     const { handleUnauthorized } = useAuth()
+    const { t } = useTranslation()
     const initialState: ICommentItemState = {
         isUpdateComment: false,
         isOpenDeleteCommentDialog: false,
@@ -65,14 +68,14 @@ const CommentItem: React.FunctionComponent<ICommentItemProps> = (props) => {
             const res = await CommentService.likeComment(item._id, handleUnauthorized)
             setState((draft) => {
                 draft.isOpenAlert = true;
-                draft.message = res.message;
+                draft.message = t(res.message);
             })
-            await refreshPost()
+            if (res.requestStatus === IRequestStatus.Success) await refreshPost()
         } catch (error: any) {
             console.log(error)
             setState((draft) => {
                 draft.isOpenAlert = true;
-                draft.message = error.message;
+                draft.message = t(error.message);
             })
         }
     }
@@ -82,7 +85,7 @@ const CommentItem: React.FunctionComponent<ICommentItemProps> = (props) => {
             setState((draft) => {
                 draft.isOpenAlert = true;
                 draft.alertType = ISeverity.error
-                draft.message = "Không được để trống"
+                draft.message = t("Not.Allowed.Comment.Blank")
             })
             return Promise.resolve()
         }
@@ -92,17 +95,17 @@ const CommentItem: React.FunctionComponent<ICommentItemProps> = (props) => {
             setState((draft) => {
                 draft.isOpenAlert = true;
                 draft.alertType = ISeverity.success
-                draft.message = res.message;
+                draft.message = t(res.message)
                 draft.isUpdateComment = false
             })
-            await refreshPost()
+            if (res.requestStatus === IRequestStatus.Success) await refreshPost()
 
         } catch (error: any) {
             console.log(error)
             setState((draft) => {
                 draft.isOpenAlert = true;
                 draft.alertType = ISeverity.error
-                draft.message = error.message
+                draft.message = t(error.message)
             })
         }
     }
@@ -114,17 +117,17 @@ const CommentItem: React.FunctionComponent<ICommentItemProps> = (props) => {
             setState((draft) => {
                 draft.isOpenAlert = true;
                 draft.alertType = ISeverity.success
-                draft.message = res.message;
+                draft.message = t(res.message)
                 draft.isOpenDeleteCommentDialog = false
                 draft.isDeletingComment = false
             })
-            await refreshPost()
+            if (res.requestStatus === IRequestStatus.Success) await refreshPost()
         } catch (error: any) {
             console.log(error)
             setState((draft) => {
                 draft.isOpenAlert = true;
                 draft.alertType = ISeverity.error
-                draft.message = error.message
+                draft.message = t(error.message)
                 draft.isDeletingComment = false
             })
         }
@@ -149,7 +152,7 @@ const CommentItem: React.FunctionComponent<ICommentItemProps> = (props) => {
                 ? <div className='g-post-comment-update-section' >
                     <Comment
                         className='g-post-comment-textarea-updated'
-                        placeholder='Nhập bình luận tại đây'
+                        placeholder={t("Fill.Comment.Here")}
                         minRows={4}
                         maxRows={4}
                         value={commentValue}
@@ -160,14 +163,14 @@ const CommentItem: React.FunctionComponent<ICommentItemProps> = (props) => {
                             className='g-post-comment-update-action-cancel'
                             variant="outlined"
                             size="small"
-                            title='Hủy bỏ'
+                            title={t("Common.Cancel")}
                             onClick={onCancelUpdate}
                         />
                         <DefaultButton
                             className='g-post-comment-update-action-submit'
                             variant="contained"
                             size="small"
-                            title='Chỉnh sửa'
+                            title={t("Common.Edit")}
                             onClick={onUpdateComment}
                         />
                     </Stack>
@@ -190,26 +193,26 @@ const CommentItem: React.FunctionComponent<ICommentItemProps> = (props) => {
                     <div className='g-post-comment-action-bottom'>
                         <DefaultButton
                             className={classNames('g-post-comment-action-button', { 'g-post-comment-action-button-active': item.isLike })}
-                            title='Thích'
+                            title={t("Comment.Action.Like")}
                             onClick={handleLikeComment}
                         />
 
                         {user?._id === props.item.commentator._id && <DefaultButton
                             className='g-post-comment-action-button'
-                            title='Chỉnh sửa'
+                            title={t("Common.Edit")}
                             onClick={() => setState({ isUpdateComment: true })}
                         />}
 
                         {user?._id === props.item.commentator._id && <DefaultButton
                             className='g-post-comment-action-button'
-                            title='Xóa'
+                            title={t("Comment.Action.Delete")}
                             onClick={() => setState({ isOpenDeleteCommentDialog: true })}
                         />}
 
                         {isOpenDeleteCommentDialog && <ConfirmDialog
                             open={isOpenDeleteCommentDialog}
-                            title={"Xác nhận xóa bình luận"}
-                            content={"Bạn có chắc muốn xóa bình luận này?"}
+                            title={t("Confirm.Delete.Comment.Title")}
+                            content={t("Confirm.Delete.Comment.Description")}
                             onClose={() => setState({ isOpenDeleteCommentDialog: false })}
                             isLoading={isDeletingComment}
                             handleConfirm={handleDeleteComment}

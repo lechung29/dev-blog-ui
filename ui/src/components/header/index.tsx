@@ -14,6 +14,7 @@ import { Avatar } from "@mui/material";
 import NavigationPanel from "../navigationPanel/NavigationPanel";
 import { TooltipHost } from "../common/tooltiphost/TooltipHost";
 import { userState } from "../../redux/reducers/users/UserSlice";
+import { useTranslation } from "react-i18next";
 
 export interface IHeaderOwnProps { }
 
@@ -27,6 +28,7 @@ const Header: React.FunctionComponent<IHeaderOwnProps> = (_props) => {
     const logoWidth: Readonly<number> = 220;
     const navigate = useNavigate()
     const { searchText } = useParams()
+    const { t } = useTranslation()
     const { user } = useAppSelector(userState)
     const initialState: IHeaderState = {
         isNavigatePanelOpen: false,
@@ -67,7 +69,7 @@ const Header: React.FunctionComponent<IHeaderOwnProps> = (_props) => {
             </TooltipHost>)
             : (<Link className="g-header-main-right-link-auth" to={"/login"}>
                 <LoginIcon fontSize={"small"} />
-                <span>{"Đăng nhập / Đăng ký"}</span>
+                <span>{t("Common.SignIn.SignUp")}</span>
             </Link>);
     }, [token])
 
@@ -105,7 +107,7 @@ const Header: React.FunctionComponent<IHeaderOwnProps> = (_props) => {
                 <div className="g-header-main-center-section">
                     <Search
                         id="id-g-searchbox-devblog"
-                        placeholder="Tìm kiếm trên Devblog"
+                        placeholder={t("Common.Header.Search.Placeholder")}
                         type="text"
                         className="hello"
                         autoComplete="off"
@@ -119,8 +121,8 @@ const Header: React.FunctionComponent<IHeaderOwnProps> = (_props) => {
                 <div className="g-header-main-right-section">
                     <Language
                         languages={[
-                            { title: "Vietnamese", name: "vie", image: vieFlag },
-                            { title: "English", name: "eng", image: engFlag },
+                            { title: "Language.English", name: "en", image: engFlag },
+                            { title: "Language.Vietnamese", name: "vn", image: vieFlag },
                         ]}
                     />
                     {onRenderAvatar()}

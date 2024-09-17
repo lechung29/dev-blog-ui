@@ -7,6 +7,31 @@
     align-items: start;
     justify-content: center;
     flex-wrap: wrap;
+
+    .g-search-page-content-box {
+        flex: 1;
+
+        .search-tab-content-button {
+            text-transform: none;
+            color: #9b9b9b;
+            max-width: 100px;
+            width: 100%;
+        }
+
+        .g-search-no-item-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+        }
+
+        .g-search-pagination {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+    }
 }
 
 .MuiTabs-flexContainer {

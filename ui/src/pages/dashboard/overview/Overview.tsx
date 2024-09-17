@@ -11,6 +11,7 @@ import { userState } from "../../../redux/reducers/users/UserSlice";
 import { IPostByCategoryProps, IPostByMonthProps } from "../../../types/Post";
 import { useImmerState } from "../../../hook/useImmerState";
 import { useAuth } from "../../../context/AuthContext";
+import { useTranslation } from "react-i18next";
 
 interface IOverviewPageProps {
 	isLoading: boolean;
@@ -22,7 +23,7 @@ interface IOverviewPageProps {
 }
 
 const initialState: IOverviewPageProps = {
-	isLoading: false,
+	isLoading: true,
 	postByMonth: [],
 	postByCategory: [],
 	totalLikes: 0,
@@ -35,6 +36,7 @@ const Overview: React.FunctionComponent = () => {
 	const { user } = useAppSelector(userState)
 	const [state, setState] = useImmerState<IOverviewPageProps>(initialState)
 	const { handleUnauthorized } = useAuth()
+	const { t } = useTranslation()
 
 	useEffect(() => {
 		setState((draft) => {
@@ -60,30 +62,30 @@ const Overview: React.FunctionComponent = () => {
 				<Skeleton variant="rounded" width={"100%"} height={"30px"} />
 			</Fragment>
 			: <Fragment>
-				<h5>{title}</h5>
+				<h5>{t(title)}</h5>
 				<p>{value}</p>
 			</Fragment>
 		)
 	}
 	return (
-		<DashboardLayout>
+		<DashboardLayout title={t("OverviewPage.Title")}>
 			<div className="g-dashboard-content-section">
 				<Stack display={"flex"} marginBottom={5} flexDirection={"row"} alignItems={"center"} justifyContent={"space-between"} gap={4} flexWrap={"wrap"}>
 					<div className="g-overview-card g-overview-all-post">
-						{getCardContent("Tổng số bài viết của bạn", state.totalPosts)}
+						{getCardContent("Overview.All.MyPost", state.totalPosts)}
 					</div>
 					<div className="g-overview-card g-overview-month-post">
-						{getCardContent("Bài viết trong tháng", state.postInCurrentMonth)}
+						{getCardContent("Overview.All.MyPost.CurrentMonth", state.postInCurrentMonth)}
 					</div>
 					<div className="g-overview-card g-overview-all-like">
-						{getCardContent("Tổng số lượt thích", state.totalLikes)}
+						{getCardContent("Overview.All.MyPost.Like", state.totalLikes)}
 					</div>
 				</Stack>
 				<Stack display={"flex"} flexDirection={"row"} alignItems={"center"} justifyContent={"space-between"} gap={3}>
 					{state.isLoading
 						? <Skeleton variant="rounded" width={"100%"} height={"280px"} />
 						: <PieChart
-							chartTitle={"Biểu đồ số bài viết theo thể loại"}
+							chartTitle={t("Chart.PostBy.Category.Title")}
 							width={450}
 							height={280}
 							data={state.postByCategory}
@@ -92,8 +94,8 @@ const Overview: React.FunctionComponent = () => {
 					{state.isLoading
 						? <Skeleton variant="rounded" width={"100%"} height={"280px"} />
 						: <BarChart
-							chartTitle="Biểu đồ bài viết của bạn qua các tháng"
-							chartCategoryLabel="Số lượng"
+							chartTitle={t("Chart.PostBy.MonthInYear")}
+							chartCategoryLabel={t("Chart.Column.Label")}
 							width={450}
 							height={280}
 							dataColumns={[{ dataKey: "post", label: "All post" }]}

@@ -16,6 +16,7 @@ import { userState } from "../../../../redux/reducers/users/UserSlice";
 import { IAction, IFunc } from "../../../../types/Function";
 import { IPostStatus } from "../../../../types/Post";
 import { useAuth } from "../../../../context/AuthContext";
+import { useTranslation } from "react-i18next";
 
 interface IPostManagementProps {
 
@@ -43,6 +44,12 @@ const UserPostManagement: React.FunctionComponent<IPostManagementProps> = (props
 	const { handleUnauthorized } = useAuth()
 	const dispatch = useAppDispatch()
 	const dataTableRef = useRef<IDataTableRef>(null);
+	const { t } = useTranslation()
+
+	const finalColumns = postManagementColumn.map((item) => ({
+		...item,
+		headerName: t(item.headerName as string)
+	}))
 
 	const handleChange = (event: SelectChangeEvent) => {
 		setState({ itemStatus: event.target.value as IPostStatus })
@@ -72,7 +79,7 @@ const UserPostManagement: React.FunctionComponent<IPostManagementProps> = (props
 	};
 
 	const deleteItemText = useMemo(() => {
-		return `Bạn chắc chắn muốn xóa ${selectedItems.length > 1 ? selectedItems.length : ""} bài viết đã chọn?`
+		return t("Confirm.Delete.Post.Description", { count: selectedItems.length })
 	}, [selectedItems])
 
 	const disableStatus = (status: IPostStatus) => {
@@ -85,17 +92,17 @@ const UserPostManagement: React.FunctionComponent<IPostManagementProps> = (props
 	const renderChangeStatus: IFunc<JSX.Element> = () => {
 		return (
 			<FormControl sx={{ m: 1, width: "100%" }} size="small">
-				<InputLabel id="demo-select-small-label">Trạng thái</InputLabel>
+				<InputLabel id="demo-select-small-label">{t("Common.Status")}</InputLabel>
 				<Select labelId="demo-select-small-label" id="status-select-small" value={itemStatus} label="Status" onChange={handleChange}>
-					<MenuItem disabled={disableStatus(IPostStatus.Public)} value={IPostStatus.Public}>Công khai</MenuItem>
-					<MenuItem disabled={disableStatus(IPostStatus.Hide)} value={IPostStatus.Hide}>Ẩn</MenuItem>
+					<MenuItem disabled={disableStatus(IPostStatus.Public)} value={IPostStatus.Public}>{t("Status.Public")}</MenuItem>
+					<MenuItem disabled={disableStatus(IPostStatus.Hide)} value={IPostStatus.Hide}>{t("Status.Hidden")}</MenuItem>
 				</Select>
 			</FormControl>
 		);
 	};
 
 	return (
-		<DashboardLayout title="Devblog - Quản lý post">
+		<DashboardLayout title={t("ManagePost.Title")}>
 			<div className="g-dashboard-content-section">
 				<Stack className="g-management-post-section-action-button">
 					{user?.role === "admin"
@@ -124,7 +131,7 @@ const UserPostManagement: React.FunctionComponent<IPostManagementProps> = (props
 					isLoading={isLoading}
 					onSelection={handleChangeSelection}
 					ref={dataTableRef}
-					columns={postManagementColumn}
+					columns={finalColumns}
 					items={allPostsItem}
 					getData={() => getData()}
 					tableWidth={"100%"}
@@ -134,7 +141,7 @@ const UserPostManagement: React.FunctionComponent<IPostManagementProps> = (props
 				{state.isOpenDeleteDialog && (
 					<ConfirmDialog
 						open={isOpenDeleteDialog}
-						title="Xác nhận xóa bài viết"
+						title={t("Confirm.Delete.Post.Title")}
 						content={deleteItemText}
 						isLoading={isUpdateAndDeleteLoading}
 						handleConfirm={() => {
@@ -154,7 +161,7 @@ const UserPostManagement: React.FunctionComponent<IPostManagementProps> = (props
 				{state.isOpenUpdateDialog && (
 					<ConfirmDialog
 						open={isOpenUpdateDialog}
-						title="Chỉnh sửa trạng thái"
+						title={t("Edit.Status")}
 						content={renderChangeStatus()}
 						isLoading={isUpdateAndDeleteLoading}
 						handleConfirm={() => {
