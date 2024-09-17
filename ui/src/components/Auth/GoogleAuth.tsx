@@ -12,6 +12,7 @@ import { login } from "../../redux/reducers/users/UserSlice";
 import { useImmerState } from "../../hook/useImmerState";
 import ConfirmDialog from "../common/confirmDialog/ConfirmDialog";
 import { IFunc } from "../../types/Function";
+import { useTranslation } from "react-i18next";
 
 interface IGoogleAuthOwnState {
     isOpenDialog: boolean;
@@ -27,6 +28,7 @@ const GoogleAuth: React.FunctionComponent = () => {
     const [state, setState] = useImmerState<IGoogleAuthOwnState>(initialState)
     const { isOpenDialog, errorMessage } = state
     const auth = getAuth(firebaseApp)
+    const { t } = useTranslation()
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
@@ -51,7 +53,7 @@ const GoogleAuth: React.FunctionComponent = () => {
             navigate("/")
         } catch (error) {
             setState((draft) => {
-                draft.errorMessage = "Có lỗi xảy ra khi đăng nhập với Google"
+                draft.errorMessage = t("Error.Google")
                 draft.isOpenDialog = true;
             })
         }
@@ -65,7 +67,7 @@ const GoogleAuth: React.FunctionComponent = () => {
             startIcon={<GoogleIcon style={{ color: "#e94820" }} />}
         />;
         {isOpenDialog && <ConfirmDialog
-            title="Thông báo"
+            title={t("Common.Notifications")}
             content={errorMessage}
             open={isOpenDialog}
             handleConfirm={() => setState({ isOpenDialog: false })}

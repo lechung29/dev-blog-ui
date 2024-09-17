@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import AppLayout from "../../layout/Layout";
-import { loginTitle, logoSrc } from "../../components/utils/common/common";
+import { logoSrc } from "../../components/utils/common/common";
 import { Label } from "../../components/common/label/Label";
 import { Image, ImageFit } from "../../components/common/image/Image";
 import { TextField } from "../../components/common/textfield/TextField";
@@ -19,6 +19,7 @@ import { useDispatch } from "react-redux";
 import { login } from "../../redux/reducers/users/UserSlice";
 import { delay } from "../../utils/helper";
 import { IRequestStatus } from "../../types/IResponse";
+import { useTranslation } from "react-i18next";
 
 interface ILoginOwnProps { }
 
@@ -45,6 +46,7 @@ const Login: React.FunctionComponent<ILoginOwnProps> = (_props) => {
     const logoWidth: Readonly<number> = 350;
     const navigate = useNavigate();
     const dispatch = useDispatch()
+    const { t } = useTranslation()
     const [state, setState] = useImmerState<ILoginFormState>(inititalState);
     const { email, password, emailError, passwordError, showPassword, isLoading } = state;
     const emailRef = useRef<HTMLInputElement>();
@@ -76,13 +78,13 @@ const Login: React.FunctionComponent<ILoginOwnProps> = (_props) => {
         let passwordError = "";
 
         if (!email?.trim()) {
-            emailError = "Tài khoản email là bắt buộc";
+            emailError = t("Error.Required.Email");
             setState({ emailError: emailError });
             isValid = false;
         }
 
         if (!password?.trim()) {
-            passwordError = "Mật khẩu là bắt buộc";
+            passwordError =t("Error.Required.Password");
             setState({ passwordError: passwordError });
             isValid = false;
         }
@@ -119,11 +121,11 @@ const Login: React.FunctionComponent<ILoginOwnProps> = (_props) => {
             if (response.requestStatus === IRequestStatus.Error) {
                 switch (response.fieldError) {
                     case "email":
-                        setState({ emailError: response.message, passwordError: "", isLoading: false });
+                        setState({ emailError: t(response.message), passwordError: "", isLoading: false });
                         emailRef.current?.focus();
                         break;
                     case "password":
-                        setState({ passwordError: response.message, emailError: "", isLoading: false });
+                        setState({ passwordError: t(response.message), emailError: "", isLoading: false });
                         passwordRef.current?.focus();
                         break;
                     default:
@@ -141,7 +143,7 @@ const Login: React.FunctionComponent<ILoginOwnProps> = (_props) => {
     };
 
     return (
-        <AppLayout title={loginTitle}>
+        <AppLayout title={t("LoginPage.Title")}>
             <section className="g-auth-section">
                 <div className="g-auth-section-row">
                     <div className="g-login-section-form">
@@ -157,7 +159,7 @@ const Login: React.FunctionComponent<ILoginOwnProps> = (_props) => {
                         <div className="g-login-section-form-description-label">
                             <Label
                                 bold
-                                title={"Đăng nhập vào Devblog"}
+                                title={t("Devblog.Login")}
                                 className="g-login-section-description-label"
                             />
                         </div>
@@ -170,7 +172,7 @@ const Login: React.FunctionComponent<ILoginOwnProps> = (_props) => {
                                 type="text"
                                 inputRef={emailRef}
                                 errorMessage={emailError}
-                                placeholder="Địa chỉ email"
+                                placeholder={t("Email.Address")}
                                 onChange={onChange}
                                 startAdornment={
                                     <InputAdornment
@@ -189,7 +191,7 @@ const Login: React.FunctionComponent<ILoginOwnProps> = (_props) => {
                                 type={showPassword ? "text" : "password"}
                                 inputRef={passwordRef}
                                 errorMessage={passwordError}
-                                placeholder="Mật khẩu"
+                                placeholder={t("Password")}
                                 onChange={onChange}
                                 startAdornment={
                                     <InputAdornment
@@ -226,7 +228,7 @@ const Login: React.FunctionComponent<ILoginOwnProps> = (_props) => {
                                     color: "#fff",
                                 }}
                                 isLoading={isLoading}
-                                title={"Đăng nhập"}
+                                title={t("Common.Login")}
                             />
                         </Box>
                         <div className="g-login-section-form-action">
@@ -236,7 +238,7 @@ const Login: React.FunctionComponent<ILoginOwnProps> = (_props) => {
                                 href="/"
                                 variant="body2"
                             >
-                                Quên mật khẩu
+                                {t("Common.Forgot.Password")}
                             </Link>
                             <Link
                                 style={{ fontSize: 12.8 }}
@@ -244,11 +246,11 @@ const Login: React.FunctionComponent<ILoginOwnProps> = (_props) => {
                                 href="/register"
                                 variant="body2"
                             >
-                                Tạo tài khoản
+                                {t("Common.Create.Account")}
                             </Link>
                         </div>
                         <Divider
-                            title="Đăng nhập bằng"
+                            title={t("Common.Login.By")}
                             textAlign="center"
                             textFontSize={16}
                             margin="16px 0"

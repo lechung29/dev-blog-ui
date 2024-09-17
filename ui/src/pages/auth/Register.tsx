@@ -3,7 +3,7 @@ import "./index.scss";
 import AppLayout from "../../layout/Layout";
 import { useImmerState } from "../../hook/useImmerState";
 import { useNavigate } from "react-router-dom";
-import { logoSrc, registerDescription, registerHighlightDes, signUpTitle } from "../../components/utils/common/common";
+import { logoSrc } from "../../components/utils/common/common";
 import { Image, ImageFit } from "../../components/common/image/Image";
 import { Label } from "../../components/common/label/Label";
 import { DefaultButton } from "../../components/common/button/defaultbutton/DefaultButton";
@@ -17,6 +17,7 @@ import { Checkbox } from "../../components/common/checkbox/Checkbox";
 import { Divider } from "../../components/common/divider/Divider";
 import { GoogleAuth } from "../../components/Auth/GoogleAuth";
 import { delay } from "../../utils/helper";
+import { useTranslation } from "react-i18next";
 
 type ISignUpOwnProps = {};
 
@@ -55,6 +56,7 @@ const inititalState: ISignUpFormState = {
 const SignUpView: React.FunctionComponent<ISignUpOwnProps> = (props) => {
     const logoHeight: Readonly<number> = 75;
     const logoWidth: Readonly<number> = 350;
+    const { t } = useTranslation()
     const [state, setState] = useImmerState<ISignUpFormState>(inititalState);
     const { email, displayName, password, confirmPassword, emailError, displayNameError, passwordError, confirmPasswordError, policyCheckboxErrorMessage, isLoading } = state;
     const emailRef = useRef<HTMLInputElement>();
@@ -71,17 +73,17 @@ const SignUpView: React.FunctionComponent<ISignUpOwnProps> = (props) => {
     const onRenderTermsAndConditions = useMemo(() => {
         return (
             <div className="g-register-term-condition">
-                <span className="g-checkbox-policy-label">Tôi đồng ý </span>
+                <span className="g-checkbox-policy-label">{t("Common.Accept")} </span>
                 <Link
                     underline="none"
                     href="/"
                     variant="body2"
                 >
-                    Điều khoản và dịch vụ của Devblog
+                    {t("Common.Policy")}
                 </Link>
             </div>
         )
-    }, [])
+    }, [t])
 
     const disableButton: boolean = useMemo(() => {
         return !show.checked
@@ -127,29 +129,29 @@ const SignUpView: React.FunctionComponent<ISignUpOwnProps> = (props) => {
         let confirmPasswordError = "";
 
         if (!email?.trim()) {
-            emailError = "Tài khoản email là bắt buộc";
+            emailError = t("Error.Required.Email");
             setState({ emailError: emailError });
             isValid = false;
         }
 
         if (!displayName?.trim()) {
-            displayNameError = "Tên hiển thị là bắt buộc";
+            displayNameError = t("Error.Required.DisplayName");
             setState({ displayNameError: displayNameError });
             isValid = false;
         }
 
         if (!password?.trim()) {
-            passwordError = "Mật khẩu là bắt buộc";
+            passwordError = t("Error.Required.Password");
             setState({ passwordError: passwordError });
             isValid = false;
         }
 
         if (!confirmPassword?.trim()) {
-            confirmPasswordError = "Xác nhận mật khẩu là bắt buộc";
+            confirmPasswordError = t("Error.Required.Confirm.Password");
             setState({ confirmPasswordError: confirmPasswordError });
             isValid = false;
         } else if (confirmPassword?.trim() !== password?.trim()) {
-            confirmPasswordError = "Mật khẩu xác nhận không trùng khớp";
+            confirmPasswordError = t("Error.Password.Not.Match");
             setState({ confirmPasswordError: confirmPasswordError });
             isValid = false;
         }
@@ -191,7 +193,7 @@ const SignUpView: React.FunctionComponent<ISignUpOwnProps> = (props) => {
         if (checked) {
             setState({ policyCheckboxErrorMessage: "" })
         } else {
-            setState({ policyCheckboxErrorMessage: "Vui lòng đồng ý với Điều khoản dịch vụ của chúng tôi" })
+            setState({ policyCheckboxErrorMessage: t("Warning.Accept.Policy") })
         }
     }
 
@@ -210,15 +212,15 @@ const SignUpView: React.FunctionComponent<ISignUpOwnProps> = (props) => {
             if (data.requestStatus === IRequestStatus.Error) {
                 switch (data.fieldError) {
                     case "email":
-                        setState({ emailError: data.message, passwordError: "", displayNameError: "", isLoading: false });
+                        setState({ emailError: t(data.message), passwordError: "", displayNameError: "", isLoading: false });
                         emailRef.current?.focus();
                         break;
                     case "displayName":
-                        setState({ displayNameError: data.message, emailError: "", passwordError: "", isLoading: false });
+                        setState({ displayNameError: t(data.message), emailError: "", passwordError: "", isLoading: false });
                         displayNameRef.current?.focus();
                         break;
                     case "password":
-                        setState({ passwordError: data.message, emailError: "", displayNameError: "", isLoading: false });
+                        setState({ passwordError: t(data.message), emailError: "", displayNameError: "", isLoading: false });
                         passwordRef.current?.focus();
                         break;
                     default:
@@ -234,7 +236,7 @@ const SignUpView: React.FunctionComponent<ISignUpOwnProps> = (props) => {
 
 
     return (
-        <AppLayout title={signUpTitle}>
+        <AppLayout title={t("SignUpPage.Title")}>
             <div className="g-auth-section">
                 <div className="g-auth-section-row">
                     <div className="g-register-section-logo">
@@ -250,14 +252,14 @@ const SignUpView: React.FunctionComponent<ISignUpOwnProps> = (props) => {
                         <div className="g-register-section-form-description-label">
                             <Label
                                 className="g-register-section-description-label"
-                                title={"Đăng ký tài khoản Devblog"}
+                                title={t("Create.Account")}
                             />
                         </div>
                         <div className="g-register-section-form-description-content">
                             <Label
                                 className="g-register-section-description-content"
-                                title={registerDescription}
-                                subTitle={registerHighlightDes}
+                                title={t("Create.Account.Description")}
+                                subTitle={t("Devblog.Platform")}
                                 subTitleStyle={{ fontWeight: 600 }}
                             />
                         </div>
@@ -277,7 +279,7 @@ const SignUpView: React.FunctionComponent<ISignUpOwnProps> = (props) => {
                                     type="text"
                                     inputRef={emailRef}
                                     errorMessage={emailError}
-                                    placeholder="Địa chỉ email"
+                                    placeholder={t("Email.Address")}
                                     onChange={onChange}
 
                                 />
@@ -289,7 +291,7 @@ const SignUpView: React.FunctionComponent<ISignUpOwnProps> = (props) => {
                                     type={"text"}
                                     inputRef={displayNameRef}
                                     errorMessage={displayNameError}
-                                    placeholder="Tên hiển thị"
+                                    placeholder={t("Common.DisplayName")}
                                     onChange={onChange}
                                 />
                             </div>
@@ -302,7 +304,7 @@ const SignUpView: React.FunctionComponent<ISignUpOwnProps> = (props) => {
                                     type={show.password ? "text" : "password"}
                                     inputRef={passwordRef}
                                     errorMessage={passwordError}
-                                    placeholder="Mật khẩu"
+                                    placeholder={t("Password")}
                                     onChange={onChange}
                                     endAdornment={
                                         <InputAdornment
@@ -330,7 +332,7 @@ const SignUpView: React.FunctionComponent<ISignUpOwnProps> = (props) => {
                                     type={show.confirmPassword ? "text" : "password"}
                                     inputRef={confirmPasswordRef}
                                     errorMessage={confirmPasswordError}
-                                    placeholder="Xác nhận mật khẩu"
+                                    placeholder={t("Common.Confirm.Password")}
                                     onChange={onChange}
                                     endAdornment={
                                         <InputAdornment
@@ -368,11 +370,11 @@ const SignUpView: React.FunctionComponent<ISignUpOwnProps> = (props) => {
                                     color: "#fff",
                                 }}
                                 isLoading={isLoading}
-                                title={"Đăng ký"}
+                                title={t("Common.SignUp")}
                             />
                         </Box>
                         <Divider
-                            title="Đăng nhập bằng"
+                            title={t("Common.Login.By")}
                             textAlign="center"
                             textFontSize={16}
                             margin="16px 0"

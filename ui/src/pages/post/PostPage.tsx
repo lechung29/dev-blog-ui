@@ -23,6 +23,7 @@ import { useImmerState } from '../../hook/useImmerState';
 import { Alert, ISeverity } from '../../components/common/alert/Alert';
 import { classNames, formatDate } from '../../utils/helper';
 import { DefaultButton } from '../../components/common/button/defaultbutton/DefaultButton';
+import { useTranslation } from 'react-i18next';
 interface IPostPageProps {
 
 }
@@ -59,6 +60,7 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
     const params = useParams()
     const { postId } = params
     const { handleUnauthorized } = useAuth()
+    const { t } = useTranslation()
     const { user } = useAppSelector(userState)
     const [state, setState] = useImmerState<IPostPageState>(initialState)
     const {
@@ -113,7 +115,7 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
                 setState((draft) => {
                     draft.showComment = false;
                     draft.commentValue = "";
-                    draft.alertMessage = res.message;
+                    draft.alertMessage = t(res.message);
                     draft.isAlertOpen = true;
                     draft.alertType = ISeverity.success;
                 })
@@ -134,18 +136,12 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
             const res = await PostService.likePost(postId!, handleUnauthorized)
             if (res.requestStatus === IRequestStatus.Success) {
                 setState((draft) => {
-                    draft.alertMessage = res.message
+                    draft.alertMessage = t(res.message);
                     draft.alertType = ISeverity.success
                     draft.isAlertOpen = true
                 })
                 await getPostDetails()
                 setState({ disableLike: false })
-            } else {
-                setState((draft) => {
-                    draft.alertMessage = res.message
-                    draft.alertType = ISeverity.error
-                    draft.isAlertOpen = true
-                })
             }
         } catch (error) {
             console.log(error)
@@ -162,18 +158,12 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
             const res = await PostService.addOrRemoveFavorites(user?._id!, postId!, !isFavorite, handleUnauthorized)
             if (res.requestStatus === IRequestStatus.Success) {
                 setState((draft) => {
-                    draft.alertMessage = res.message
+                    draft.alertMessage = t(res.message);
                     draft.alertType = ISeverity.success
                     draft.isAlertOpen = true
                 })
                 await getPostDetails()
                 setState({ disableFavorite: false })
-            } else {
-                setState((draft) => {
-                    draft.alertMessage = res.message
-                    draft.alertType = ISeverity.error
-                    draft.isAlertOpen = true
-                })
             }
         } catch (error) {
             console.log(error)
@@ -210,7 +200,7 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
             display="block"
             gutterBottom
         >
-            {`Post by: ${post?.author.displayName} - Category: ${post?.category} - Created at: ${formatDate(new Date(post?.createdAt as string))}`}
+            {`${post?.author.displayName}  -  ${post?.category}  -  ${formatDate(new Date(post?.createdAt as string))}`}
         </Typography>
     }, [isLoading])
 
@@ -330,7 +320,7 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
     }, [isLoading, isLike, showComment, post?.comments, isFavorite])
 
     return (
-        <AppLayout>
+        <AppLayout title={t("DetailPost.Title")}>
             <div className='g-post-page-content-section'>
                 <Stack className='g-post-page-content-title'>
                     {postTitle}
@@ -353,7 +343,7 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
                 {!isLoading && showComment && <Stack className='g-post-page-comment-part'>
                     <Comment
                         className='g-post-comment-textarea'
-                        placeholder='Nhập bình luận tại đây'
+                        placeholder={t("Fill.Comment.Here")}
                         minRows={4}
                         maxRows={4}
                         value={commentValue}
@@ -364,7 +354,7 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
                             className='g-post-page-comment-part-action-button'
                             variant="outlined"
                             size="small"
-                            title='Hủy bỏ'
+                            title={t("Common.Cancel")}
                             onClick={() => {
                                 setState((draft) => {
                                     draft.showComment = false
@@ -377,7 +367,7 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
                             className='g-post-page-comment-part-action-button-active'
                             variant="contained"
                             size="small"
-                            title='Đăng'
+                            title={t("Common.Submit.Comment")}
                             onClick={onSubmitComment}
                         />
                     </Stack>

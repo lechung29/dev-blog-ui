@@ -4,7 +4,6 @@ import AppLayout from "../../layout/Layout";
 import { PostService } from "../../services/posts/PostService";
 import Thumbnail from "../../components/thumbnail/Thumbnail";
 import "./index.scss";
-import { groupLink } from "../../components/utils/common/common";
 import PostCard from "../../components/postCard/PostCard";
 import { Box, Container, Stack } from "@mui/material";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
@@ -21,6 +20,7 @@ import QuestionShimmer from "../../components/postCardShimmer/QuestionShimmer";
 import { DefaultButton } from "../../components/common/button/defaultbutton/DefaultButton";
 import { IFunc } from "../../types/Function";
 import { Label } from "../../components/common/label/Label";
+import { useTranslation } from "react-i18next";
 
 interface IHomePageOwnProps {
 
@@ -79,6 +79,7 @@ const initialState: IHomePageState = {
 const Home: React.FunctionComponent<IHomePageOwnProps> = (_props) => {
     const limit: number = 5;
     const navigate = useNavigate()
+    const { t } = useTranslation()
     const shimmerArray = Array(5).fill('');
     const [state, setState] = useImmerState<IHomePageState>(initialState)
     const {
@@ -93,7 +94,6 @@ const Home: React.FunctionComponent<IHomePageOwnProps> = (_props) => {
         sortObject,
         runAfter
     } = state;
-
 
     const getPosts = async () => {
         setState({ isLoadingPost: true })
@@ -183,7 +183,7 @@ const Home: React.FunctionComponent<IHomePageOwnProps> = (_props) => {
                     />))
                 : <Label
                     className="g-post-no-item-label"
-                    title="Không có bài viết phù hợp"
+                    title={t("Common.Post.NoItem")}
                 />
 
     }
@@ -203,19 +203,19 @@ const Home: React.FunctionComponent<IHomePageOwnProps> = (_props) => {
                     />))
                 : <Label
                     className="g-post-no-item-label"
-                    title="Không có bài viết phù hợp"
+                    title={t("Common.Post.NoItem")}
                 />
     }
 
     return (
-        <AppLayout>
+        <AppLayout title={t("HomePage.Title")}>
             <Thumbnail />
             <Box
                 component={"section"}
                 className="g-navbar-link-section"
             >
                 <Link to="/" className="g-navbar-link-section-item">
-                    {groupLink}
+                    {t("Invite.Group.Link")}
                 </Link>
             </Box>
             <Container className="g-homepage-section">
@@ -227,7 +227,7 @@ const Home: React.FunctionComponent<IHomePageOwnProps> = (_props) => {
                     <Stack className="g-homepage-left-section-action">
                         <DefaultButton
                             className="g-homepage-left-section-filter"
-                            title="Bộ lọc"
+                            title={t("Common.Filter")}
                             startIcon={<FilterAltIcon />}
                             onClick={() => setState({ isFilterPanelOpen: true })}
                         />
@@ -265,7 +265,7 @@ const Home: React.FunctionComponent<IHomePageOwnProps> = (_props) => {
                     mx={1}
                 >
                     <Divider
-                        title="CÂU HỎI MỚI NHẤT"
+                        title={t("Common.Latest.Question")}
                         textAlign="center"
                         textFontSize={16}
                         margin="5px 0 10px"

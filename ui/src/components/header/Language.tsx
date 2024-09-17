@@ -4,6 +4,7 @@ import { Stack, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { TooltipHost } from "../common/tooltiphost/TooltipHost";
 import { useImmerState } from "../../hook/useImmerState";
 import { classNames } from "../../utils/helper";
+import { useTranslation } from "react-i18next";
 
 interface ILanguage {
     name: string;
@@ -18,18 +19,21 @@ interface ILanguageOwnProps {
 interface ILanguageState {
     lang: string;
 }
-const initialState: ILanguageState = {
-    lang: "vie",
-}
 
 const Language: React.FunctionComponent<ILanguageOwnProps> = (props) => {
     const { languages } = props
+    const { i18n, t } = useTranslation()
+    const currentLanguage = i18n.language;
+    const initialState: ILanguageState = {
+        lang: currentLanguage || "en",
+    }
     const [state, setState] = useImmerState<ILanguageState>(initialState)
     const { lang } = state;
 
     const handleChange = (event: React.MouseEvent<HTMLElement>, newLang: string) => {
         event.preventDefault();
-        setState({ lang: newLang })
+        i18n.changeLanguage(newLang)
+        setState({ lang: newLang });
     };
 
     return (
@@ -46,11 +50,11 @@ const Language: React.FunctionComponent<ILanguageOwnProps> = (props) => {
                         value={item.name}
                         onClick={handleChange}
                     >
-                        <TooltipHost title={item.title}>
+                        <TooltipHost title={t(item.title)}>
                             <img
                                 className="g-choose-language-image"
                                 src={item.image}
-                                alt={item.title}
+                                alt={t(item.title)}
                             />
                         </TooltipHost>
                     </ToggleButton>

@@ -9,27 +9,36 @@ import { IPostDataProps } from "../../../types/Post";
 import { useAppSelector } from "../../../redux/store/store";
 import { userState } from "../../../redux/reducers/users/UserSlice";
 import { PostService } from "../../../services/posts/PostService";
-import { IToastProps, renderToast } from "../../../utils/utils";
 import { IRequestStatus } from "../../../types/IResponse";
 import { useAuth } from "../../../context/AuthContext";
+import { Label } from "../../../components/common/label/Label";
+import { Alert, ISeverity } from "../../../components/common/alert/Alert";
+import { useTranslation } from "react-i18next";
 
 interface IFavouritePostProps { }
 
 interface IFavouriteState {
 	favoritePosts: IPostDataProps[]
 	isLoading: boolean;
+	isAlertOpen: boolean
+	alertType: ISeverity,
+	alertMessage: string,
 }
 
 const initialState: IFavouriteState = {
 	favoritePosts: [],
 	isLoading: false,
+	isAlertOpen: false,
+	alertMessage: "",
+	alertType: ISeverity.success,
 };
 
 const FavouritePost: React.FunctionComponent<IFavouritePostProps> = (props) => {
 	const { user } = useAppSelector(userState)
 	const [state, setState] = useImmerState<IFavouriteState>(initialState);
-	const { favoritePosts, isLoading } = state
+	const { favoritePosts, isLoading, alertMessage, alertType, isAlertOpen } = state
 	const { handleUnauthorized } = useAuth()
+	const { t } = useTranslation()
 
 	const getFavouritePosts = async () => {
 		setState({ isLoading: true })
@@ -47,10 +56,11 @@ const FavouritePost: React.FunctionComponent<IFavouritePostProps> = (props) => {
 	const handleChangeFavouritePosts = (item: IPostDataProps) => {
 		return PostService.addOrRemoveFavorites(user?._id!, item._id, !item.isFavorite, handleUnauthorized)
 			.then((data) => {
-				renderToast(
-					data.requestStatus === IRequestStatus.Success ? IToastProps.success : IToastProps.error,
-					data.message
-				)
+				setState((draft) => {
+					draft.alertMessage = data.message
+					draft.alertType = data.requestStatus === IRequestStatus.Success ? ISeverity.success : ISeverity.error
+					draft.isAlertOpen = true
+				})
 			})
 			.then(() => {
 				getFavouritePosts();
@@ -58,53 +68,38 @@ const FavouritePost: React.FunctionComponent<IFavouritePostProps> = (props) => {
 	}
 
 	return (
-		<DashboardLayout>
+		<DashboardLayout title={t("ManageFavorite.Title")}>
 			<div className="g-dashboard-content-section">
-				<Grid container spacing={2}>
+				<Grid className="g-dasboard-content-grid" container spacing={2}>
 					{isLoading
 						? Array(8).fill("").map((_item, index) => (
 							<Grid item xs={12} sm={6} md={4} lg={3}>
 								<Skeleton key={index} variant="rounded" width={"100%"} height={220} />
 							</Grid>
 						))
-						: favoritePosts.map((post) => (
-							<Grid item xs={12} sm={6} md={4} lg={3}>
-								<FavouriteCard
-									item={post}
-									onChangeFavorite={(item) => {
-										handleChangeFavouritePosts(item)
-									}}
-								/>
-							</Grid>
-						))}
-					{/* <Grid item xs={12} sm={6} md={4} lg={3}>
-						<FavouriteCard />
-					</Grid>
-					<Grid item xs={12} sm={6} md={4} lg={3}>
-						<FavouriteCard />
-					</Grid>
-					<Grid item xs={12} sm={6} md={4} lg={3}>
-						<FavouriteCard />
-					</Grid>
-					<Grid item xs={12} sm={6} md={4} lg={3}>
-						<FavouriteCard />
-					</Grid>
-					<Grid item xs={12} sm={6} md={4} lg={3}>
-						<FavouriteCard />
-					</Grid>
-					<Grid item xs={12} sm={6} md={4} lg={3}>
-						<FavouriteCard />
-					</Grid>
-					<Grid item xs={12} sm={6} md={4} lg={3}>
-						<FavouriteCard />
-					</Grid>
-					<Grid item xs={12} sm={6} md={4} lg={3}>
-						<FavouriteCard />
-					</Grid>
-					<Grid item xs={12} sm={6} md={4} lg={3}>
-						<FavouriteCard />
-					</Grid> */}
+						: favoritePosts.length
+							? favoritePosts.map((post) => (
+								<Grid item xs={12} sm={6} md={4} lg={3}>
+									<FavouriteCard
+										item={post}
+										onChangeFavorite={(item) => {
+											handleChangeFavouritePosts(item)
+										}}
+									/>
+								</Grid>
+							))
+							: <Label
+								className="g-post-no-item-label"
+								title={t("Common.Post.NoItem")}
+							/>
+					}
 				</Grid>
+				{isAlertOpen && <Alert
+					open={isAlertOpen}
+					severity={alertType}
+					message={alertMessage}
+					onClose={() => setState({ isAlertOpen: false })}
+				/>}
 			</div>
 		</DashboardLayout>
 	);

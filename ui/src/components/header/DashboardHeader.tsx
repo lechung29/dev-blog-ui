@@ -16,18 +16,14 @@ import { logout, userState } from "../../redux/reducers/users/UserSlice";
 import { Image, ImageFit } from "../common/image/Image";
 import { smallLogoSrc } from "../utils/common/common";
 import { IAction, IAction1 } from "../../types/Function";
+import { useTranslation } from "react-i18next";
 
 export interface IDashboardHeaderState {
 	search?: string;
-	lang: "vie" | "eng";
+	lang: string;
 	anchorEl: null | HTMLElement
 }
-
-const initialState: IDashboardHeaderState = {
-	search: "",
-	lang: "vie",
-	anchorEl: null,
-};
+;
 
 const DashboardHeader: React.FunctionComponent = () => {
 	const dispatch = useDispatch();
@@ -35,13 +31,19 @@ const DashboardHeader: React.FunctionComponent = () => {
 	const { user } = useAppSelector(userState)
 	const logoHeight: Readonly<number> = 34;
 	const logoWidth: Readonly<number> = 240;
+	const { t, i18n } = useTranslation()
+	const initialState: IDashboardHeaderState = {
+		search: "",
+		lang: i18n.language,
+		anchorEl: null,
+	}
 	const [state, setState] = useImmerState<IDashboardHeaderState>(initialState);
 	const { anchorEl, lang, search } = state
 	const open = Boolean(anchorEl);
 
 	const avatarMenuList: IPageRoute[] = [
 		{
-			title: "Trang chủ",
+			title: t("Common.Homepage"),
 			route: "/",
 			icon: <HomeIcon style={{ color: "#5488c7" }} />,
 			onClick: () => {
@@ -49,7 +51,7 @@ const DashboardHeader: React.FunctionComponent = () => {
 			},
 		},
 		{
-			title: "Thông tin cá nhân",
+			title: t("Common.Information.Page"),
 			route: "/profile",
 			icon: <PersonIcon style={{ color: "#5488c7" }} />,
 			onClick: () => {
@@ -57,7 +59,7 @@ const DashboardHeader: React.FunctionComponent = () => {
 			},
 		},
 		{
-			title: "Đăng xuất",
+			title: t("Common.Logout"),
 			route: "/login",
 			icon: <LogoutIcon style={{ color: "#5488c7" }} />,
 			onClick: () => {
@@ -93,10 +95,12 @@ const DashboardHeader: React.FunctionComponent = () => {
 	};
 
 	const onChangeLanguage: IAction = () => {
-		if (state.lang === "vie") {
-			setState({ lang: "eng" });
-		} else if (state.lang === "eng") {
-			setState({ lang: "vie" });
+		if (state.lang === "vn") {
+			i18n.changeLanguage("en")
+			setState({ lang: "en" });
+		} else if (state.lang === "en") {
+			i18n.changeLanguage("vn")
+			setState({ lang: "vn" });
 		}
 	};
 
@@ -114,7 +118,7 @@ const DashboardHeader: React.FunctionComponent = () => {
 			<div className="g-dashboard-header-searchbox">
 				<Search
 					id="id-g-searchbox-devblog"
-					placeholder="Tìm kiếm"
+					placeholder={t("Common.Header.Search.Placeholder")}
 					type="text"
 					autoComplete="off"
 					name="searchInput"
@@ -125,9 +129,9 @@ const DashboardHeader: React.FunctionComponent = () => {
 				/>
 			</div>
 			<div className="g-dashboard-header-info">
-				<ChangeLanguage 
-					language={lang} 
-					onChangeLanguage={onChangeLanguage} 
+				<ChangeLanguage
+					language={lang}
+					onChangeLanguage={onChangeLanguage}
 				/>
 				<Avatar
 					className="g-dashboard-header-avatar"
@@ -170,10 +174,10 @@ const DashboardHeader: React.FunctionComponent = () => {
 					anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
 				>
 					<MenuItem className="g-dashboard-avatar-row">
-						<Avatar 
+						<Avatar
 							className="g-dashboard-avatar-image"
-							alt={user?.displayName} 
-							src={user?.avatar} 
+							alt={user?.displayName}
+							src={user?.avatar}
 						/>
 						<div className="g-dashboard-avatar-info">
 							<p className="g-dashboard-avatar-info-name">{user?.displayName}</p>
@@ -182,9 +186,9 @@ const DashboardHeader: React.FunctionComponent = () => {
 					</MenuItem>
 					<Divider />
 					{avatarMenuList.map((item, index) => (
-						<MenuItem 
+						<MenuItem
 							key={index}
-							className="g-avatar-menu-item" 
+							className="g-avatar-menu-item"
 							onClick={item.onClick}
 						>
 							{item.icon}

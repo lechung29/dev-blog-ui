@@ -4,6 +4,7 @@ import "react-quill/dist/quill.snow.css";
 import { htmlToMarkdown, markdownToHtml } from "../../pages/dashboard/createpost/Parse";
 import uploadToCloudinary from "../../services/helpers/upload";
 import "./index.scss";
+import { useTranslation } from "react-i18next";
 
 export interface EditorContentChanged {
 	html: string;
@@ -19,7 +20,7 @@ export default function Editor(props: EditorProps) {
 	const { onChange, value } = props
 	const [editorValue, setEditorValue] = useState<string>(markdownToHtml(value || ""));
 	const reactQuillRef = useRef<ReactQuill>(null);
-
+	const { t } = useTranslation()
 	const onChangeEditor = (content: string) => {
 		setEditorValue(content);
 
@@ -53,7 +54,7 @@ export default function Editor(props: EditorProps) {
 		<ReactQuill
 			ref={reactQuillRef}
 			theme="snow"
-			placeholder="Nhập nội dung..."
+			placeholder={t("Editor.Fill.Content")}
 			modules={{
 				toolbar: {
 					container: [

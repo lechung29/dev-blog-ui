@@ -7,12 +7,13 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { ILabelItemProps } from "../filterPanel/sortByCreated/SortByCreated";
 import { ISearchSortValue } from "../../pages/search/SearchPage";
 import { IAction1, IFunc, IFunc1 } from "../../types/Function";
+import { useTranslation } from "react-i18next";
 
 interface ISearchSortProps {
     open: HTMLElement | null;
     onClose: () => void;
     sortValue: ISearchSortValue;
-    onOpen: (e:  React.MouseEvent<HTMLElement>) => void;
+    onOpen: (e: React.MouseEvent<HTMLElement>) => void;
     onChangeSortValue: (ISearchSortValue) => void;
 }
 
@@ -56,37 +57,38 @@ const StyledMenu = styled((props: MenuProps) => (
 export const SortList: ILabelItemProps[] = [
     {
         field: "createdAt",
-        name: "Mới nhất",
+        name: "Common.Sort.Latest",
         value: "desc",
     },
     {
-       field: "createdAt",
-        name: "Cũ nhất",
+        field: "createdAt",
+        name: "Common.Sort.Oldest",
         value: "asc",
     },
     {
-       field: "comment",
-        name: "Nhiều bình luận nhất",
+        field: "comment",
+        name: "Sort.Most.Comment",
         value: "desc",
     },
     {
-       field: "like",
-        name: "Nhiều lượt thích nhất",
+        field: "like",
+        name: "Sort.Most.Like",
         value: "desc",
     }
 ]
 
 const SearchSort: React.FunctionComponent<ISearchSortProps> = (props) => {
-    const { onClose, open, sortValue, onOpen, onChangeSortValue} = props
+    const { onClose, open, sortValue, onOpen, onChangeSortValue } = props
     const [currentSort, setCurrentSort] = React.useState<ISearchSortValue>(sortValue);
+    const { t } = useTranslation()
 
     const onChangeSort: IAction1<ILabelItemProps> = (item) => {
         if (item.field !== currentSort.field || item.value !== currentSort.value) {
-          setCurrentSort((prev) => ({
-              ...prev,
-              field: item.field!,
-              value: item.value
-          }));
+            setCurrentSort((prev) => ({
+                ...prev,
+                field: item.field!,
+                value: item.value
+            }));
         }
     };
 
@@ -105,9 +107,9 @@ const SearchSort: React.FunctionComponent<ISearchSortProps> = (props) => {
         <React.Fragment>
             <Box className="g-search-sort-box">
                 <Label
-                    title={`Sắp xếp theo: ${getSortLabel()}`}
+                    title={t("Sort.By", { sortType: t(getSortLabel()) })}
                     className="g-search-sort-box-label"
-                    subTitle={getSortLabel()}
+                    subTitle={t(getSortLabel())}
                     endIcon={<ArrowDropDownIcon />}
                     subTitleStyle={{
                         color: "#5488c7",
@@ -126,14 +128,14 @@ const SearchSort: React.FunctionComponent<ISearchSortProps> = (props) => {
                 anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
             >
                 {SortList.map((item, index) => (
-                    <MenuItem 
-                        key={index} 
+                    <MenuItem
+                        key={index}
                         aria-hidden
-                        className="g-search-sort-list-item" 
-                        selected={checkSelected(item)} 
+                        className="g-search-sort-list-item"
+                        selected={checkSelected(item)}
                         onClick={() => onChangeSort(item)}
                     >
-                        {item.name}
+                        {t(item.name)}
                     </MenuItem>
                 ))}
             </StyledMenu>
