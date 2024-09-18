@@ -10,7 +10,6 @@ import { useAppSelector } from "../../../redux/store/store";
 import { userState } from "../../../redux/reducers/users/UserSlice";
 import { IPostByCategoryProps, IPostByMonthProps } from "../../../types/Post";
 import { useImmerState } from "../../../hook/useImmerState";
-import { useAuth } from "../../../context/AuthContext";
 import { useTranslation } from "react-i18next";
 
 interface IOverviewPageProps {
@@ -35,14 +34,13 @@ const initialState: IOverviewPageProps = {
 const Overview: React.FunctionComponent = () => {
 	const { user } = useAppSelector(userState)
 	const [state, setState] = useImmerState<IOverviewPageProps>(initialState)
-	const { handleUnauthorized } = useAuth()
 	const { t } = useTranslation()
 
 	useEffect(() => {
 		setState((draft) => {
 			draft.isLoading = true;
 		});
-		PostService.getUserOverview(user?._id!, handleUnauthorized)
+		PostService.getUserOverview(user?._id!)
 			.then((data) => {
 				setState((draft) => {
 					draft.isLoading = false;

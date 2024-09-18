@@ -4,6 +4,7 @@ import "./index.scss";
 import DashboardHeader from "../components/header/DashboardHeader";
 import DashboardPanel from "../components/dashboardPanel/DashboardPanel";
 import { Toaster } from "react-hot-toast";
+import ExpiredModal from "../components/ExpiredModal/ExpiredModal";
 
 interface IDashboardLayoutProps {
 	children: React.ReactNode;
@@ -23,6 +24,7 @@ const DashboardLayout: React.FunctionComponent<IDashboardLayoutProps> = (props) 
 					<DashboardHeader />
 					<section style={{ display: "flex", height: "calc(100vh - 90px)" }}>
 						<Toaster containerClassName="g-toaster-container" position="bottom-right" reverseOrder={false} />
+						<ExpiredModal />
 						<DashboardPanel />
 						{children}
 					</section>

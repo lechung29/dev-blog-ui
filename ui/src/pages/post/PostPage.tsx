@@ -18,7 +18,6 @@ import { userState } from '../../redux/reducers/users/UserSlice';
 import { IRequestStatus } from '../../types/IResponse';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
-import { useAuth } from '../../context/AuthContext';
 import { useImmerState } from '../../hook/useImmerState';
 import { Alert, ISeverity } from '../../components/common/alert/Alert';
 import { classNames, formatDate } from '../../utils/helper';
@@ -59,7 +58,6 @@ const initialState: IPostPageState = {
 const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
     const params = useParams()
     const { postId } = params
-    const { handleUnauthorized } = useAuth()
     const { t } = useTranslation()
     const { user } = useAppSelector(userState)
     const [state, setState] = useImmerState<IPostPageState>(initialState)
@@ -110,7 +108,7 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
                 post: postId!,
                 content: commentValue,
                 commentator: user?._id!
-            }, handleUnauthorized)
+            })
             if (res.requestStatus === IRequestStatus.Success) {
                 setState((draft) => {
                     draft.showComment = false;
@@ -133,7 +131,7 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
         }
         try {
             setState({ disableLike: true })
-            const res = await PostService.likePost(postId!, handleUnauthorized)
+            const res = await PostService.likePost(postId!)
             if (res.requestStatus === IRequestStatus.Success) {
                 setState((draft) => {
                     draft.alertMessage = t(res.message);
@@ -155,7 +153,7 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
         }
         try {
             setState({ disableFavorite: true })
-            const res = await PostService.addOrRemoveFavorites(user?._id!, postId!, !isFavorite, handleUnauthorized)
+            const res = await PostService.addOrRemoveFavorites(user?._id!, postId!, !isFavorite)
             if (res.requestStatus === IRequestStatus.Success) {
                 setState((draft) => {
                     draft.alertMessage = t(res.message);

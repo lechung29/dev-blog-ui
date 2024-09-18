@@ -1,4 +1,6 @@
-import { IFetch } from "../../types/Function";
+import { handleUnauthorized } from "../../redux/reducers/auth/AuthSlice";
+import { store } from "../../redux/store/store";
+import { IFunc3 } from "../../types/Function";
 
 export enum FetchMethod {
     GET = "GET",
@@ -7,7 +9,7 @@ export enum FetchMethod {
     DELETE = "DELETE",
 }
 
-export const FetchApi: IFetch<string, FetchMethod, any, Function, Promise<any>> = async (url, method, body, handleUnauthorized) => {
+export const FetchApi: IFunc3<string, FetchMethod, any, Promise<any>> = async (url, method, body) => {
     try {
         const access_token = localStorage.getItem("access_token");
         const response = await fetch(url, {
@@ -20,12 +22,13 @@ export const FetchApi: IFetch<string, FetchMethod, any, Function, Promise<any>> 
         });
         if (response.status === 401) {
             const errorMessage = await response.json();
-            handleUnauthorized?.(errorMessage.message);
+            store.dispatch(handleUnauthorized(errorMessage.message));
             throw new Error(errorMessage.message);
         } else {
             return await response.json();
         }
     } catch (error: any) {
+        console.log(error)
         return error;
     }
 };

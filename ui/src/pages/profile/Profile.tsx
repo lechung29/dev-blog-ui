@@ -15,7 +15,6 @@ import { IRequestStatus } from "../../types/IResponse";
 import { delay } from "../../utils/helper";
 import { useNavigate } from "react-router-dom";
 import { Alert, ISeverity } from "../../components/common/alert/Alert";
-import { useAuth } from "../../context/AuthContext";
 import { useTranslation } from "react-i18next";
 interface IProfilePageOwnProps { }
 
@@ -36,7 +35,6 @@ const Profile: React.FunctionComponent<IProfilePageOwnProps> = (_props) => {
     const { user } = useAppSelector(userState)
     const dispatch = useAppDispatch()
     const navigate = useNavigate()
-    const { handleUnauthorized } = useAuth()
     const initialState: IProfilePageState = {
         imageFileUrl: user?.avatar || "",
         displayName: user?.displayName || "",
@@ -113,7 +111,7 @@ const Profile: React.FunctionComponent<IProfilePageOwnProps> = (_props) => {
                 avatar: imageFileUrl,
                 displayName: displayName,
                 email: email
-            }, handleUnauthorized)
+            })
 
             if (updatedUser.requestStatus === IRequestStatus.Error) {
                 switch (updatedUser.fieldError) {

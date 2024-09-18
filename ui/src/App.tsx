@@ -14,40 +14,35 @@ import Overview from "./pages/dashboard/overview/Overview";
 import SearchPage from "./pages/search/SearchPage";
 import PostPage from "./pages/post/PostPage";
 import UserManagement from "./pages/dashboard/usermanagement/UserManagement";
-import { AuthProvider } from "./context/AuthContext";
-import ExpiredModal from "./components/ExpiredModal/ExpiredModal";
 
 function App() {
 	const token = localStorage.getItem("access_token")
 	return (
 		<React.Fragment>
 			<BrowserRouter>
-				<AuthProvider>
-					<Routes>
-						<Route key={"blog-home"} path="/" element={<Home />} />
-						<Route key={"blog-login"} path="/login" element={token ? <Navigate to={"/"} /> : <Login />} />
-						<Route key={"blog-register"} path="/register" element={token ? <Navigate to={"/"} /> : <SignUp />} />
-						<Route key={"blog-search"} path="/search/:searchText" element={<SearchPage />} />
-						<Route key={"blog-post"} path="/post/:postId" element={<PostPage />} />
-						<Route element={<CommonRoute />}>
-							<Route key={"blog-user-profile"} path="/profile" element={<Profile />} />
-						</Route>
-						<Route path="/admin-dashboard" element={<AdminRoute />}>
-							<Route key={"admin-overview"} path="overview" element={<Overview />} />
-							<Route key={"admin-create-post"} path="create-post" element={<CreatePost />} />
-							<Route key={"admin-post-management"} path="post-management" element={<UserPostManagement />} />
-							<Route key={"admin-user-management"} path="user-management" element={<UserManagement />} />
-							<Route key={"admin-favorite-management"} path="favourite-management" element={<FavouritePost />} />
-						</Route>
-						<Route path="/user-dashboard" element={<UserRoute />}>
-							<Route key={"user-overview"} path="overview" element={<Overview />} />
-							<Route key={"user-create-post"} path="create-post" element={<CreatePost />} />
-							<Route key={"user-post-management"} path="post-management" element={<UserPostManagement />} />
-							<Route key={"user-favorite-management"} path="favourite-management" element={<FavouritePost />} />
-						</Route>
-					</Routes>
-					<ExpiredModal />
-				</AuthProvider>
+				<Routes>
+					<Route key={"blog-home"} path="/" element={<Home />} />
+					<Route key={"blog-login"} path="/login" element={token ? <Navigate to={"/"} /> : <Login />} />
+					<Route key={"blog-register"} path="/register" element={token ? <Navigate to={"/"} /> : <SignUp />} />
+					<Route key={"blog-search"} path="/search/:searchText" element={<SearchPage />} />
+					<Route key={"blog-post"} path="/post/:postId" element={<PostPage />} />
+					<Route element={<CommonRoute />}>
+						<Route key={"blog-user-profile"} path="/profile" element={<Profile />} />
+					</Route>
+					<Route path="/admin-dashboard" element={<AdminRoute />}>
+						<Route key={"admin-overview"} path="overview" element={<Overview />} />
+						<Route key={"admin-create-post"} path="create-post" element={<CreatePost />} />
+						<Route key={"admin-post-management"} path="post-management" element={<UserPostManagement />} />
+						<Route key={"admin-user-management"} path="user-management" element={<UserManagement />} />
+						<Route key={"admin-favorite-management"} path="favourite-management" element={<FavouritePost />} />
+					</Route>
+					<Route path="/user-dashboard" element={<UserRoute />}>
+						<Route key={"user-overview"} path="overview" element={<Overview />} />
+						<Route key={"user-create-post"} path="create-post" element={<CreatePost />} />
+						<Route key={"user-post-management"} path="post-management" element={<UserPostManagement />} />
+						<Route key={"user-favorite-management"} path="favourite-management" element={<FavouritePost />} />
+					</Route>
+				</Routes>
 			</BrowserRouter>
 		</React.Fragment>
 	);

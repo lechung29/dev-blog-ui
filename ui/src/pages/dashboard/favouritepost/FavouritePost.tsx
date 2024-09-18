@@ -10,7 +10,6 @@ import { useAppSelector } from "../../../redux/store/store";
 import { userState } from "../../../redux/reducers/users/UserSlice";
 import { PostService } from "../../../services/posts/PostService";
 import { IRequestStatus } from "../../../types/IResponse";
-import { useAuth } from "../../../context/AuthContext";
 import { Label } from "../../../components/common/label/Label";
 import { Alert, ISeverity } from "../../../components/common/alert/Alert";
 import { useTranslation } from "react-i18next";
@@ -37,12 +36,11 @@ const FavouritePost: React.FunctionComponent<IFavouritePostProps> = (props) => {
 	const { user } = useAppSelector(userState)
 	const [state, setState] = useImmerState<IFavouriteState>(initialState);
 	const { favoritePosts, isLoading, alertMessage, alertType, isAlertOpen } = state
-	const { handleUnauthorized } = useAuth()
 	const { t } = useTranslation()
 
 	const getFavouritePosts = async () => {
 		setState({ isLoading: true })
-		const res = await PostService.getFavoritePostByUserId(user?._id!, handleUnauthorized)
+		const res = await PostService.getFavoritePostByUserId(user?._id!)
 		setState((draft) => {
 			draft.favoritePosts = res.data || [];
 			draft.isLoading = false;
@@ -54,7 +52,7 @@ const FavouritePost: React.FunctionComponent<IFavouritePostProps> = (props) => {
 	}, [])
 
 	const handleChangeFavouritePosts = (item: IPostDataProps) => {
-		return PostService.addOrRemoveFavorites(user?._id!, item._id, !item.isFavorite, handleUnauthorized)
+		return PostService.addOrRemoveFavorites(user?._id!, item._id, !item.isFavorite)
 			.then((data) => {
 				setState((draft) => {
 					draft.alertMessage = data.message

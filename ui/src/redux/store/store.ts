@@ -6,6 +6,7 @@ import UserSlice from "../reducers/users/UserSlice";
 import storage from "redux-persist/lib/storage";
 import { useDispatch, useSelector } from "react-redux";
 import PostSlice from "../reducers/posts/PostSlice";
+import AuthSlice from "../reducers/auth/AuthSlice";
 
 const persistConfig: any = {
     key: "root",
@@ -17,6 +18,7 @@ const persistConfig: any = {
 const rootReducer = combineReducers({
     user: UserSlice,
     post: PostSlice,
+    auth: AuthSlice,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
