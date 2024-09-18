@@ -21,11 +21,11 @@ import {
 } from "../helpers/QueryString";
 
 class PostService {
-    public static createPost(data: ICreatePost, handleUnauthorized: Function): Promise<IResponseType<ICreatePost>> {
-        return FetchApi(`${root}/${v1}/post/${createPost}`, FetchMethod.POST, data, handleUnauthorized);
+    public static createPost(data: ICreatePost): Promise<IResponseType<ICreatePost>> {
+        return FetchApi(`${root}/${v1}/post/${createPost}`, FetchMethod.POST, data);
     }
-    public static getAllPosts(handleUnauthorized: Function): Promise<IResponseType<IPostDataProps[]>> {
-        return FetchApi(`${root}/${v1}/post/${getAllPost}`, FetchMethod.GET, null, handleUnauthorized);
+    public static getAllPosts(): Promise<IResponseType<IPostDataProps[]>> {
+        return FetchApi(`${root}/${v1}/post/${getAllPost}`, FetchMethod.GET);
     }
 
     public static getFilterPosts(selector: IQueryObject): Promise<IResponseType<IPostDataProps[]>> {
@@ -42,36 +42,36 @@ class PostService {
         return FetchApi(`${root}/${v1}/post/${getMaxPages}${query}`, FetchMethod.GET);
     }
 
-    public static likePost(postId: string, handleUnauthorized: Function): Promise<IResponseType<IPostDataProps>> {
-        return FetchApi(`${root}/${v1}/post/${likePost}/${postId}`, FetchMethod.PUT, null, handleUnauthorized);
+    public static likePost(postId: string): Promise<IResponseType<IPostDataProps>> {
+        return FetchApi(`${root}/${v1}/post/${likePost}/${postId}`, FetchMethod.PUT);
     }
 
-    public static adminUpdatePostStatus(status: IPostStatus, postId: string, handleUnauthorized: Function): Promise<IResponseType<IPostDataProps[]>> {
-        return FetchApi(`${root}/${v1}/post/${updatePost}/${postId}/`, FetchMethod.PUT, { status: status }, handleUnauthorized);
+    public static adminUpdatePostStatus(status: IPostStatus, postId: string): Promise<IResponseType<IPostDataProps[]>> {
+        return FetchApi(`${root}/${v1}/post/${updatePost}/${postId}/`, FetchMethod.PUT, { status: status });
     }
 
-    public static deleteMultiPost(postIds: string[], handleUnauthorized: Function): Promise<IResponseType<IPostDataProps[]>> {
-        return FetchApi(`${root}/${v1}/post/${multiDeletePosts}`, FetchMethod.DELETE, { postIds: postIds }, handleUnauthorized);
+    public static deleteMultiPost(postIds: string[]): Promise<IResponseType<IPostDataProps[]>> {
+        return FetchApi(`${root}/${v1}/post/${multiDeletePosts}`, FetchMethod.DELETE, { postIds: postIds });
     }
 
     public static getAllTags(): Promise<IResponseType<string[]>> {
         return FetchApi(`${root}/${v1}/post/${getAllTags}`, FetchMethod.GET);
     }
 
-    public static addOrRemoveFavorites(userId: string, postId: string, isAddFavorite: boolean, handleUnauthorized: Function): Promise<IResponseDefault> {
+    public static addOrRemoveFavorites(userId: string, postId: string, isAddFavorite: boolean): Promise<IResponseDefault> {
         return FetchApi(`${root}/${v1}/favorite/${addFavorite}`, FetchMethod.POST, {
             userId: userId,
             postId: postId,
             isAddFavorite: isAddFavorite,
-        }, handleUnauthorized);
+        });
     }
 
-    public static getFavoritePostByUserId(userId: string, handleUnauthorized: Function): Promise<IResponseType<IPostDataProps[]>> {
-        return FetchApi(`${root}/${v1}/favorite/${getFavorite}/${userId}`, FetchMethod.GET, null, handleUnauthorized);
+    public static getFavoritePostByUserId(userId: string): Promise<IResponseType<IPostDataProps[]>> {
+        return FetchApi(`${root}/${v1}/favorite/${getFavorite}/${userId}`, FetchMethod.GET);
     }
 
-    public static getUserOverview(userId: string, handleUnauthorized: Function): Promise<IResponseType<IOverViewProps>> {
-        return FetchApi(`${root}/${v1}/post/${getOverview}/${userId}`, FetchMethod.GET, null, handleUnauthorized);
+    public static getUserOverview(userId: string): Promise<IResponseType<IOverViewProps>> {
+        return FetchApi(`${root}/${v1}/post/${getOverview}/${userId}`, FetchMethod.GET);
     }
 }
 

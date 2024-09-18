@@ -16,20 +16,20 @@ class AuthService {
         return FetchApi(`${root}/${v1}/auth/${register}`, FetchMethod.POST, data);
     }
 
-    public static updateUserInfo(userId: string, data: IUpdateUserProps, handleUnauthorized: Function): Promise<IResponseType<IUserInformation>> {
-        return FetchApi(`${root}/${v1}/user/${updateUser}/${userId}`, FetchMethod.PUT, data, handleUnauthorized);
+    public static updateUserInfo(userId: string, data: IUpdateUserProps): Promise<IResponseType<IUserInformation>> {
+        return FetchApi(`${root}/${v1}/user/${updateUser}/${userId}`, FetchMethod.PUT, data);
     }
 
-    public static updatePassword(userId: string, data: IChangePasswordProps, handleUnauthorized: Function): Promise<IResponseType<IUserInformation>> {
-        return FetchApi(`${root}/${v1}/user/${updatePassword}/${userId}`, FetchMethod.PUT, data, handleUnauthorized);
+    public static updatePassword(userId: string, data: IChangePasswordProps): Promise<IResponseType<IUserInformation>> {
+        return FetchApi(`${root}/${v1}/user/${updatePassword}/${userId}`, FetchMethod.PUT, data);
     }
 
-    public static getAllUsers(handleUnauthorized: Function): Promise<IResponseType<IUserInformation[]>> {
-        return FetchApi(`${root}/${v1}/user/${allUser}`, FetchMethod.GET, handleUnauthorized);
+    public static getAllUsers(): Promise<IResponseType<IUserInformation[]>> {
+        return FetchApi(`${root}/${v1}/user/${allUser}`, FetchMethod.GET);
     }
 
-    public static updateUserStatus(userId: string, status: userStatus, handleUnauthorized: Function): Promise<IResponseDefault> {
-        return FetchApi(`${root}/${v1}/user/${updateUserStatus}/${userId}`, FetchMethod.PUT, { status: status }, handleUnauthorized);
+    public static updateUserStatus(userId: string, status: userStatus): Promise<IResponseDefault> {
+        return FetchApi(`${root}/${v1}/user/${updateUserStatus}/${userId}`, FetchMethod.PUT, { status: status });
     }
 }
 

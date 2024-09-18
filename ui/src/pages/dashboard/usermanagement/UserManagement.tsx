@@ -15,7 +15,6 @@ import { userState } from '../../../redux/reducers/users/UserSlice';
 import { Alert, ISeverity } from '../../../components/common/alert/Alert';
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
-import { useAuth } from '../../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 
 interface IUserManagementProps { }
@@ -50,7 +49,6 @@ const UserManagement: React.FunctionComponent<IUserManagementProps> = (props) =>
     const { user } = useAppSelector(userState)
     const { t } = useTranslation()
     const dataTableRef = useRef<IDataTableRef>(null);
-    const { handleUnauthorized } = useAuth()
 
     const finalColumns = userManagementColumn.map((item) => ({
         ...item,
@@ -59,7 +57,7 @@ const UserManagement: React.FunctionComponent<IUserManagementProps> = (props) =>
 
     const getAllUsers = async () => {
         setState({ loading: true });
-        const allUser = await AuthService.getAllUsers(handleUnauthorized);
+        const allUser = await AuthService.getAllUsers();
         const formattedUsers = allUser.data?.map((user) => ({
             ...user,
             id: user._id,
@@ -93,7 +91,7 @@ const UserManagement: React.FunctionComponent<IUserManagementProps> = (props) =>
             })
             return Promise.resolve();
         } else {
-            return AuthService.updateUserStatus(selectedUsers[0], lockStatusNeedUpdate(), handleUnauthorized)
+            return AuthService.updateUserStatus(selectedUsers[0], lockStatusNeedUpdate())
                 .then((data) => {
                     setState((draft) => {
                         draft.isLockLoading = false;

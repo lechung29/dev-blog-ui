@@ -19,27 +19,25 @@ const initialState: IPostState = {
     allPosts: [],
 };
 
-export const getAllPosts = createAsyncThunk("posts/getAllPosts", async (callback: Function) => {
-    return await PostService.getAllPosts(callback);
+export const getAllPosts = createAsyncThunk("posts/getAllPosts", async () => {
+    return await PostService.getAllPosts();
 });
 
 interface IDeletePostProps {
     postIds: string[];
-    handleUnauthorized: (message) => void
 }
 
 export const deletePost = createAsyncThunk("posts/deletePost", async (data: IDeletePostProps) => {
-    return await PostService.deleteMultiPost(data.postIds, data.handleUnauthorized);
+    return await PostService.deleteMultiPost(data.postIds);
 });
 
 export interface IUpdatePostStatus {
     status: IPostStatus;
     postId: string;
-    handleUnauthorized : (message: string) => void
 }
 
 export const updatePost = createAsyncThunk("posts/updatePostStatus", async (data: IUpdatePostStatus) => {
-    return await PostService.adminUpdatePostStatus(data.status, data.postId, data.handleUnauthorized);
+    return await PostService.adminUpdatePostStatus(data.status, data.postId);
 });
 
 const postSlice = createSlice({

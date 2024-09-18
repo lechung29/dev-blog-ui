@@ -8,7 +8,6 @@ import { useAppSelector } from '../../redux/store/store';
 import { userState } from '../../redux/reducers/users/UserSlice';
 import { CommentService } from '../../services/comments/CommentService';
 import ConfirmDialog from '../common/confirmDialog/ConfirmDialog';
-import { useAuth } from '../../context/AuthContext';
 import { useImmerState } from '../../hook/useImmerState';
 import { IAction, IFunc } from '../../types/Function';
 import { Alert, ISeverity } from '../common/alert/Alert';
@@ -36,7 +35,6 @@ interface ICommentItemState {
 const CommentItem: React.FunctionComponent<ICommentItemProps> = (props) => {
     const { item, refreshPost } = props
     const { user } = useAppSelector(userState)
-    const { handleUnauthorized } = useAuth()
     const { t } = useTranslation()
     const initialState: ICommentItemState = {
         isUpdateComment: false,
@@ -65,18 +63,17 @@ const CommentItem: React.FunctionComponent<ICommentItemProps> = (props) => {
 
     const handleLikeComment = async () => {
         try {
-            const res = await CommentService.likeComment(item._id, handleUnauthorized)
-            setState((draft) => {
-                draft.isOpenAlert = true;
-                draft.message = t(res.message);
-            })
-            if (res.requestStatus === IRequestStatus.Success) await refreshPost()
+            const res = await CommentService.likeComment(item._id)
+            if (res.requestStatus === IRequestStatus.Success) {
+                setState((draft) => {
+                    draft.isOpenAlert = true;
+                    draft.message = t(res.message);
+                })
+                await refreshPost()
+            }
+
         } catch (error: any) {
             console.log(error)
-            setState((draft) => {
-                draft.isOpenAlert = true;
-                draft.message = t(error.message);
-            })
         }
     }
 
@@ -91,45 +88,39 @@ const CommentItem: React.FunctionComponent<ICommentItemProps> = (props) => {
         }
 
         try {
-            const res = await CommentService.updateComment(props.item._id, user?._id!, commentValue, handleUnauthorized)
-            setState((draft) => {
-                draft.isOpenAlert = true;
-                draft.alertType = ISeverity.success
-                draft.message = t(res.message)
-                draft.isUpdateComment = false
-            })
-            if (res.requestStatus === IRequestStatus.Success) await refreshPost()
+            const res = await CommentService.updateComment(props.item._id, user?._id!, commentValue)
+            if (res.requestStatus === IRequestStatus.Success) {
+                setState((draft) => {
+                    draft.isOpenAlert = true;
+                    draft.alertType = ISeverity.success
+                    draft.message = t(res.message)
+                    draft.isUpdateComment = false
+                })
+                await refreshPost()
+            }
 
         } catch (error: any) {
             console.log(error)
-            setState((draft) => {
-                draft.isOpenAlert = true;
-                draft.alertType = ISeverity.error
-                draft.message = t(error.message)
-            })
         }
     }
 
     const handleDeleteComment = async () => {
         setState({ isDeletingComment: true })
         try {
-            const res = await CommentService.deleteComment(props.item._id, user?._id!, handleUnauthorized)
-            setState((draft) => {
-                draft.isOpenAlert = true;
-                draft.alertType = ISeverity.success
-                draft.message = t(res.message)
-                draft.isOpenDeleteCommentDialog = false
-                draft.isDeletingComment = false
-            })
-            if (res.requestStatus === IRequestStatus.Success) await refreshPost()
+            const res = await CommentService.deleteComment(props.item._id, user?._id!)
+
+            if (res.requestStatus === IRequestStatus.Success) {
+                setState((draft) => {
+                    draft.isOpenAlert = true;
+                    draft.alertType = ISeverity.success
+                    draft.message = t(res.message)
+                    draft.isOpenDeleteCommentDialog = false
+                    draft.isDeletingComment = false
+                })
+                await refreshPost()
+            }
         } catch (error: any) {
             console.log(error)
-            setState((draft) => {
-                draft.isOpenAlert = true;
-                draft.alertType = ISeverity.error
-                draft.message = t(error.message)
-                draft.isDeletingComment = false
-            })
         }
     }
 

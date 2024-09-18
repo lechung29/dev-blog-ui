@@ -10,7 +10,6 @@ import { userState } from '../../redux/reducers/users/UserSlice';
 import { AuthService } from '../../services/auth/AuthService';
 import { IRequestStatus } from '../../types/IResponse';
 import { delay } from '../../utils/helper';
-import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 
 interface IChangePasswordDialogProps {
@@ -40,7 +39,6 @@ const initialState: IChangePasswordDialogState = {
 
 const ChangePasswordDialog: React.FunctionComponent<IChangePasswordDialogProps> = (props) => {
     const { onClose, open } = props
-    const { handleUnauthorized } = useAuth()
     const { user } = useAppSelector(userState)
     const { t } = useTranslation()
     const [state, setState] = useImmerState<IChangePasswordDialogState>(initialState)
@@ -117,7 +115,7 @@ const ChangePasswordDialog: React.FunctionComponent<IChangePasswordDialogProps> 
         const updatedUser = await AuthService.updatePassword(user?._id!, {
             currentPassword: currentPassword,
             newPassword: newPassword
-        }, handleUnauthorized)
+        })
         if (updatedUser.requestStatus === IRequestStatus.Error) {
             switch (updatedUser.fieldError) {
                 case "currentPassword":

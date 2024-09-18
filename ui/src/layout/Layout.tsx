@@ -6,6 +6,7 @@ import { Toaster } from "react-hot-toast";
 import { defaultAppTitle } from "../components/utils/common/common";
 import { useLocation } from "react-router-dom";
 import "./index.scss";
+import ExpiredModal from "../components/ExpiredModal/ExpiredModal";
 
 interface ILayoutProps {
     children: React.ReactNode;
@@ -30,6 +31,7 @@ const AppLayout: React.FunctionComponent<ILayoutProps> = (props) => {
 						position="bottom-right"
 						reverseOrder={false}
 					/>
+                    <ExpiredModal />
                     {children}
                 </section>
                 {!authRoute.has(location.pathname) ? <Footer /> : <React.Fragment />}

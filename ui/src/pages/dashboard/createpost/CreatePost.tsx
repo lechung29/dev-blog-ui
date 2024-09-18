@@ -12,7 +12,6 @@ import { PostService } from "../../../services/posts/PostService";
 import { IRequestStatus } from "../../../types/IResponse";
 import { useAppSelector } from "../../../redux/store/store";
 import uploadToCloudinary from "../../../services/helpers/upload";
-import { useAuth } from "../../../context/AuthContext";
 import { userState } from "../../../redux/reducers/users/UserSlice";
 import { IAction1, IFunc1 } from "../../../types/Function";
 import { useNavigate } from "react-router-dom";
@@ -62,7 +61,6 @@ const initialState: ICreatePostState = {
 };
 
 const CreatePost: React.FunctionComponent<ICreatePostOwnProps> = (props) => {
-	const { handleUnauthorized } = useAuth()
 	const [state, setState] = useImmerState<ICreatePostState>(initialState);
 	const {
 		categoryInput,
@@ -197,7 +195,7 @@ const CreatePost: React.FunctionComponent<ICreatePostOwnProps> = (props) => {
 				tags: tags,
 				content: postContent,
 				thumbnail: postThumbnails ?? "",
-			}, handleUnauthorized)
+			})
 			if (data.requestStatus === IRequestStatus.Error) {
 				switch (data.fieldError) {
 					case "title":
