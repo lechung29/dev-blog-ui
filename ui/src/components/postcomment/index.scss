@@ -153,5 +153,27 @@
                 font-size: 13px;
             }
         }
+
+        @media screen and (max-width: 420px) {
+            .g-post-comment-action-bottom {
+                .g-post-comment-timeline {
+                    display: none;
+                }
+            }
+        }
     }
 }
+
+@media screen and (max-width: 767px) {
+    .g-post-comment-item {
+        width: 80%;
+    }
+}
+
+@media screen and (max-width: 575px) {
+    .g-post-comment-item {
+        width: 100%;
+    }
+}
+
+

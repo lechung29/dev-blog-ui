@@ -177,7 +177,7 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
             style={{ borderRadius: 16, marginBottom: "0.35em" }}
         /> : <Typography
             textAlign={"center"}
-            variant="h4"
+            variant="h5"
             gutterBottom
             fontWeight={500}
         >

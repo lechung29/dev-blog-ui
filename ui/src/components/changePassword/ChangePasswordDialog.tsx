@@ -90,7 +90,7 @@ const ChangePasswordDialog: React.FunctionComponent<IChangePasswordDialogProps> 
             isValid = false;
         }
 
-        if (currentPassword.trim() === newPassword.trim()) {
+        if ((currentPassword.trim() === newPassword.trim()) && newPassword.trim()) {
             newPasswordError = t("Error.Current.Different.New.Password")
             setState({ newPasswordError: newPasswordError });
             isValid = false;
@@ -192,7 +192,7 @@ const ChangePasswordDialog: React.FunctionComponent<IChangePasswordDialogProps> 
                     disabled={isUpdating}
                     onClick={onClose}
                 >
-                    Hủy
+                    {t("Common.Cancel")}
                 </Button>
                 <DefaultButton
                     variant="contained"

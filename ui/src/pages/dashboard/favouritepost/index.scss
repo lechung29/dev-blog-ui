@@ -7,7 +7,14 @@
 }
 
 
-.g-dasboard-content-grid {
+.g-dasbhoard-content-grid {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    height: 100%;
+}
+
+.g-dashboard-content-grid-no-item {
     display: flex;
     align-items: center;
     justify-content: center;

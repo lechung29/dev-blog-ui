@@ -55,7 +55,7 @@ const ConfirmDialog: React.FunctionComponent<IConfirmDialogProps> = (props) => {
 					className="g-dialog-footer-button"
 					onClick={onClose}
 				>
-					Hủy
+					{t("Common.Cancel")}
 				</Button>}
 				<DefaultButton
 					className='g-update-form-submit-button'

@@ -13,6 +13,7 @@ import { IRequestStatus } from "../../../types/IResponse";
 import { Label } from "../../../components/common/label/Label";
 import { Alert, ISeverity } from "../../../components/common/alert/Alert";
 import { useTranslation } from "react-i18next";
+import { classNames } from "../../../utils/helper";
 
 interface IFavouritePostProps { }
 
@@ -68,7 +69,7 @@ const FavouritePost: React.FunctionComponent<IFavouritePostProps> = (props) => {
 	return (
 		<DashboardLayout title={t("ManageFavorite.Title")}>
 			<div className="g-dashboard-content-section">
-				<Grid className="g-dasboard-content-grid" container spacing={2}>
+				<Grid className={classNames("g-dashboard-content-grid", {"g-dashboard-content-grid-no-item": (!favoritePosts.length && !isLoading)})} container spacing={2}>
 					{isLoading
 						? Array(8).fill("").map((_item, index) => (
 							<Grid item xs={12} sm={6} md={4} lg={3}>
@@ -77,7 +78,7 @@ const FavouritePost: React.FunctionComponent<IFavouritePostProps> = (props) => {
 						))
 						: favoritePosts.length
 							? favoritePosts.map((post) => (
-								<Grid item xs={12} sm={6} md={4} lg={3}>
+								<Grid item xs={12} sm={6} md={5} lg={3}>
 									<FavouriteCard
 										item={post}
 										onChangeFavorite={(item) => {
@@ -95,7 +96,7 @@ const FavouritePost: React.FunctionComponent<IFavouritePostProps> = (props) => {
 				{isAlertOpen && <Alert
 					open={isAlertOpen}
 					severity={alertType}
-					message={alertMessage}
+					message={t(alertMessage)}
 					onClose={() => setState({ isAlertOpen: false })}
 				/>}
 			</div>

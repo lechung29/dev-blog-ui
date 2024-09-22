@@ -11,11 +11,15 @@ import { IconButton } from "../../../../components/common/button/iconbutton/Icon
 import "./index.scss";
 import ConfirmDialog from "../../../../components/common/confirmDialog/ConfirmDialog";
 import { useAppDispatch, useAppSelector } from "../../../../redux/store/store";
-import { deletePost, getAllPosts, postState, stopLoading, updatePost } from "../../../../redux/reducers/posts/PostSlice";
+import { closeAlert, deletePost, getAllPosts, postState, stopLoading, updatePost } from "../../../../redux/reducers/posts/PostSlice";
 import { userState } from "../../../../redux/reducers/users/UserSlice";
 import { IAction, IFunc } from "../../../../types/Function";
 import { IPostStatus } from "../../../../types/Post";
 import { useTranslation } from "react-i18next";
+import { Alert } from "../../../../components/common/alert/Alert";
+import { TooltipHost } from "../../../../components/common/tooltiphost/TooltipHost";
+import { useNavigate } from "react-router-dom";
+import { formatDate } from "../../../../utils/helper";
 
 interface IPostManagementProps {
 
@@ -39,14 +43,64 @@ const UserPostManagement: React.FunctionComponent<IPostManagementProps> = (props
 	const [state, setState] = useImmerState<IPostManagementState>(initialState);
 	const { isOpenDeleteDialog, isOpenUpdateDialog, itemStatus, selectedItems } = state
 	const { user } = useAppSelector(userState)
-	const { allPosts, isLoading, isUpdateAndDeleteLoading } = useAppSelector(postState)
+	const { allPosts, isLoading, isUpdateAndDeleteLoading, alertType, isAlertOpen, message } = useAppSelector(postState)
 	const dispatch = useAppDispatch()
 	const dataTableRef = useRef<IDataTableRef>(null);
 	const { t } = useTranslation()
+	const navigate = useNavigate()
 
-	const finalColumns = postManagementColumn.map((item) => ({
-		...item,
-		headerName: t(item.headerName as string)
+	const finalColumns = postManagementColumn.map((post) => ({
+		...post,
+		headerName: t(post.headerName as string),
+		renderCell: (item) => {
+			switch (item.field) {
+				case "title":
+					return <div className="g-post-table-field-title" onClick={() => navigate(`/post/${item.row._id}`)}>
+						<TooltipHost title={item.value}>
+							<span>{item.value}</span>
+						</TooltipHost>
+					</div>
+				case "category":
+					let temp = ""
+					if (item.value === "post") {
+						temp = t("Category.Post")
+					} else if (item.value === "question") {
+						temp = t("Category.Question")
+					} else {
+						temp = t("Category.Discussion")
+					}
+					return <div>
+						<TooltipHost title={temp}>
+							<span>{temp}</span>
+						</TooltipHost>
+					</div>
+				case "status":
+					let tempStatus = ""
+					if (item.value === "Pending") {
+						tempStatus = t("Status.Pending")
+					} else if (item.value === "Public") {
+						tempStatus = t("Status.Public")
+					} else {
+						tempStatus = t("Status.Hidden")
+					}
+					return <div>
+						<TooltipHost title={tempStatus}>
+							<span>{tempStatus}</span>
+						</TooltipHost>
+					</div>
+				case "tags":
+					let tempTag = item.value.join(" - ")
+					return <span>{tempTag}</span>
+				case "createdAt": 
+				case "updatedAt":
+					return <span>{formatDate(new Date(item.value))}</span>
+				case "_id":
+				case "author":
+				default:
+					return item.value
+			}
+
+		}
 	}))
 
 	const handleChange = (event: SelectChangeEvent) => {
@@ -78,7 +132,7 @@ const UserPostManagement: React.FunctionComponent<IPostManagementProps> = (props
 
 	const deleteItemText = useMemo(() => {
 		return t("Confirm.Delete.Post.Description", { count: selectedItems.length })
-	}, [selectedItems])
+	}, [selectedItems, t])
 
 	const disableStatus = (status: IPostStatus) => {
 		return status === allPosts.find((post) => post.id === selectedItems[0])?.status
@@ -178,6 +232,12 @@ const UserPostManagement: React.FunctionComponent<IPostManagementProps> = (props
 						})}
 					/>
 				)}
+				{isAlertOpen && <Alert
+					open={isAlertOpen}
+					severity={alertType}
+					message={t(message)}
+					onClose={() => dispatch(closeAlert())}
+				/>}
 			</div>
 		</DashboardLayout>
 	);

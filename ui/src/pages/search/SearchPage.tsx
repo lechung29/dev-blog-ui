@@ -63,7 +63,7 @@ const SearchPage: React.FunctionComponent<ISearchPageProps> = (props) => {
     const navigate = useNavigate()
     const { t } = useTranslation()
     const { searchText = "" } = useParams()
-    const shimmerArray = Array(5).fill('');
+    const shimmerArray = Array(3).fill('');
 
     const SearchTabList: ITabListProps[] = [
         {
@@ -164,13 +164,11 @@ const SearchPage: React.FunctionComponent<ISearchPageProps> = (props) => {
     };
 
     const onRenderTab: IFunc<JSX.Element[]> = () => {
-        return isPostLoading
-            ? shimmerArray.map((_item, id) => (
-                <PostShimmer key={id} />
-            ))
-            : PostCategoryValue.map((item, key) => (
-                <TabPanel key={key} value={item}>
-                    {posts.length
+        return PostCategoryValue.map((item, key) => (
+            <TabPanel className='g-tab-page-data' key={key} value={item}>
+                {isPostLoading ? shimmerArray.map((_item, id) => (
+                    <PostShimmer key={id} />
+                )) : posts.length
                         ? posts?.map((post: IPostDataProps) => (
                             <PostCard
                                 key={post._id}
@@ -183,9 +181,9 @@ const SearchPage: React.FunctionComponent<ISearchPageProps> = (props) => {
                             className="g-search-no-item-label"
                             title={t("Common.Post.NoItem")}
                         />
-                    }
-                </TabPanel>
-            ))
+                }
+            </TabPanel>
+        ))
     }
 
     return (

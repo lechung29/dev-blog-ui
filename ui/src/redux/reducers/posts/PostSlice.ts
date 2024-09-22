@@ -2,8 +2,8 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { IIdentityProps, IPostProps, IPostStatus } from "../../../types/Post";
 import { PostService } from "../../../services/posts/PostService";
 import { RootState } from "../../store/store";
-import { IToastProps, renderToast } from "../../../utils/utils";
 import { IRequestStatus } from "../../../types/IResponse";
+import { ISeverity } from "../../../components/common/alert/Alert";
 
 export type IPostWithId = IPostProps & IIdentityProps;
 
@@ -11,12 +11,18 @@ export interface IPostState {
     isLoading: boolean;
     isUpdateAndDeleteLoading: boolean;
     allPosts: IPostWithId[];
+    message: string;
+    alertType: ISeverity;
+    isAlertOpen: boolean;
 }
 
 const initialState: IPostState = {
     isLoading: false,
     isUpdateAndDeleteLoading: false,
     allPosts: [],
+    isAlertOpen: false,
+    message: "",
+    alertType: ISeverity.success,
 };
 
 export const getAllPosts = createAsyncThunk("posts/getAllPosts", async () => {
@@ -47,6 +53,9 @@ const postSlice = createSlice({
         stopLoading: (state) => {
             state.isLoading = false;
         },
+        closeAlert: (state) => {
+            state.isAlertOpen = false;
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -76,10 +85,9 @@ const postSlice = createSlice({
                         author: item.author.displayName,
                     };
                 }) as IPostWithId[];
-                renderToast(
-                    action.payload.requestStatus === IRequestStatus.Success ? IToastProps.success : IToastProps.error,
-                    action.payload.message
-                );
+                state.alertType = action.payload.requestStatus === IRequestStatus.Success ? ISeverity.success : ISeverity.error
+                state.message = action.payload.message;
+                state.isAlertOpen = true;
             })
             .addCase(updatePost.pending, (state) => {
                 state.isUpdateAndDeleteLoading = true;
@@ -94,14 +102,13 @@ const postSlice = createSlice({
                         author: item.author.displayName,
                     };
                 }) as IPostWithId[];
-                renderToast(
-                    action.payload.requestStatus === IRequestStatus.Success ? IToastProps.success : IToastProps.error,
-                    action.payload.message
-                );
+                state.alertType = action.payload.requestStatus === IRequestStatus.Success ? ISeverity.success : ISeverity.error
+                state.message = action.payload.message;
+                state.isAlertOpen = true;
             });
     },
 });
 
 export const postState = (state: RootState) => state.post;
-export const { stopLoading } = postSlice.actions;
+export const { stopLoading, closeAlert } = postSlice.actions;
 export default postSlice.reducer;

@@ -1,4 +1,5 @@
-import React from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect } from "react";
 import "./index.scss";
 import Search from "../common/searchbox/Search";
 import { useImmerState } from "../../hook/useImmerState";
@@ -17,11 +18,16 @@ import { Image, ImageFit } from "../common/image/Image";
 import { smallLogoSrc } from "../utils/common/common";
 import { IAction, IAction1 } from "../../types/Function";
 import { useTranslation } from "react-i18next";
+import { useMiniMobile, useMobile } from "../../utils/Responsive";
+import MenuIcon from '@mui/icons-material/Menu';
+import { IconButton } from "../common/button/iconbutton/IconButton";
+import ResDashboardPanel from "../dashboardPanel/ResDashboardPanel";
 
 export interface IDashboardHeaderState {
 	search?: string;
 	lang: string;
 	anchorEl: null | HTMLElement
+	isOpenPanel: boolean
 }
 ;
 
@@ -29,17 +35,20 @@ const DashboardHeader: React.FunctionComponent = () => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const { user } = useAppSelector(userState)
-	const logoHeight: Readonly<number> = 34;
-	const logoWidth: Readonly<number> = 240;
+	const logoHeight: Readonly<number> = 30;
+	const logoWidth: Readonly<number> = 220;
 	const { t, i18n } = useTranslation()
 	const initialState: IDashboardHeaderState = {
 		search: "",
 		lang: i18n.language,
 		anchorEl: null,
+		isOpenPanel: false,
 	}
 	const [state, setState] = useImmerState<IDashboardHeaderState>(initialState);
-	const { anchorEl, lang, search } = state
+	const { anchorEl, lang, search, isOpenPanel } = state
 	const open = Boolean(anchorEl);
+	const isMobile = useMobile()
+	const isMiniMobile = useMiniMobile()
 
 	const avatarMenuList: IPageRoute[] = [
 		{
@@ -104,9 +113,29 @@ const DashboardHeader: React.FunctionComponent = () => {
 		}
 	};
 
+	useEffect(() => {
+		if (!isMobile) {
+			setState({ isOpenPanel: false })
+		}
+	}, [isMobile])
+
 	return (
 		<div className="g-dashboard-header-section">
-			<div className="g-dashboard-panel-logo" onClick={() => navigate("/")}>
+			{isMobile && <div className="g-dashboard-menu-button">
+				<IconButton
+					size="large"
+					className="g-dashboard-menu-icon-button"
+					icon={<MenuIcon />}
+					onClick={() => setState({ isOpenPanel: true })}
+				/>
+				{isOpenPanel && <ResDashboardPanel
+					open={isOpenPanel}
+					placement="left"
+					onClosePanel={() => setState({ isOpenPanel: false })}
+					onOpenPanel={() => setState({ isOpenPanel: true })}
+				/>}
+			</div>}
+			{!isMobile && <div className="g-dashboard-panel-logo" onClick={() => navigate("/")}>
 				<Image
 					src={smallLogoSrc}
 					objectFit={ImageFit.COVER}
@@ -114,8 +143,8 @@ const DashboardHeader: React.FunctionComponent = () => {
 					height={logoHeight}
 					alt={"logo"}
 				/>
-			</div>
-			<div className="g-dashboard-header-searchbox">
+			</div>}
+			{!isMiniMobile && <div className="g-dashboard-header-searchbox">
 				<Search
 					id="id-g-searchbox-devblog"
 					placeholder={t("Common.Header.Search.Placeholder")}
@@ -127,7 +156,7 @@ const DashboardHeader: React.FunctionComponent = () => {
 					onSearch={onSearchSubmit}
 					onKeyDown={onKeyDown}
 				/>
-			</div>
+			</div>}
 			<div className="g-dashboard-header-info">
 				<ChangeLanguage
 					language={lang}

@@ -8,6 +8,9 @@ import { ILabelItemProps } from "../filterPanel/sortByCreated/SortByCreated";
 import { ISearchSortValue } from "../../pages/search/SearchPage";
 import { IAction1, IFunc, IFunc1 } from "../../types/Function";
 import { useTranslation } from "react-i18next";
+import SortIcon from '@mui/icons-material/Sort';
+import { useMiniMobile } from "../../utils/Responsive";
+import { IconButton } from "../common/button/iconbutton/IconButton";
 
 interface ISearchSortProps {
     open: HTMLElement | null;
@@ -80,6 +83,7 @@ export const SortList: ILabelItemProps[] = [
 const SearchSort: React.FunctionComponent<ISearchSortProps> = (props) => {
     const { onClose, open, sortValue, onOpen, onChangeSortValue } = props
     const [currentSort, setCurrentSort] = React.useState<ISearchSortValue>(sortValue);
+    const isMiniMobile = useMiniMobile()
     const { t } = useTranslation()
 
     const onChangeSort: IAction1<ILabelItemProps> = (item) => {
@@ -106,7 +110,12 @@ const SearchSort: React.FunctionComponent<ISearchSortProps> = (props) => {
     return (
         <React.Fragment>
             <Box className="g-search-sort-box">
-                <Label
+                {isMiniMobile ? <IconButton 
+                    size="large"
+                    className="g-search-sort-icon-button"
+                    icon={<SortIcon />}
+                    onClick={onOpen}
+                /> : <Label
                     title={t("Sort.By", { sortType: t(getSortLabel()) })}
                     className="g-search-sort-box-label"
                     subTitle={t(getSortLabel())}
@@ -116,7 +125,7 @@ const SearchSort: React.FunctionComponent<ISearchSortProps> = (props) => {
                         fontWeight: 600,
                     }}
                     onClick={onOpen}
-                />
+                />}
             </Box>
             <StyledMenu
                 anchorEl={open}

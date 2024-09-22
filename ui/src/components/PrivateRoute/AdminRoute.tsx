@@ -8,8 +8,7 @@ import { useTranslation } from "react-i18next";
 const AdminRoute: React.FunctionComponent = () => {
     const { user } = useAppSelector(userState);
     const { t } = useTranslation()
-    const token = localStorage.getItem("access_token")
-    return !token
+    return !user
         ? <RedirectPage to={"/login"} message={t("Required.Login.To.Access")} />
         : user?.role === "admin"
             ? <Outlet />

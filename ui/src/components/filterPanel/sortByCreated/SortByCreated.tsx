@@ -20,7 +20,7 @@ export interface ILabelItemProps {
 const SortByCreated: React.FunctionComponent<ISortByCreated> = (props) => {
     const { value, items, onChangeValue } = props
     const { t } = useTranslation()
-    
+
     const handleChange: IAction1<React.ChangeEvent<HTMLInputElement>> = (event) => {
         const sortField = items.find(item => item.value === event.target.value)?.field || defaultSortProperty
         onChangeValue(sortField, event.target.value)
@@ -39,7 +39,7 @@ const SortByCreated: React.FunctionComponent<ISortByCreated> = (props) => {
 
     return (
         <FormControl>
-            <FormLabel id="sort-radio-buttons-group">{t("Common.Sort")}</FormLabel>
+            <FormLabel id="sort-radio-buttons-group" style={{ fontWeight: 600 }}>{t("Common.Sort")}</FormLabel>
             <RadioGroup
                 aria-labelledby="sort-radio-buttons-group"
                 name="controlled-radio-buttons-group"

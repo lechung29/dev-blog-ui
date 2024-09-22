@@ -6,7 +6,6 @@ import { adminPanelList, userPanelList } from "./index";
 import { useAppSelector } from "../../redux/store/store";
 import { userState } from "../../redux/reducers/users/UserSlice";
 import { Label } from "../common/label/Label";
-import { ITooltipHostPlacement } from "../common/tooltiphost/TooltipHost";
 import { useTranslation } from "react-i18next";
 
 const DashboardPanel: React.FunctionComponent = () => {
@@ -40,10 +39,6 @@ const DashboardPanel: React.FunctionComponent = () => {
 							<Label
 								bold
 								title={item.title}
-								tooltipProps={{
-									placement: ITooltipHostPlacement.Top,
-									arrow: true,
-								}}
 								className="g-dashboard-item-title"
 							/>
 						</NavLink>

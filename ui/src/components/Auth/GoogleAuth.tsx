@@ -9,26 +9,10 @@ import { IRequestStatus } from "../../types/IResponse";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { login } from "../../redux/reducers/users/UserSlice";
-import { useImmerState } from "../../hook/useImmerState";
-import ConfirmDialog from "../common/confirmDialog/ConfirmDialog";
 import { IFunc } from "../../types/Function";
-import { useTranslation } from "react-i18next";
-
-interface IGoogleAuthOwnState {
-    isOpenDialog: boolean;
-    errorMessage: string;
-}
-
-const initialState: IGoogleAuthOwnState = {
-    isOpenDialog: false,
-    errorMessage: "",
-}
 
 const GoogleAuth: React.FunctionComponent = () => {
-    const [state, setState] = useImmerState<IGoogleAuthOwnState>(initialState)
-    const { isOpenDialog, errorMessage } = state
     const auth = getAuth(firebaseApp)
-    const { t } = useTranslation()
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
@@ -42,20 +26,13 @@ const GoogleAuth: React.FunctionComponent = () => {
                 email: result.user.email!,
                 avatar: result.user.photoURL!,
             })
-            if (data.requestStatus !== IRequestStatus.Success) {
-                setState((draft) => {
-                    draft.errorMessage = data.message;
-                    draft.isOpenDialog = true;
-                })
-                return Promise.resolve()
+            if (data.requestStatus === IRequestStatus.Success) {
+                dispatch(login(data.data))
+                navigate("/")
             }
-            dispatch(login(data.data))
-            navigate("/")
+
         } catch (error) {
-            setState((draft) => {
-                draft.errorMessage = t("Error.Google")
-                draft.isOpenDialog = true;
-            })
+            console.log(error)
         }
     }
     return <Fragment>
@@ -66,13 +43,6 @@ const GoogleAuth: React.FunctionComponent = () => {
             className="g-google-auth-button"
             startIcon={<GoogleIcon style={{ color: "#e94820" }} />}
         />;
-        {isOpenDialog && <ConfirmDialog
-            title={t("Common.Notifications")}
-            content={errorMessage}
-            open={isOpenDialog}
-            handleConfirm={() => setState({ isOpenDialog: false })}
-            noCancelButton
-        />}
     </Fragment>
 };
 

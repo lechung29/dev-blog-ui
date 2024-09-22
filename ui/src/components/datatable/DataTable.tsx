@@ -42,7 +42,7 @@ const DataTable = React.forwardRef((props: IDataTabelProps, ref) => {
 						paginationModel: { page: 0, pageSize: 5 },
 					},
 				}}
-				pageSizeOptions={[5, 10]}
+				// pageSizeOptions={[5, 10]}
 				checkboxSelection
 				onRowSelectionModelChange={onSelection}
 				disableRowSelectionOnClick
@@ -59,6 +59,7 @@ const DataTable = React.forwardRef((props: IDataTabelProps, ref) => {
 						noRowsVariant: 'skeleton',
 					},
 				}}
+				hideFooterSelectedRowCount
 			/>
 		</div>
 	);

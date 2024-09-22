@@ -208,7 +208,7 @@ const CommentItem: React.FunctionComponent<ICommentItemProps> = (props) => {
                             isLoading={isDeletingComment}
                             handleConfirm={handleDeleteComment}
                         />}
-                        <span>{formatDate(new Date(item.createdAt))}</span>
+                        <span className='g-post-comment-timeline'>{formatDate(new Date(item.createdAt))}</span>
                     </div>
                 </div>
             }
