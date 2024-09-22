@@ -3,7 +3,7 @@
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    flex-direction: row!important;
+    flex-direction: row !important;
     gap: 1rem;
 
     .g-edit-action-button {
@@ -21,7 +21,7 @@
         width: 40px;
         height: 40px;
 
-        :hover {
+        &:hover {
             background-color: #5488c7 !important;
             color: #fff;
         }
@@ -43,7 +43,7 @@
     width: 40px;
     height: 40px;
 
-    :hover {
+    &:hover {
         background-color: #5488c7 !important;
         color: #fff;
     }
@@ -55,4 +55,28 @@
     min-width: 0 !important;
     width: 40px;
     height: 40px;
+
+    &:hover {
+        background-color: rgb(255, 56, 86) !important;
+        color: #fff;
+    }
+}
+
+.g-post-table-field-title {
+    font-weight: 500;
+    cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &:hover {
+        text-decoration: underline;
+        color: #5488c7;
+    }
+}
+
+.g-post-table-field-category {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }

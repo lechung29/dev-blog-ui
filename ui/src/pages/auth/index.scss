@@ -18,7 +18,7 @@
 
         .g-login-section-form {
             max-width: 28.5rem;
-            width: 100%;
+            width: -webkit-fill-available;
             height: auto;
             box-sizing: border-box;
             padding: 2rem;
@@ -138,8 +138,8 @@
         }
 
         .g-register-section-form {
-            max-width: 32rem;
-            width: 100%;
+            max-width: 30rem;
+            width: -webkit-fill-available;
             height: auto;
             box-sizing: border-box;
             padding: 1.25rem;
@@ -263,6 +263,34 @@
                     font-size: 13px;
                     height: 36px;
                     margin-bottom: 1rem;
+                }
+            }
+        }
+
+        @media screen and (max-width: 576px) {
+            .g-login-section-form {
+                margin: 0 1rem;
+                box-shadow: none;
+
+                .g-login-section-form-description-label {
+                    .g-login-section-description-label {
+                        padding-top: 0;
+                        font-size: 18px;
+                        color: #303133;
+                    }
+                }
+            }
+
+            .g-register-section-form {
+                margin: 0 1rem;
+                box-shadow: none;
+                padding: 0.5rem;
+                .g-register-section-form-description-label {
+
+                    .g-register-section-description-label {
+                        font-weight: 400 !important;
+                        font-size: 1.15rem;
+                    }
                 }
             }
         }

@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useCallback } from "react";
+import React, { useEffect } from "react";
 import "./index.scss";
 import { Image, ImageFit } from "../common/image/Image";
 import { engFlag, smallLogoSrc, vieFlag } from "../utils/common/common";
@@ -15,6 +15,9 @@ import NavigationPanel from "../navigationPanel/NavigationPanel";
 import { TooltipHost } from "../common/tooltiphost/TooltipHost";
 import { userState } from "../../redux/reducers/users/UserSlice";
 import { useTranslation } from "react-i18next";
+import AppsIcon from '@mui/icons-material/Apps';
+import { IconButton } from "../common/button/iconbutton/IconButton";
+import { useMiniMobile, useMobile, useTablet } from "../../utils/Responsive";
 
 export interface IHeaderOwnProps { }
 
@@ -27,6 +30,9 @@ const Header: React.FunctionComponent<IHeaderOwnProps> = (_props) => {
     const logoHeight: Readonly<number> = 30;
     const logoWidth: Readonly<number> = 220;
     const navigate = useNavigate()
+    const isMobile = useMobile()
+    const isMiniMobile = useMiniMobile()
+    const isTablet = useTablet()
     const { searchText } = useParams()
     const { t } = useTranslation()
     const { user } = useAppSelector(userState)
@@ -36,7 +42,6 @@ const Header: React.FunctionComponent<IHeaderOwnProps> = (_props) => {
     };
     const [state, setState] = useImmerState<IHeaderState>(initialState);
     const { isNavigatePanelOpen, search } = state;
-    const token = localStorage.getItem("access_token");
 
 
     const onChangeSearch: IAction1<React.ChangeEvent<HTMLInputElement>> = (event) => {
@@ -57,8 +62,8 @@ const Header: React.FunctionComponent<IHeaderOwnProps> = (_props) => {
         }
     };
 
-    const onRenderAvatar: IFunc<JSX.Element> = useCallback(() => {
-        return token
+    const onRenderAvatar: IFunc<JSX.Element> = () => {
+        return user
             ? (<TooltipHost title={user?.displayName} >
                 <Avatar
                     className="g-header-avatar"
@@ -71,7 +76,7 @@ const Header: React.FunctionComponent<IHeaderOwnProps> = (_props) => {
                 <LoginIcon fontSize={"small"} />
                 <span>{t("Common.SignIn.SignUp")}</span>
             </Link>);
-    }, [token])
+    }
 
     const handleOpenClosePanel: IAction1<boolean> = (status) => {
         setState((draft) => {
@@ -87,6 +92,13 @@ const Header: React.FunctionComponent<IHeaderOwnProps> = (_props) => {
             onClosePanel={() => handleOpenClosePanel(false)}
         />
     }
+
+    useEffect(() => {
+        if (!isMobile && !user) {
+            setState({ isNavigatePanelOpen: false })
+        }
+    }, [isMobile, user])
+
     return (
         <section className="g-header-section">
             <div className="g-header-main-section">
@@ -104,7 +116,7 @@ const Header: React.FunctionComponent<IHeaderOwnProps> = (_props) => {
                         />
                     </div>
                 </div>
-                <div className="g-header-main-center-section">
+                {!isMiniMobile && <div className="g-header-main-center-section">
                     <Search
                         id="id-g-searchbox-devblog"
                         placeholder={t("Common.Header.Search.Placeholder")}
@@ -117,16 +129,22 @@ const Header: React.FunctionComponent<IHeaderOwnProps> = (_props) => {
                         onSearch={onSearchSubmit}
                         onKeyDown={onKeyDown}
                     />
-                </div>
+                </div>}
                 <div className="g-header-main-right-section">
-                    <Language
+                    {!isTablet && !isMobile && <Language
                         languages={[
                             { title: "Language.English", name: "en", image: engFlag },
                             { title: "Language.Vietnamese", name: "vn", image: vieFlag },
                         ]}
-                    />
-                    {onRenderAvatar()}
-                    {onRenderNavigatePanel()}
+                    />}
+                    {!isMobile && onRenderAvatar()}
+                    {isNavigatePanelOpen && onRenderNavigatePanel()}
+                    {isMobile && <IconButton
+                        size="large"
+                        className="g-app-header-icon-button"
+                        icon={<AppsIcon />}
+                        onClick={() => setState({ isNavigatePanelOpen: true })}
+                    />}
                 </div>
             </div>
         </section>

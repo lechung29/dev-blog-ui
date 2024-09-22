@@ -14,16 +14,19 @@ import Overview from "./pages/dashboard/overview/Overview";
 import SearchPage from "./pages/search/SearchPage";
 import PostPage from "./pages/post/PostPage";
 import UserManagement from "./pages/dashboard/usermanagement/UserManagement";
+import { useAppSelector } from "./redux/store/store";
+import { userState } from "./redux/reducers/users/UserSlice";
+import NotFound from "./pages/pageNotFound/PageNotFound";
 
 function App() {
-	const token = localStorage.getItem("access_token")
+	const { user } = useAppSelector(userState)
 	return (
 		<React.Fragment>
 			<BrowserRouter>
 				<Routes>
 					<Route key={"blog-home"} path="/" element={<Home />} />
-					<Route key={"blog-login"} path="/login" element={token ? <Navigate to={"/"} /> : <Login />} />
-					<Route key={"blog-register"} path="/register" element={token ? <Navigate to={"/"} /> : <SignUp />} />
+					<Route key={"blog-login"} path="/login" element={user ? <Navigate to={"/"} /> : <Login />} />
+					<Route key={"blog-register"} path="/register" element={user ? <Navigate to={"/"} /> : <SignUp />} />
 					<Route key={"blog-search"} path="/search/:searchText" element={<SearchPage />} />
 					<Route key={"blog-post"} path="/post/:postId" element={<PostPage />} />
 					<Route element={<CommonRoute />}>
@@ -42,6 +45,7 @@ function App() {
 						<Route key={"user-post-management"} path="post-management" element={<UserPostManagement />} />
 						<Route key={"user-favorite-management"} path="favourite-management" element={<FavouritePost />} />
 					</Route>
+					<Route path="*" element={<NotFound />} />
 				</Routes>
 			</BrowserRouter>
 		</React.Fragment>

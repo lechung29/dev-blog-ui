@@ -1,4 +1,5 @@
-import React, { useRef } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect, useRef } from "react";
 import DashboardLayout from "../../../layout/DashboardLayout";
 import "./createpost.scss";
 import { Label } from "../../../components/common/label/Label";
@@ -18,6 +19,7 @@ import { useNavigate } from "react-router-dom";
 import { Alert, ISeverity } from "../../../components/common/alert/Alert";
 import { useTranslation } from "react-i18next";
 import { delay } from "../../../utils/helper";
+import { htmlToMarkdown } from "./Parse";
 
 interface ICreatePostOwnProps { }
 
@@ -89,35 +91,39 @@ const CreatePost: React.FunctionComponent<ICreatePostOwnProps> = (props) => {
 
 	const PostCategoryList: string[] = [t("Category.Post"), t("Category.Question"), t("Category.Discussion")]
 
+	useEffect(() => {
+		setState({ categoryName: "", categoryValue: null })
+	}, [t])
+
 	const handleDeleteTags = (tagToDelete: string) => () => {
 		setState({ tags: state.tags.filter((item) => item !== tagToDelete) });
 	};
 
 	const handleKeyDown: IAction1<React.KeyboardEvent> = (event) => {
 		if (event.key === "Enter") {
-			if (tagValue.includes(" ")) {
+			if (!tagValue.trim() || tagValue.includes(" ")) {
 				setState((draft) => {
-					draft.alertMessage = "Error.Tag.Include.Blank";
+					draft.alertMessage = t("Error.Tag.Include.Blank");
 					draft.alertType = ISeverity.error
 					draft.isAlertOpen = true
 				})
 			} else {
 				if (tags.includes(tagValue)) {
 					setState((draft) => {
-						draft.alertMessage = "Error.Tag.Existed";
+						draft.alertMessage = t("Error.Tag.Existed");
 						draft.alertType = ISeverity.error
 						draft.isAlertOpen = true
 					})
 				} else if (tags.length + 1 > 3) {
 					setState((draft) => {
-						draft.alertMessage = "Error.Tag.MaxLength";
+						draft.alertMessage = t("Error.Tag.MaxLength");
 						draft.alertType = ISeverity.error
 						draft.isAlertOpen = true
 					})
 				} else {
 					setState({ tags: [...state.tags, tagValue], tagError: "", tagValue: "" });
 					setState((draft) => {
-						draft.alertMessage = "Successful.Add.Tag";
+						draft.alertMessage = t("Successful.Add.Tag");
 						draft.alertType = ISeverity.success
 						draft.isAlertOpen = true
 					})
@@ -143,29 +149,29 @@ const CreatePost: React.FunctionComponent<ICreatePostOwnProps> = (props) => {
 		let contentError = "";
 
 		if (!postTitle?.trim()) {
-			titleError = "Required.Post.Title";
+			titleError = t("Required.Post.Title");
 			setState({ titleError: titleError });
 			isValid = false;
 		}
 
 		if (!categoryName?.trim()) {
-			categoryError = "Required.Post.Category";
+			categoryError = t("Required.Post.Category");
 			setState({ categoryError: categoryError });
 			isValid = false;
 		} else if (!PostCategoryList.includes(categoryName!)) {
-			categoryError = "Invalid.Post.Category";
+			categoryError = t("Invalid.Post.Category");
 			setState({ categoryError: categoryError });
 			isValid = false;
 		}
 
 		if (tags.length === 0) {
-			tagError = "Required.Post.Tag";
+			tagError = t("Required.Post.Tag");
 			setState({ tagError: tagError });
 			isValid = false;
 		}
 
-		if (!postContent.trim()) {
-			contentError = "Required.Post.Content";
+		if (!htmlToMarkdown(postContent).trim()) {
+			contentError = t("Required.Post.Content");
 			setState({ contentError: contentError });
 			isValid = false;
 		}
@@ -196,15 +202,7 @@ const CreatePost: React.FunctionComponent<ICreatePostOwnProps> = (props) => {
 				content: postContent,
 				thumbnail: postThumbnails ?? "",
 			})
-			if (data.requestStatus === IRequestStatus.Error) {
-				switch (data.fieldError) {
-					case "title":
-						setState({ titleError: t(data.message), isLoading: false });
-						break;
-					default:
-						break;
-				}
-			} else {
+			if (data.requestStatus === IRequestStatus.Success) {
 				setState({ isLoading: false })
 				setState((draft) => {
 					draft.alertMessage = t(data.message)
@@ -214,7 +212,15 @@ const CreatePost: React.FunctionComponent<ICreatePostOwnProps> = (props) => {
 				await delay(2000).then(() => {
 					navigate(`/${user?.role}-dashboard/post-management`)
 				})
+			} else {
+				setState({ isLoading: false })
+				setState((draft) => {
+					draft.alertMessage = t("Error.Network")
+					draft.alertType = ISeverity.error
+					draft.isAlertOpen = true
+				})
 			}
+
 		}
 	}
 
@@ -321,7 +327,7 @@ const CreatePost: React.FunctionComponent<ICreatePostOwnProps> = (props) => {
 					</Grid>
 					<Grid className="g-create-post-section-basic-info" item sm={12} xs={12} md={12}>
 						<form className="g-upload-image-form">
-							<span className="g-upload-image-form-title">{t("Post.Create.Thumbmail")}</span>
+							<span className="g-upload-image-form-title">{t("Post.Create.Thumbnail")}</span>
 							<label htmlFor="file-input" className="g-upload-image-form-drop-container">
 								<input type="file" accept="image/*" id="file-input" onChange={handlePostThumbnailChange} />
 							</label>

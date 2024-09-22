@@ -21,6 +21,8 @@ import { DefaultButton } from "../../components/common/button/defaultbutton/Defa
 import { IFunc } from "../../types/Function";
 import { Label } from "../../components/common/label/Label";
 import { useTranslation } from "react-i18next";
+import { useMiniMobile } from "../../utils/Responsive";
+import { IconButton } from "../../components/common/button/iconbutton/IconButton";
 
 interface IHomePageOwnProps {
 
@@ -82,6 +84,7 @@ const Home: React.FunctionComponent<IHomePageOwnProps> = (_props) => {
     const { t } = useTranslation()
     const shimmerArray = Array(5).fill('');
     const [state, setState] = useImmerState<IHomePageState>(initialState)
+    const isMiniMobile = useMiniMobile()
     const {
         isFilterPanelOpen,
         posts, currentPage,
@@ -225,12 +228,17 @@ const Home: React.FunctionComponent<IHomePageOwnProps> = (_props) => {
                     mx={1}
                 >
                     <Stack className="g-homepage-left-section-action">
-                        <DefaultButton
+                        {isMiniMobile ? <IconButton 
+                            size="large"
+                            className="g-homepage-left-section-filter-icon"
+                            icon={<FilterAltIcon />}
+                            onClick={() => setState({ isFilterPanelOpen: true })}
+                        /> : <DefaultButton
                             className="g-homepage-left-section-filter"
                             title={t("Common.Filter")}
                             startIcon={<FilterAltIcon />}
                             onClick={() => setState({ isFilterPanelOpen: true })}
-                        />
+                        />}
 
                         {isFilterPanelOpen && <FilterPanel
                             open={isFilterPanelOpen}

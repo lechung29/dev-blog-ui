@@ -35,12 +35,12 @@ const Filters: React.FunctionComponent<IFilterPartProps> = (props) => {
     }
     return (
         <Box className='g-filter-section'>
-            <FormControl 
+            <FormControl
                 className='g-filter-form'
-                component="fieldset" 
+                component="fieldset"
                 variant="standard"
             >
-                <FormLabel component="legend">{filterTitle}</FormLabel>
+                <FormLabel component="legend" style={{ fontWeight: 600 }}>{filterTitle}</FormLabel>
                 {onRenderFilterItem()}
             </FormControl>
         </Box>

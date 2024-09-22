@@ -16,8 +16,18 @@ const ChangeLanguage: React.FunctionComponent<IChangeLanguageProps> = (props) =>
 	return (
 		<React.Fragment>
 			<TooltipHost title={t(language === "vn" ? "Language.Vietnamese" : "Language.English")}>
-				<IconButton onClick={onChangeLanguage} aria-label="change-lang" size="large">
-					<img src={language === "vn" ? vieFlag : engFlag} alt="lang" width="28" height="28" />
+				<IconButton
+					aria-label="change-lang"
+					onClick={onChangeLanguage}
+					size="large"
+					style={{ padding: 0 }}
+				>
+					<img
+						src={language === "vn" ? vieFlag : engFlag}
+						alt="lang"
+						width="28"
+						height="28"
+					/>
 				</IconButton>
 			</TooltipHost>
 		</React.Fragment>

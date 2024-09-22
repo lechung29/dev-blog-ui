@@ -39,7 +39,7 @@ const LabelView: React.FunctionComponent<ILabelProps> = (props) => {
             >
                 <label {...rest} className={labelClassName}>
                     {startIcon ?? <></>}
-                    {onRenderTitle()}
+                    <span>{onRenderTitle()}</span>
                     {endIcon ?? <></>}
                 </label>
             </TooltipHost>
@@ -48,7 +48,7 @@ const LabelView: React.FunctionComponent<ILabelProps> = (props) => {
         return (
             <label {...rest} className={labelClassName}>
                 {startIcon ?? <></>}
-                {onRenderTitle()}
+                <span>{onRenderTitle()}</span>
                 {endIcon ?? <></>}
             </label>
         );

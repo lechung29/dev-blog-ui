@@ -28,7 +28,7 @@ i18n.use(Backend)
         interpolation: {
             escapeValue: false,
         },
-        debug: true,
+        debug: false,
         react: {
             useSuspense: false,
         },

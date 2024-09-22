@@ -8,5 +8,12 @@
     .g-pie-chart-title {
         color: "#141522";
         font-size: 20px;
+        margin-bottom: 1rem;
+    }
+
+    @media screen and (max-width: 767px) {
+        .g-pie-chart-title {
+            font-size: 16px;
+        }
     }
 }

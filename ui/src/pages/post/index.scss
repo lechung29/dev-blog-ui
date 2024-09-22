@@ -47,6 +47,15 @@
             margin: 1rem 0;
             padding: 0 1rem;
             width: 100%;
+
+            img {
+                object-fit: cover;
+                width: 100% !important;
+            }
+
+            ul, ol {
+                margin-left: 2rem;
+            }
         }
     }
 
@@ -139,5 +148,39 @@
         gap: 1rem;
         margin-top: 1rem;
         width: 100%;
+    }
+}
+
+@media screen and (max-width: 575px) {
+    .g-post-page-content-section {
+        padding: 2rem 2.5rem 2rem;
+
+        .g-post-page-content-data {
+            margin-top: 10px;
+
+            .g-post-page-content-data-text {
+                font-size: 12px;
+            }
+        }
+
+        .g-post-page-action-list-button {
+            margin: 0.5rem 0 1.5rem;
+
+            .g-post-action-button-group {
+                .g-post-action-button {
+                    flex: 1;
+                }
+            }
+        }
+
+        .g-post-page-comment-part {
+            .g-post-comment-textarea {
+                width: 100%;
+            }
+
+            .g-post-page-comment-part-action {
+                width: 100%;
+            }
+        }
     }
 }

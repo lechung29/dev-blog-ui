@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React from "react";
+import React, { useState } from "react";
 import { Anchor } from "../filterPanel/FilterPanel";
 import { Box, Button, Stack, SwipeableDrawer } from "@mui/material";
-import { IFunc } from "../../types/Function";
+import { IAction, IAction1, IFunc } from "../../types/Function";
 import { Label } from "../common/label/Label";
 import CloseIcon from "@mui/icons-material/Close";
 import "./index.scss"
@@ -10,10 +10,14 @@ import { Divider } from "../common/divider/Divider";
 import PersonIcon from '@mui/icons-material/Person';
 import LogoutIcon from '@mui/icons-material/Logout';
 import SpaceDashboardIcon from '@mui/icons-material/SpaceDashboard';
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { logout, userState } from "../../redux/reducers/users/UserSlice";
 import { useAppDispatch, useAppSelector } from "../../redux/store/store";
 import { useTranslation } from "react-i18next";
+import Search from "../common/searchbox/Search";
+import { useMiniMobile, useMobile, useTablet } from "../../utils/Responsive";
+import LanguageIcon from '@mui/icons-material/Language';
+import ChangeLanguage from "../changeLanguage/ChangeLanguage";
 
 interface INavigatePanelOwnProps {
     placement: Anchor;
@@ -33,11 +37,17 @@ export interface IPageRoute {
 const NavigationPanel: React.FunctionComponent<INavigatePanelOwnProps> = (props) => {
     const { open, placement, onClosePanel, onOpenPanel } = props;
     const { user } = useAppSelector(userState)
+    const { searchText } = useParams()
     const dispatch = useAppDispatch();
-    const { t } = useTranslation()
+    const navigate = useNavigate()
+    const { t, i18n } = useTranslation()
+    const isTablet = useTablet()
+    const isMobile = useMobile()
+    const isMiniMobile = useMiniMobile()
+    const [search, setSearch] = useState<string>(searchText || "")
+    const [language, setLanguage] = useState<string>(i18n.language)
 
-
-    const pageList: IPageRoute[] = [
+    const userPageList: IPageRoute[] = [
         {
             title: t("Common.Information.Page"),
             route: "/profile",
@@ -57,6 +67,44 @@ const NavigationPanel: React.FunctionComponent<INavigatePanelOwnProps> = (props)
             }
         }
     ]
+
+    const onChangeSearch: IAction1<React.ChangeEvent<HTMLInputElement>> = (event) => {
+        setSearch(event.target.value)
+    };
+
+    const onKeyDown: IAction1<React.KeyboardEvent> = (event) => {
+        if (event.key === "Enter") {
+            onSearchSubmit();
+        }
+    }
+
+    const onSearchSubmit: IAction = () => {
+        if (search) {
+            navigate(`/search/${search}`)
+        }
+    };
+
+    const finalPanel: IFunc<IPageRoute[]> = () => {
+        const tempList: IPageRoute[] = []
+        if (!user && !isMobile) {
+            return tempList
+        } else if (!user && isMobile) {
+            tempList.push({
+                title: t("Common.Login"),
+                route: "/login",
+                icon: <LogoutIcon style={{ color: "#5488c7" }} />,
+                onClick: () => {
+                    navigate("/login")
+                }
+            })
+            return tempList
+        } else {
+            userPageList.forEach((item) => {
+                tempList.push(item)
+            })
+            return tempList
+        }
+    }
 
 
     const onRenderTitle: IFunc<JSX.Element> = () => {
@@ -81,10 +129,47 @@ const NavigationPanel: React.FunctionComponent<INavigatePanelOwnProps> = (props)
         );
     };
 
+    const onChangeLanguage: IAction = () => {
+        if (language === "vn") {
+            i18n.changeLanguage("en")
+            setLanguage("en")
+        } else if (language === "en") {
+            i18n.changeLanguage("vn")
+            setLanguage("vn")
+        }
+    };
+
     const onRenderContent: IFunc<JSX.Element> = () => {
         return (
             <Box className="g-navigate-content">
-                {pageList.map((page, index) => (
+                {isMiniMobile && <div style={{ marginBottom: "1rem" }}>
+                    <Search
+                        id="id-g-searchbox-devblog"
+                        placeholder={t("Common.Header.Search.Placeholder")}
+                        type="text"
+                        className="hello"
+                        autoComplete="off"
+                        name="searchInput"
+                        value={search}
+                        onChange={onChangeSearch}
+                        onSearch={onSearchSubmit}
+                        onKeyDown={onKeyDown}
+                    />
+                </div>}
+                {(isTablet || isMobile) && <Stack className="g-language-content-row">
+                    <Stack className="g-change-language-label">
+                        <LanguageIcon style={{ color: "#5488c7" }} />
+                        <Label
+                            className="g-change-language-title"
+                            title={t("Language.Change")}
+                        />
+                    </Stack>
+                    <ChangeLanguage
+                        language={language}
+                        onChangeLanguage={onChangeLanguage}
+                    />
+                </Stack>}
+                {finalPanel().map((page, index) => (
                     <Stack
                         key={index}
                         className="g-navigate-content-row"

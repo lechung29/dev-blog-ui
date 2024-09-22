@@ -16,6 +16,8 @@ import { Alert, ISeverity } from '../../../components/common/alert/Alert';
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import { useTranslation } from 'react-i18next';
+import { TooltipHost } from '../../../components/common/tooltiphost/TooltipHost';
+import { formatDate } from '../../../utils/helper';
 
 interface IUserManagementProps { }
 
@@ -52,7 +54,43 @@ const UserManagement: React.FunctionComponent<IUserManagementProps> = (props) =>
 
     const finalColumns = userManagementColumn.map((item) => ({
         ...item,
-        headerName: t(item.headerName as string)
+        headerName: t(item.headerName as string),
+        renderCell: (item) => {
+            switch (item.field) {
+                case "role":
+                    let tempRole = ""
+                    if (item.value === "admin") {
+                        tempRole = t("Role.Admin")
+                    } else {
+                        tempRole = t("Role.User")
+                    }
+                    return <div className="g-post-table-field-category">
+                        <TooltipHost title={tempRole}>
+                            <span>{tempRole}</span>
+                        </TooltipHost>
+                    </div>
+                case "status":
+                    let tempStatus = ""
+                    if (item.value === "locked") {
+                        tempStatus = t("User.Status.Locked")
+                    } else {
+                        tempStatus = t("User.Status.Active")
+                    }
+                    return <div className="g-post-table-field-category">
+                        <TooltipHost title={tempStatus}>
+                            <span>{tempStatus}</span>
+                        </TooltipHost>
+                    </div>
+                case "createdAt":
+                case "updatedAt":
+                    return <span>{formatDate(new Date(item.value))}</span>
+                case "_id":
+                case "author":
+                default:
+                    return item.value
+            }
+
+        }
     }))
 
     const getAllUsers = async () => {
@@ -78,7 +116,7 @@ const UserManagement: React.FunctionComponent<IUserManagementProps> = (props) =>
         return lockStatus === userStatus.active ? userStatus.inactive : userStatus.active
     }
 
-    const handleDeleteUser = async () => {
+    const handleChangeUserStatus = async () => {
         setState({ isLockLoading: true })
         const existingCurrentUser = selectedUsers.find((item) => item === user?._id!)
         if (existingCurrentUser) {
@@ -116,8 +154,10 @@ const UserManagement: React.FunctionComponent<IUserManagementProps> = (props) =>
     };
 
     const deleteItemText = useMemo(() => {
-        return t("Confirm.Lock.User.Description", { count: selectedUsers.length })
-    }, [selectedUsers])
+        return lockStatus === userStatus.active 
+            ? t("Confirm.Lock.User.Description", { count: selectedUsers.length })
+            : t("Confirm.Unlock.User.Description", { count: selectedUsers.length })
+    }, [selectedUsers, lockStatus])
 
     return (
         <DashboardLayout title={t("ManageUser.Title")}>
@@ -143,7 +183,7 @@ const UserManagement: React.FunctionComponent<IUserManagementProps> = (props) =>
                         title={t("Confirm.Lock.User.Title")}
                         content={deleteItemText}
                         isLoading={isLockLoading}
-                        handleConfirm={handleDeleteUser}
+                        handleConfirm={handleChangeUserStatus}
                         onClose={() => setState({ isOpenLockUserDialog: false })}
                     />
                 )}

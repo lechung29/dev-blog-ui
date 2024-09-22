@@ -22,7 +22,10 @@
         padding: 0 0.25rem;
         gap: 0.5rem;
         display: flex;
+        width: inherit;
         flex-direction: column;
+        overflow: hidden;
+        
         .g-post-card-basic-info {
             display: flex;
             align-items: center;

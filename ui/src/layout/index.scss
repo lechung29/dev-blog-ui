@@ -4,19 +4,21 @@
     min-height: 100vh;
     margin: 0 auto;
     box-sizing: border-box;
+    display: flex;
+    flex-direction: column
 }
 
 .g-dashboard-layout-container {
     @extend .g-app-layout-container;
     display: flex;
     .g-dashboard-main {
-        padding-right: 1.75rem;
+        padding: 0 1.75rem;
         width: 100%;
         display: flex;
         flex-direction: column;
+        min-height: 100vh;
         .g-dashboard-content-section {
             background-color: rgb(245, 245, 247);
-            height: calc(100% - 48px);
             margin: 8px 0 40px;
             padding: 24px;
             border-radius: 12px;

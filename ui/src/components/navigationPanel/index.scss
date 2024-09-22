@@ -71,6 +71,27 @@
                         }
                     }
                 }
+
+                .g-language-content-row {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    flex-direction: row;
+
+                    .g-change-language-label {
+                        display: flex;
+                        align-items: center;
+                        justify-content: flex-start;
+                        flex-direction: row;
+                        gap: 0.5rem;
+
+                        .g-change-language-title {
+                            text-decoration: none;
+                            color: #000;
+                            font-weight: 500;
+                        }
+                    }
+                }
             }
         }
     }

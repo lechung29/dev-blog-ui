@@ -1,10 +1,12 @@
 .g-searchbox-input-group {
     display: flex;
     align-items: center;
+    justify-content: center;
+    width: -webkit-fill-available;
     .g-searchbox-input {
         height: 40px;
-        max-width: 400px;
-        min-width: 350px;
+        width: 100%;
+        max-width: 30rem;
         padding: 0 1rem;
         color: #9b9b9b;
         font-size: 13px;

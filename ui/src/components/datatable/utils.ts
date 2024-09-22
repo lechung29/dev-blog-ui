@@ -3,7 +3,7 @@ import { GridColDef } from "@mui/x-data-grid";
 export const postManagementColumn: GridColDef[] = [
     { field: "id", headerName: "id", width: 100, hideable: true },
     { field: "_id", headerName: "ID", width: 100, resizable: true },
-    { field: "title", headerName: "Post.Title", width: 300, resizable: true },
+    { field: "title", headerName: "Post.Title", width: 240, resizable: true },
     { field: "category", headerName: "Common.Category", width: 160, resizable: true },
     {
         field: "author",
@@ -20,22 +20,20 @@ export const postManagementColumn: GridColDef[] = [
     {
         field: "tags",
         headerName: "Post.Create.TagList",
-        width: 100,
+        width: 160,
         resizable: true,
     },
     {
         field: "createdAt",
         headerName: "Common.CreatedAt",
-        width: 160,
+        width: 200,
         resizable: true,
-        valueFormatter: (params) => new Date(params).toLocaleString(),
     },
     {
         field: "updatedAt",
         headerName: "Common.UpdatedAt",
-        width: 160,
+        width: 200,
         resizable: true,
-        valueFormatter: (params) => new Date(params).toLocaleString(),
     },
 ];
 
@@ -54,13 +52,13 @@ export const userManagementColumn: GridColDef[] = [
     {
         field: "createdAt",
         headerName: "Common.CreatedAt",
-        width: 160,
+        width: 200,
         resizable: true,
     },
     {
         field: "updatedAt",
         headerName: "Common.UpdatedAt",
-        width: 160,
+        width: 200,
         resizable: true,
     },
 ];

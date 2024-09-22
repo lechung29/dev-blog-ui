@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { Fragment, useEffect } from "react";
+import React, { Fragment, useEffect, useMemo } from "react";
 import DashboardLayout from "../../../layout/DashboardLayout";
 import { Skeleton, Stack } from "@mui/material";
 import "./index.scss";
@@ -11,6 +11,8 @@ import { userState } from "../../../redux/reducers/users/UserSlice";
 import { IPostByCategoryProps, IPostByMonthProps } from "../../../types/Post";
 import { useImmerState } from "../../../hook/useImmerState";
 import { useTranslation } from "react-i18next";
+import { useDesktop, useLaptop, useMiniMobile, useMobile, useTablet } from "../../../utils/Responsive";
+
 
 interface IOverviewPageProps {
 	isLoading: boolean;
@@ -35,6 +37,11 @@ const Overview: React.FunctionComponent = () => {
 	const { user } = useAppSelector(userState)
 	const [state, setState] = useImmerState<IOverviewPageProps>(initialState)
 	const { t } = useTranslation()
+	const isDesktop = useDesktop()
+	const isLaptop = useLaptop()
+	const isTablet = useTablet()
+	const isMobile = useMobile()
+	const isMiniMobile = useMiniMobile()
 
 	useEffect(() => {
 		setState((draft) => {
@@ -53,6 +60,29 @@ const Overview: React.FunctionComponent = () => {
 			})
 	}, [])
 
+	const formattedPostByCategory = useMemo(() => {
+		return state.postByCategory.map((category) => {
+			let tempLabel = ""
+			switch (category.label) {
+				case "post":
+					tempLabel = t("Category.Post")
+					break;
+				case "question":
+					tempLabel = t("Category.Question")
+					break;
+				case "discussion":
+					tempLabel = t("Category.Discussion")
+					break;
+				default:
+					break;
+			}
+			return {
+				...category,
+				label: tempLabel
+			}
+		})
+	}, [t, state.postByCategory])
+
 	const getCardContent = (title: string, value: number) => {
 		return (state.isLoading
 			? <Fragment>
@@ -65,10 +95,35 @@ const Overview: React.FunctionComponent = () => {
 			</Fragment>
 		)
 	}
+
+	const chartWidth: number = useMemo(() => {
+		if (isDesktop) {
+			return 450
+		} else if (isLaptop) {
+			return 600
+		} else if (isTablet || (isMobile && !isMiniMobile)) {
+			return 450
+		} else {
+			return 300
+		}
+	}, [isDesktop, isLaptop, isTablet, isMobile, isMiniMobile])
+
+	const chartHeight: number = useMemo(() => {
+		if (isDesktop) {
+			return 200
+		} else if (isLaptop) {
+			return 250
+		} else if (isTablet || (isMobile && !isMiniMobile)) {
+			return 200
+		} else {
+			return 140
+		}
+	}, [isDesktop, isLaptop, isTablet, isMobile, isMiniMobile])
+
 	return (
 		<DashboardLayout title={t("OverviewPage.Title")}>
 			<div className="g-dashboard-content-section">
-				<Stack display={"flex"} marginBottom={5} flexDirection={"row"} alignItems={"center"} justifyContent={"space-between"} gap={4} flexWrap={"wrap"}>
+				<Stack className="g-dashboard-card-section">
 					<div className="g-overview-card g-overview-all-post">
 						{getCardContent("Overview.All.MyPost", state.totalPosts)}
 					</div>
@@ -79,14 +134,14 @@ const Overview: React.FunctionComponent = () => {
 						{getCardContent("Overview.All.MyPost.Like", state.totalLikes)}
 					</div>
 				</Stack>
-				<Stack display={"flex"} flexDirection={"row"} alignItems={"center"} justifyContent={"space-between"} gap={3}>
+				<Stack className="g-dashboard-graph-section">
 					{state.isLoading
 						? <Skeleton variant="rounded" width={"100%"} height={"280px"} />
 						: <PieChart
 							chartTitle={t("Chart.PostBy.Category.Title")}
-							width={450}
-							height={280}
-							data={state.postByCategory}
+							width={chartWidth}
+							height={chartHeight}
+							data={formattedPostByCategory}
 						/>
 					}
 					{state.isLoading
@@ -94,9 +149,9 @@ const Overview: React.FunctionComponent = () => {
 						: <BarChart
 							chartTitle={t("Chart.PostBy.MonthInYear")}
 							chartCategoryLabel={t("Chart.Column.Label")}
-							width={450}
-							height={280}
-							dataColumns={[{ dataKey: "post", label: "All post" }]}
+							width={chartWidth}
+							height={chartHeight}
+							dataColumns={[{ dataKey: "post", label: t("Overview.All.MyPost") }]}
 							dataSet={state.postByMonth}
 						/>
 					}

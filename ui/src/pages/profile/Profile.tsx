@@ -16,6 +16,7 @@ import { delay } from "../../utils/helper";
 import { useNavigate } from "react-router-dom";
 import { Alert, ISeverity } from "../../components/common/alert/Alert";
 import { useTranslation } from "react-i18next";
+import { IFunc } from "../../types/Function";
 interface IProfilePageOwnProps { }
 
 interface IProfilePageState {
@@ -86,7 +87,7 @@ const Profile: React.FunctionComponent<IProfilePageOwnProps> = (_props) => {
 
 
     useEffect(() => {
-        if (displayName === user?.displayName && email === user.email && imageFileUrl === user.avatar) {
+        if (displayName === user?.displayName && email === user?.email && imageFileUrl === user?.avatar) {
             setState({ isDisabled: true })
         }
     }, [imageFileUrl, displayName, email])
@@ -103,9 +104,34 @@ const Profile: React.FunctionComponent<IProfilePageOwnProps> = (_props) => {
         }
     };
 
+    const validate: IFunc<boolean> = () => {
+        let isValid = true;
+        let displayNameError = "";
+        let emailError = "";
+
+        if (!displayName.trim()) {
+            displayNameError = t("Error.Required.DisplayName");
+            setState({ displayNameError: displayNameError });
+            displayNameRef.current?.focus()
+            isValid = false;
+        } else if (!email.trim()) {
+            emailError = t("Error.Required.Email");
+            setState({ emailError: emailError });
+            emailRef.current?.focus()
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
 
     const handleSubmit = async () => {
         setState({ isUpdating: true })
+        if (!validate()) {
+            setState({ isUpdating: false })
+            return;
+        }
+
         try {
             const updatedUser = await AuthService.updateUserInfo(user?._id!, {
                 avatar: imageFileUrl,
@@ -193,10 +219,10 @@ const Profile: React.FunctionComponent<IProfilePageOwnProps> = (_props) => {
                                 rowSpacing={2}
                                 columnSpacing={2}
                             >
-                                <Grid className="g-update-field-label" item xs={4} md={3}>
-                                    <Label title={t("Common.Your.Id")} />
+                                <Grid className="g-update-field-label" item xs={12} sm={4} md={3}>
+                                    <Label title={t("Common.Your.Id")} bold />
                                 </Grid>
-                                <Grid className="g-update-field-input" item xs={8} md={9}>
+                                <Grid className="g-update-field-input" item xs={12} sm={8} md={9}>
                                     <TextField
                                         id="g-update-field-id"
                                         className="g-update-section-input-item"
@@ -205,10 +231,10 @@ const Profile: React.FunctionComponent<IProfilePageOwnProps> = (_props) => {
                                         value={user?._id}
                                     />
                                 </Grid>
-                                <Grid className="g-update-field-label" item xs={4} md={3}>
-                                    <Label title={t("Common.DisplayName")} />
+                                <Grid className="g-update-field-label" item xs={12} sm={4} md={3}>
+                                    <Label title={t("Common.DisplayName")} bold />
                                 </Grid>
-                                <Grid className="g-update-field-input" item xs={8} md={9}>
+                                <Grid className="g-update-field-input" item xs={12} sm={8} md={9}>
                                     <TextField
                                         id="g-update-field-displayname"
                                         className="g-update-section-input-item"
@@ -221,10 +247,10 @@ const Profile: React.FunctionComponent<IProfilePageOwnProps> = (_props) => {
                                         error={!!displayNameError}
                                     />
                                 </Grid>
-                                <Grid className="g-update-field-label" item xs={4} md={3}>
-                                    <Label title={t("Email.Address")} />
+                                <Grid className="g-update-field-label" item xs={12} sm={4} md={3}>
+                                    <Label title={t("Email.Address")} bold />
                                 </Grid>
-                                <Grid className="g-update-field-input" item xs={8} md={9}>
+                                <Grid className="g-update-field-input" item xs={12} sm={8} md={9}>
                                     <TextField
                                         id="g-update-field-email"
                                         className="g-update-section-input-item"

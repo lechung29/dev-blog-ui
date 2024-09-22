@@ -1,14 +1,37 @@
-.g-overview-card {
-    flex: 1;
-    height: 120px;
-    min-width: 200px;
-    border-radius: 12px;
-    padding: 1rem;
+.g-dashboard-card-section {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    flex-direction: row !important;
+    gap: 1rem;
+    flex-wrap: wrap;
+
+    .g-overview-card {
+        flex: 1;
+        height: 120px;
+        min-width: 200px;
+        border-radius: 12px;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .g-overview-all-post {
+        background: linear-gradient(-45deg, #f89b29 0%, #ff0f7b 100%);
+    }
+
+    .g-overview-month-post {
+        background: linear-gradient(45deg, #04051dea 0%, #2b566e 100%);
+    }
+
+    .g-overview-all-like {
+        background: linear-gradient(144deg, #af40ff, #4f46e5);
+    }
+
     h5 {
         font-weight: 500;
         color: #fff;
@@ -31,14 +54,11 @@
     }
 }
 
-.g-overview-all-post {
-    background: linear-gradient(-45deg, #f89b29 0%, #ff0f7b 100%);
-}
-
-.g-overview-month-post {
-    background: linear-gradient(45deg, #04051dea 0%, #2b566e 100%);
-}
-
-.g-overview-all-like {
-    background: linear-gradient(144deg, #af40ff, #4f46e5);
+.g-dashboard-graph-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row !important;
+    flex-wrap: wrap;
+    gap: 0.5rem;
 }

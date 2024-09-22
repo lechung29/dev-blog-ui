@@ -1,6 +1,7 @@
-import React from 'react'
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect } from 'react'
 import "./index.scss"
-import { Avatar, Badge, Stack } from '@mui/material'
+import { Avatar, Badge, Menu, MenuItem, Stack } from '@mui/material'
 import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
 import Comment from './Comment';
 import { IReferenceComments } from '../../types/Comment';
@@ -15,6 +16,10 @@ import { DefaultButton } from '../common/button/defaultbutton/DefaultButton';
 import { classNames, formatDate } from '../../utils/helper';
 import { IRequestStatus } from '../../types/IResponse';
 import { useTranslation } from 'react-i18next';
+import { useExtraMini } from '../../utils/Responsive';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import { IconButton } from '../common/button/iconbutton/IconButton';
+import Fade from '@mui/material/Fade';
 
 interface ICommentItemProps {
     item: IReferenceComments
@@ -30,6 +35,7 @@ interface ICommentItemState {
     message: string;
     alertType: ISeverity
     isDisabledLikeComment: boolean
+    anchorEl: HTMLElement | null;
 }
 
 const CommentItem: React.FunctionComponent<ICommentItemProps> = (props) => {
@@ -44,10 +50,26 @@ const CommentItem: React.FunctionComponent<ICommentItemProps> = (props) => {
         isOpenAlert: false,
         message: "",
         alertType: ISeverity.success,
-        isDisabledLikeComment: false
+        isDisabledLikeComment: false,
+        anchorEl: null,
     }
     const [state, setState] = useImmerState<ICommentItemState>(initialState)
-    const { commentValue, isDeletingComment, isOpenDeleteCommentDialog, isUpdateComment, isOpenAlert, message } = state
+    const { commentValue, isDeletingComment, isOpenDeleteCommentDialog, isUpdateComment, isOpenAlert, message, anchorEl } = state
+    const isExtraMini = useExtraMini()
+
+    const open = Boolean(anchorEl);
+    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+        setState({ anchorEl: event.target });
+    };
+    const handleClose = () => {
+        setState({ anchorEl: null });
+    };
+
+    useEffect(() => {
+        if (!isExtraMini) {
+            handleClose()
+        }
+    }, [isExtraMini])
 
     const onRenderBadgeContent: IFunc<JSX.Element | null> = () => {
         if (!item.like.length) return null
@@ -188,17 +210,47 @@ const CommentItem: React.FunctionComponent<ICommentItemProps> = (props) => {
                             onClick={handleLikeComment}
                         />
 
-                        {user?._id === props.item.commentator._id && <DefaultButton
+                        {!isExtraMini && user?._id === props.item.commentator._id && <DefaultButton
                             className='g-post-comment-action-button'
                             title={t("Common.Edit")}
                             onClick={() => setState({ isUpdateComment: true })}
                         />}
 
-                        {user?._id === props.item.commentator._id && <DefaultButton
+                        {!isExtraMini && user?._id === props.item.commentator._id && <DefaultButton
                             className='g-post-comment-action-button'
                             title={t("Comment.Action.Delete")}
                             onClick={() => setState({ isOpenDeleteCommentDialog: true })}
                         />}
+
+                        {isExtraMini && user?._id === props.item.commentator._id && <div>
+                            <IconButton
+                                id="fade-button"
+                                size='large'
+                                className='g-more-action-icon-button'
+                                icon={<MoreHorizIcon style={{ color: "#000!important" }} />}
+                                aria-controls={open ? 'fade-menu' : undefined}
+                                aria-haspopup="true"
+                                aria-expanded={open ? 'true' : undefined}
+                                style={{
+                                    padding: "0!important",
+                                }}
+                                onClick={handleClick}
+                            />
+                            <Menu
+                                id="fade-menu"
+                                className='g-more-action-menu'
+                                MenuListProps={{
+                                    'aria-labelledby': 'fade-button',
+                                }}
+                                anchorEl={anchorEl}
+                                open={open}
+                                onClose={handleClose}
+                                TransitionComponent={Fade}
+                            >
+                                <MenuItem onClick={() => setState({ isUpdateComment: true, anchorEl: null })}>{t("Common.Edit")}</MenuItem>
+                                <MenuItem onClick={() => setState({ isOpenDeleteCommentDialog: true, anchorEl: null })}>{t("Comment.Action.Delete")}</MenuItem>
+                            </Menu>
+                        </div>}
 
                         {isOpenDeleteCommentDialog && <ConfirmDialog
                             open={isOpenDeleteCommentDialog}
@@ -208,7 +260,7 @@ const CommentItem: React.FunctionComponent<ICommentItemProps> = (props) => {
                             isLoading={isDeletingComment}
                             handleConfirm={handleDeleteComment}
                         />}
-                        <span>{formatDate(new Date(item.createdAt))}</span>
+                        <span className='g-post-comment-timeline'>{formatDate(new Date(item.createdAt))}</span>
                     </div>
                 </div>
             }

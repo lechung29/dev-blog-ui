@@ -27,6 +27,8 @@
         justify-content: flex-start;
         align-items: center;
         list-style: none;
+        overflow-x: auto;
+        
         .g-create-post-tag-list-item {
             padding-top: 4px !important;
             padding-bottom: 4px !important;
@@ -106,9 +108,9 @@
 
 .g-create-post-section-content {
     display: flex;
-    gap: 2.75rem;
+    gap: .25rem;
     flex-direction: column!important;
-    margin-bottom: 4rem;
+    height: max-content;
 }
 
 .g-create-post-section-action-button {
