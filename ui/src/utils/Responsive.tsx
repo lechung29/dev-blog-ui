@@ -8,7 +8,8 @@ enum Breakpoint {
     TabletMax = 991,
     TabletMin = 768,
     MobileMax = 767,
-    MobileMedium = 575
+    MobileMedium = 575,
+    MobileMin = 440,
 }
 
 const useDesktop = () => useMediaQuery({ minWidth: Breakpoint.DesktopMin })
@@ -38,8 +39,10 @@ const Mobile: React.FC<React.PropsWithChildren<any>> = ({ children }) => {
 const useMiniMobile = () => useMediaQuery({ maxWidth: Breakpoint.MobileMedium })
 const MiniMobile: React.FC<React.PropsWithChildren<any>> = ({ children }) => {
     const isMiniMobile = useMiniMobile()
-    return isMiniMobile? children : null
+    return isMiniMobile ? children : null
 }
+
+const useExtraMini = () => useMediaQuery({ maxWidth: Breakpoint.MobileMin })
 
 export {
     Breakpoint,
@@ -53,4 +56,5 @@ export {
     Mobile,
     useMiniMobile,
     MiniMobile,
+    useExtraMini
 }

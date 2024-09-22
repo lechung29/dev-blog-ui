@@ -65,9 +65,18 @@
 .g-post-table-field-title {
     font-weight: 500;
     cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 
     &:hover {
         text-decoration: underline;
         color: #5488c7;
     }
+}
+
+.g-post-table-field-category {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }

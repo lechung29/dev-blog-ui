@@ -64,7 +64,7 @@ const UserManagement: React.FunctionComponent<IUserManagementProps> = (props) =>
                     } else {
                         tempRole = t("Role.User")
                     }
-                    return <div>
+                    return <div className="g-post-table-field-category">
                         <TooltipHost title={tempRole}>
                             <span>{tempRole}</span>
                         </TooltipHost>
@@ -76,7 +76,7 @@ const UserManagement: React.FunctionComponent<IUserManagementProps> = (props) =>
                     } else {
                         tempStatus = t("User.Status.Active")
                     }
-                    return <div>
+                    return <div className="g-post-table-field-category">
                         <TooltipHost title={tempStatus}>
                             <span>{tempStatus}</span>
                         </TooltipHost>

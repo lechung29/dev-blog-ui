@@ -16,6 +16,7 @@ import PostPage from "./pages/post/PostPage";
 import UserManagement from "./pages/dashboard/usermanagement/UserManagement";
 import { useAppSelector } from "./redux/store/store";
 import { userState } from "./redux/reducers/users/UserSlice";
+import NotFound from "./pages/pageNotFound/PageNotFound";
 
 function App() {
 	const { user } = useAppSelector(userState)
@@ -44,6 +45,7 @@ function App() {
 						<Route key={"user-post-management"} path="post-management" element={<UserPostManagement />} />
 						<Route key={"user-favorite-management"} path="favourite-management" element={<FavouritePost />} />
 					</Route>
+					<Route path="*" element={<NotFound />} />
 				</Routes>
 			</BrowserRouter>
 		</React.Fragment>

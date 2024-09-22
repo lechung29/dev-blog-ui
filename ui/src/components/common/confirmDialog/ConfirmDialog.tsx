@@ -19,10 +19,11 @@ interface IConfirmDialogProps {
 	content: React.ReactNode
 	isLoading?: boolean;
 	noCancelButton?: boolean;
+	isDisable?: boolean
 }
 
 const ConfirmDialog: React.FunctionComponent<IConfirmDialogProps> = (props) => {
-	const { content, handleConfirm, open, title, isLoading, noCancelButton, onClose } = props
+	const { content, handleConfirm, open, title, isLoading, noCancelButton, onClose, isDisable } = props
 	const { t } = useTranslation()
 	const iconStyle = React.useMemo(() => {
 		return {
@@ -62,6 +63,7 @@ const ConfirmDialog: React.FunctionComponent<IConfirmDialogProps> = (props) => {
 					variant="contained"
 					onClick={handleConfirm}
 					onKeyDown={onKeyDown}
+					disabled={isDisable}
 					autoFocus
 					iconStyle={iconStyle}
 					isLoading={isLoading}

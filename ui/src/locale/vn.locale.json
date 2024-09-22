@@ -10,6 +10,7 @@
     "ManagePost.Title": "Devblog - Quản lý bài viết",
     "ManageUser.Title": "Devblog - Quản lý người dùng",
     "ManageFavorite.Title": "Devblog - Yêu thích",
+    "Page.Not.Found.Title": "Devblog - Trang không tồn tại",
     "Common": {
         "Post.NoItem": "Không có bài viết phù hợp",
         "Filter": "Bộ lọc",
@@ -169,7 +170,7 @@
     "Post.Create.Name": "Tên bài viết",
     "Post.Create.TagName": "Tên thẻ",
     "Post.Create.TagList": "Danh sách thẻ",
-    "Post.Create.Thumbmail": "Tải ảnh bìa",
+    "Post.Create.Thumbnail": "Tải ảnh bìa",
     "Overview.All.MyPost": "Tổng số bài viết",
     "Overview.All.MyPost.CurrentMonth": "Bài viết trong tháng",
     "Overview.All.MyPost.Like": "Tổng số lượt thích",
@@ -196,7 +197,7 @@
     "language.English": "Tiếng Anh",
     "Language.Change": "Đổi ngôn ngữ",
     "Delete.Post.Success": "Xóa thành công",
-    "Role.User": "Người đùng",
+    "Role.User": "Người dùng",
     "Role.Admin": "Quản trị viên",
     "User.Status.Locked": "Khóa",
     "User.Status.Active": "Hoạt động",
@@ -215,5 +216,8 @@
     "Services.FAQs": "FAQs",
     "Services.RSS": "RSS",
     "Services.Terms": "Điều khoản",
-    "Services.Help": "Hỗ trợ"
+    "Services.Help": "Hỗ trợ",
+    "Error.Page.Not.Found": "Trang không tìm thấy",
+    "Error.Page.Post.Not.Exists": "Bài viết không tồn tại",
+    "Error.Page.Post.Cannot.Access": "Bài viết bị ẩn bởi quản trị viên, không thể truy cập"
 }

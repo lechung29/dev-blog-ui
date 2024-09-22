@@ -69,7 +69,7 @@ const UserPostManagement: React.FunctionComponent<IPostManagementProps> = (props
 					} else {
 						temp = t("Category.Discussion")
 					}
-					return <div>
+					return <div className="g-post-table-field-category">
 						<TooltipHost title={temp}>
 							<span>{temp}</span>
 						</TooltipHost>
@@ -83,7 +83,7 @@ const UserPostManagement: React.FunctionComponent<IPostManagementProps> = (props
 					} else {
 						tempStatus = t("Status.Hidden")
 					}
-					return <div>
+					return <div className="g-post-table-field-category">
 						<TooltipHost title={tempStatus}>
 							<span>{tempStatus}</span>
 						</TooltipHost>
@@ -91,7 +91,7 @@ const UserPostManagement: React.FunctionComponent<IPostManagementProps> = (props
 				case "tags":
 					let tempTag = item.value.join(" - ")
 					return <span>{tempTag}</span>
-				case "createdAt": 
+				case "createdAt":
 				case "updatedAt":
 					return <span>{formatDate(new Date(item.value))}</span>
 				case "_id":
@@ -153,6 +153,10 @@ const UserPostManagement: React.FunctionComponent<IPostManagementProps> = (props
 		);
 	};
 
+	const isDisable = useMemo(() => {
+		return allPosts.find((post) => post.id === selectedItems[0])?.status === itemStatus
+	}, [allPosts, selectedItems, itemStatus])
+
 	return (
 		<DashboardLayout title={t("ManagePost.Title")}>
 			<div className="g-dashboard-content-section">
@@ -213,6 +217,7 @@ const UserPostManagement: React.FunctionComponent<IPostManagementProps> = (props
 					<ConfirmDialog
 						open={isOpenUpdateDialog}
 						title={t("Edit.Status")}
+						isDisable={isDisable}
 						content={renderChangeStatus()}
 						isLoading={isUpdateAndDeleteLoading}
 						handleConfirm={() => {

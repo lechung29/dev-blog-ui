@@ -23,6 +23,7 @@ import { Alert, ISeverity } from '../../components/common/alert/Alert';
 import { classNames, formatDate } from '../../utils/helper';
 import { DefaultButton } from '../../components/common/button/defaultbutton/DefaultButton';
 import { useTranslation } from 'react-i18next';
+import NotFound from '../pageNotFound/PageNotFound';
 interface IPostPageProps {
 
 }
@@ -42,7 +43,7 @@ interface IPostPageState {
 }
 
 const initialState: IPostPageState = {
-    isLoading: false,
+    isLoading: true,
     showComment: false,
     commentValue: "",
     post: null,
@@ -74,7 +75,7 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
         alertType,
         isAlertOpen
     } = state
-
+    
 
     useEffect(() => {
         setState({ isLoading: true })
@@ -212,14 +213,16 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
                 variant="rectangular"
                 style={{ borderRadius: 20 }}
             />
-            : <img
-                src={post?.thumbnail || "/assets/thumbnail.jpg"}
-                style={{
-                    width: "100%",
-                    objectFit: "contain"
-                }}
-                alt='img'
-            />
+            : post?.thumbnail
+                ? <img
+                    src={post?.thumbnail}
+                    style={{
+                        width: "100%",
+                        objectFit: "contain"
+                    }}
+                    alt='img'
+                />
+                : <React.Fragment />
     }, [isLoading])
 
 
@@ -316,6 +319,18 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
             </Button>
         </ButtonGroup>
     }, [isLoading, isLike, showComment, post?.comments, isFavorite])
+
+    if (!isLoading && !post) {
+        return <NotFound 
+            message={t("Error.Page.Post.Not.Exists")}
+        />
+    }
+    
+    if (!isLoading && post && post.status !== "Public" ) {
+        return <NotFound 
+            message={t("Error.Page.Post.Cannot.Access")}
+        />
+    }
 
     return (
         <AppLayout title={t("DetailPost.Title")}>

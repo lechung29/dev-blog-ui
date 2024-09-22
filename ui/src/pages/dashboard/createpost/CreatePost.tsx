@@ -202,15 +202,24 @@ const CreatePost: React.FunctionComponent<ICreatePostOwnProps> = (props) => {
 				content: postContent,
 				thumbnail: postThumbnails ?? "",
 			})
-			setState({ isLoading: false })
-			setState((draft) => {
-				draft.alertMessage = t(data.message)
-				draft.alertType = data.requestStatus === IRequestStatus.Success ? ISeverity.success : ISeverity.error
-				draft.isAlertOpen = true
-			})
-			await delay(2000).then(() => {
-				navigate(`/${user?.role}-dashboard/post-management`)
-			})
+			if (data.requestStatus === IRequestStatus.Success) {
+				setState({ isLoading: false })
+				setState((draft) => {
+					draft.alertMessage = t(data.message)
+					draft.alertType = ISeverity.success
+					draft.isAlertOpen = true
+				})
+				await delay(2000).then(() => {
+					navigate(`/${user?.role}-dashboard/post-management`)
+				})
+			} else {
+				setState({ isLoading: false })
+				setState((draft) => {
+					draft.alertMessage = t("Error.Network")
+					draft.alertType = ISeverity.error
+					draft.isAlertOpen = true
+				})
+			}
 
 		}
 	}
@@ -318,7 +327,7 @@ const CreatePost: React.FunctionComponent<ICreatePostOwnProps> = (props) => {
 					</Grid>
 					<Grid className="g-create-post-section-basic-info" item sm={12} xs={12} md={12}>
 						<form className="g-upload-image-form">
-							<span className="g-upload-image-form-title">{t("Post.Create.Thumbmail")}</span>
+							<span className="g-upload-image-form-title">{t("Post.Create.Thumbnail")}</span>
 							<label htmlFor="file-input" className="g-upload-image-form-drop-container">
 								<input type="file" accept="image/*" id="file-input" onChange={handlePostThumbnailChange} />
 							</label>
