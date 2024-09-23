@@ -42,7 +42,7 @@ const GoogleAuth: React.FunctionComponent = () => {
             variant="outlined"
             className="g-google-auth-button"
             startIcon={<GoogleIcon style={{ color: "#e94820" }} />}
-        />;
+        />
     </Fragment>
 };
 
