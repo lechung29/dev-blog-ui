@@ -1,7 +1,7 @@
 import React from "react";
 import "./index.scss";
 import { TooltipHost } from "../common/tooltiphost/TooltipHost";
-import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ModeCommentIcon from "@mui/icons-material/ModeComment";
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import { Stack } from "@mui/material";
@@ -21,7 +21,7 @@ const QuestionCard: React.FunctionComponent<IPostCardItemProps> = (props) => {
             <div className="g-question-card-reaction">
                 <TooltipHost title={t("Post.Like.Count", { count: item.totalLikes })}>
                     <div className="g-post-card-reaction-item">
-                        <RemoveRedEyeIcon style={{ color: "#9b9b9b", fontSize: 14 }} />
+                        <ThumbUpIcon style={{ color: "#9b9b9b", fontSize: 14 }} />
                         <span>{item.totalLikes}</span>
                     </div>
                 </TooltipHost>

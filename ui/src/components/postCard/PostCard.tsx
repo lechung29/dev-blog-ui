@@ -1,6 +1,6 @@
 import { Avatar, Stack } from "@mui/material";
 import React from "react";
-import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ModeCommentIcon from '@mui/icons-material/ModeComment';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import "./index.scss"
@@ -63,7 +63,7 @@ const PostCard: React.FunctionComponent<IPostCardItemProps> = (props) => {
                 <div className="g-post-card-reaction">
                     <TooltipHost title={t("Post.Like.Count", { count: totalLikes })}>
                         <div className="g-post-card-reaction-item">
-                            <RemoveRedEyeIcon className="g-post-card-react-icon" />
+                            <ThumbUpIcon className="g-post-card-react-icon" />
                             <span>{totalLikes}</span>
                         </div>
                     </TooltipHost>

@@ -7,7 +7,15 @@
     gap: 1rem;
 
     .g-edit-action-button {
-        background-color: #3d405b !important;
+        background: linear-gradient(45deg, rgb(216, 189, 8) 0%, #08c281 100%) !important;
+        color: #fff !important;
+        min-width: 0 !important;
+        width: 40px;
+        height: 40px;
+    }
+
+    .g-status-action-button {
+        background: linear-gradient(45deg, rgba(4, 5, 29, 0.9176470588) 0%, #2b566e 100%) !important;
         color: #fff !important;
         min-width: 0 !important;
         width: 40px;
@@ -28,7 +36,7 @@
     }
 
     .g-delete-action-button {
-        background-color: rgb(255, 56, 86) !important;
+        background: linear-gradient(-45deg, #f89b29 0%, #ff0f7b 100%) !important;
         color: #fff !important;
         min-width: 0 !important;
         width: 40px;
@@ -50,14 +58,14 @@
 }
 
 .g-delete-action-button {
-    background-color: rgb(255, 56, 86) !important;
+    background: linear-gradient(-45deg, #f89b29 0%, #ff0f7b 100%) !important;
     color: #fff !important;
     min-width: 0 !important;
     width: 40px;
     height: 40px;
 
     &:hover {
-        background-color: rgb(255, 56, 86) !important;
+        background: linear-gradient(-45deg, #f89b29 0%, #ff0f7b 100%) !important;
         color: #fff;
     }
 }

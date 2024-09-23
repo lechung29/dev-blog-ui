@@ -24,7 +24,7 @@ const Laptop: React.FC<React.PropsWithChildren<any>> = ({ children }) => {
     return isLaptop ? children : null
 }
 
-const useTablet = () => useMediaQuery({ maxWidth: Breakpoint.TabletMax, minWidth: Breakpoint.TabletMin })
+const useTablet = () => useMediaQuery({ maxWidth: Breakpoint.TabletMax, minWidth: Breakpoint.MobileMax })
 const Tablet: React.FC<React.PropsWithChildren<any>> = ({ children }) => {
     const isTablet = useTablet()
     return isTablet ? children : null

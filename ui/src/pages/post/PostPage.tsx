@@ -75,7 +75,7 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
         alertType,
         isAlertOpen
     } = state
-    
+
 
     useEffect(() => {
         setState({ isLoading: true })
@@ -133,14 +133,21 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
         try {
             setState({ disableLike: true })
             const res = await PostService.likePost(postId!)
-            if (res.requestStatus === IRequestStatus.Success) {
+            if (res.requestStatus === IRequestStatus.Error) {
+                setState((draft) => {
+                    draft.alertMessage = t(res.message);
+                    draft.alertType = ISeverity.error
+                    draft.isAlertOpen = true
+                })
+                await getPostDetails()
+                setState({ disableLike: false })
+            } else {
+                console.log(res.message)
                 setState((draft) => {
                     draft.alertMessage = t(res.message);
                     draft.alertType = ISeverity.success
                     draft.isAlertOpen = true
                 })
-                await getPostDetails()
-                setState({ disableLike: false })
             }
         } catch (error) {
             console.log(error)
@@ -184,8 +191,20 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
         >
             {post?.title}
         </Typography>
-    }, [isLoading])
+    }, [isLoading, t])
 
+    const getCategoryName = (categoryValue) => {
+        switch (categoryValue) {
+            case "post":
+                return t("Category.Post")
+            case "question":
+                return t("Category.Question")
+            case "discussion":
+                return t("Category.Discussion")
+            default:
+                return ""
+        }
+    }
 
     const subTitle = useMemo(() => {
         return isLoading ? <Skeleton
@@ -193,15 +212,27 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
             height={30}
             width="60%"
             style={{ borderRadius: 8, marginBottom: "0.35rem" }}
-        /> : <Typography
-            variant="caption"
-            fontSize={14}
-            display="block"
-            gutterBottom
-        >
-            {`${post?.author.displayName}  -  ${post?.category}  -  ${formatDate(new Date(post?.createdAt as string))}`}
-        </Typography>
-    }, [isLoading])
+        /> : <Stack className='g-post-chip-info-section'>
+            <Chip
+                key={post?.author.displayName}
+                label={`${t("Common.Author")}: ${post?.author.displayName}`}
+                size='small'
+                className='g-post-chip-info-item'
+            />
+            <Chip
+                key={post?.author.displayName}
+                label={`${t("Common.Category")}: ${getCategoryName(post?.category)}`}
+                size='small'
+                className='g-post-chip-info-item'
+            />
+            <Chip
+                key={post?.author.displayName}
+                label={`${t("Common.CreatedAt")}: ${formatDate(new Date(post?.createdAt as string))}`}
+                size='small'
+                className='g-post-chip-info-item'
+            />
+        </Stack>
+    }, [isLoading, t])
 
 
     const postThumbnail = useMemo(() => {
@@ -213,16 +244,14 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
                 variant="rectangular"
                 style={{ borderRadius: 20 }}
             />
-            : post?.thumbnail
-                ? <img
-                    src={post?.thumbnail}
-                    style={{
-                        width: "100%",
-                        objectFit: "contain"
-                    }}
-                    alt='img'
-                />
-                : <React.Fragment />
+            : <img
+                src={post?.thumbnail}
+                style={{
+                    width: "100%",
+                    objectFit: "contain"
+                }}
+                alt='img'
+            />
     }, [isLoading])
 
 
@@ -321,13 +350,13 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
     }, [isLoading, isLike, showComment, post?.comments, isFavorite])
 
     if (!isLoading && !post) {
-        return <NotFound 
+        return <NotFound
             message={t("Error.Page.Post.Not.Exists")}
         />
     }
-    
-    if (!isLoading && post && post.status !== "Public" ) {
-        return <NotFound 
+
+    if (!isLoading && post && post.status !== "Public") {
+        return <NotFound
             message={t("Error.Page.Post.Cannot.Access")}
         />
     }
@@ -344,9 +373,9 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
                 <Stack className='g-post-page-content-tags'>
                     {tagsList}
                 </Stack>
-                <Stack className='g-post-page-content-thumbnail'>
+                {post?.thumbnail && <Stack className='g-post-page-content-thumbnail'>
                     {postThumbnail}
-                </Stack>
+                </Stack>}
                 <Stack className='g-post-page-content-data'>
                     {postContent}
                 </Stack>
