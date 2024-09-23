@@ -24,6 +24,11 @@ class PostService {
     public static createPost(data: ICreatePost): Promise<IResponseType<ICreatePost>> {
         return FetchApi(`${root}/${v1}/post/${createPost}`, FetchMethod.POST, data);
     }
+
+    public static updatePost(data: ICreatePost, postId: string, userId: string): Promise<IResponseType<ICreatePost>> {
+        return FetchApi(`${root}/${v1}/post/${updatePost}/${postId}/${userId}`, FetchMethod.PUT, data )
+    }
+
     public static getAllPosts(): Promise<IResponseType<IPostDataProps[]>> {
         return FetchApi(`${root}/${v1}/post/${getAllPost}`, FetchMethod.GET);
     }

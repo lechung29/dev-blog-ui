@@ -20,6 +20,7 @@ import { Alert } from "../../../../components/common/alert/Alert";
 import { TooltipHost } from "../../../../components/common/tooltiphost/TooltipHost";
 import { useNavigate } from "react-router-dom";
 import { formatDate } from "../../../../utils/helper";
+import SellIcon from '@mui/icons-material/Sell';
 
 interface IPostManagementProps {
 
@@ -161,12 +162,18 @@ const UserPostManagement: React.FunctionComponent<IPostManagementProps> = (props
 		<DashboardLayout title={t("ManagePost.Title")}>
 			<div className="g-dashboard-content-section">
 				<Stack className="g-management-post-section-action-button">
+					{selectedItems.length === 1 && <IconButton
+						size="small"
+						className="g-edit-action-button"
+						icon={<EditIcon />}
+						onClick={() => navigate(`/${user?.role}-dashboard/edit-post/${selectedItems[0]}`)}
+					/>}
 					{user?.role === "admin"
 						&& selectedItems.length === 1
 						&& <IconButton
 							size="small"
-							className="g-edit-action-button"
-							icon={<EditIcon />}
+							className="g-status-action-button"
+							icon={<SellIcon />}
 							onClick={() => setState({ isOpenUpdateDialog: true })}
 						/>}
 					{selectedItems.length > 0 && <IconButton

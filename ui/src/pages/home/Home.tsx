@@ -57,7 +57,6 @@ interface IHomePageState {
     isLoadingMaxPages: boolean;
     filtersObject: IHomeFilterProps;
     sortObject: ISortProps,
-    runAfter: boolean;
 }
 
 const initialState: IHomePageState = {
@@ -75,7 +74,6 @@ const initialState: IHomePageState = {
         category: []
     },
     sortObject: defaultSort,
-    runAfter: false,
 }
 
 const Home: React.FunctionComponent<IHomePageOwnProps> = (_props) => {
@@ -95,10 +93,9 @@ const Home: React.FunctionComponent<IHomePageOwnProps> = (_props) => {
         lastQuestions,
         filtersObject,
         sortObject,
-        runAfter
     } = state;
 
-    const getPosts = async () => {
+    const getPosts = async (currentPage: number) => {
         setState({ isLoadingPost: true })
         const res = await PostService.getFilterPosts({
             limit: limit,
@@ -139,33 +136,15 @@ const Home: React.FunctionComponent<IHomePageOwnProps> = (_props) => {
     }
 
     useEffect(() => {
-        if (runAfter) {
-            if (currentPage === 1) {
-                Promise.all([getPosts(), getMaxPages()]).then(([..._other]) => {
-                    setState((draft) => {
-                        draft.isLoadingMaxPages = false;
-                        draft.isLoadingPost = false
-                    })
-                })
-            } else {
-                getMaxPages().then(() => {
-                    setState({ isLoadingMaxPages: false })
-                })
-                setState({ currentPage: 1 })
-            }
-        } else {
-            getMaxPages().then(() => {
-                setState({ isLoadingMaxPages: false })
+        let tempPage = 1
+        Promise.all([getPosts(tempPage), getMaxPages()]).then(([..._other]) => {
+            setState((draft) => {
+                draft.isLoadingMaxPages = false;
+                draft.isLoadingPost = false
+                draft.currentPage = tempPage;
             })
-            setState({ runAfter: true })
-        }
+        })
     }, [filtersObject, sortObject])
-
-
-    useEffect(() => {
-        getPosts().then(() => setState({ isLoadingPost: false }))
-    }, [currentPage])
-
 
     useEffect(() => {
         getLikelyQuestions().then(() => setState({ isLoadingLastQuestions: false }))
@@ -228,7 +207,7 @@ const Home: React.FunctionComponent<IHomePageOwnProps> = (_props) => {
                     mx={1}
                 >
                     <Stack className="g-homepage-left-section-action">
-                        {isMiniMobile ? <IconButton 
+                        {isMiniMobile ? <IconButton
                             size="large"
                             className="g-homepage-left-section-filter-icon"
                             icon={<FilterAltIcon />}
@@ -263,7 +242,10 @@ const Home: React.FunctionComponent<IHomePageOwnProps> = (_props) => {
                             loading={isLoadingMaxPages}
                             maxPages={maxPages}
                             currentPage={currentPage}
-                            onChangePage={(page) => setState({ currentPage: page })}
+                            onChangePage={(page) => {
+                                setState({ currentPage: page })
+                                getPosts(page).then(() => setState({ isLoadingPost: false }))
+                            }}
                         />
                     </Stack>}
                 </Box>

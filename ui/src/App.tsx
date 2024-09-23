@@ -17,6 +17,7 @@ import UserManagement from "./pages/dashboard/usermanagement/UserManagement";
 import { useAppSelector } from "./redux/store/store";
 import { userState } from "./redux/reducers/users/UserSlice";
 import NotFound from "./pages/pageNotFound/PageNotFound";
+import EditPost from "./pages/dashboard/editpost/EditPost";
 
 function App() {
 	const { user } = useAppSelector(userState)
@@ -35,6 +36,7 @@ function App() {
 					<Route path="/admin-dashboard" element={<AdminRoute />}>
 						<Route key={"admin-overview"} path="overview" element={<Overview />} />
 						<Route key={"admin-create-post"} path="create-post" element={<CreatePost />} />
+						<Route key={"admin-edit-post"} path="edit-post/:postId" element={<EditPost />} />
 						<Route key={"admin-post-management"} path="post-management" element={<UserPostManagement />} />
 						<Route key={"admin-user-management"} path="user-management" element={<UserManagement />} />
 						<Route key={"admin-favorite-management"} path="favourite-management" element={<FavouritePost />} />
@@ -42,6 +44,7 @@ function App() {
 					<Route path="/user-dashboard" element={<UserRoute />}>
 						<Route key={"user-overview"} path="overview" element={<Overview />} />
 						<Route key={"user-create-post"} path="create-post" element={<CreatePost />} />
+						<Route key={"user-edit-post"} path="edit-post/:postId" element={<EditPost />} />
 						<Route key={"user-post-management"} path="post-management" element={<UserPostManagement />} />
 						<Route key={"user-favorite-management"} path="favourite-management" element={<FavouritePost />} />
 					</Route>

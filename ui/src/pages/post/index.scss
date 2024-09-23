@@ -14,6 +14,22 @@
         justify-content: center;
         flex-direction: row;
         width: 75%;
+
+        .g-post-chip-info-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: row;
+            gap: 1rem;
+            margin: 0.5rem 0 1.5rem;
+
+            .g-post-chip-info-item {
+                padding: 1rem 0.25rem;
+                background: linear-gradient(-45deg, #f89b29 0%, #ff0f7b 100%) !important;
+                color: #fff;
+                font-weight: 500;
+            }
+        }
     }
 
     .g-post-page-content-tags {
@@ -41,7 +57,7 @@
         align-items: center;
         justify-content: center;
         width: 100%;
-        margin-top: 40px;
+        margin-top: 20px;
 
         .g-post-page-content-data-text {
             margin: 1rem 0;
@@ -53,7 +69,8 @@
                 width: 100% !important;
             }
 
-            ul, ol {
+            ul,
+            ol {
                 margin-left: 2rem;
             }
         }

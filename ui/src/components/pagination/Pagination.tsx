@@ -1,9 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect } from 'react'
+import React from 'react'
 import Pagination from '@mui/material/Pagination';
 import { Skeleton } from '@mui/material';
 import { IAction1, IAction2 } from '../../types/Function';
-import { useImmerState } from '../../hook/useImmerState';
 
 interface IPaginationProps {
     maxPages: number;
@@ -11,27 +10,13 @@ interface IPaginationProps {
     onChangePage: IAction1<number>
     loading?: boolean;
 }
-interface IPaginationState {
-    page: number
-}
 
 
 const PaginationView: React.FunctionComponent<IPaginationProps> = (props) => {
     const { maxPages, currentPage, onChangePage, loading } = props;
-    const initialState: IPaginationState = {
-        page: currentPage,
-    }
-    const [state, setState] = useImmerState<IPaginationState>(initialState)
-    const { page } = state;
-
-    useEffect(() => {
-        onChangePage(page)
-    }, [page])
 
     const onSelectPage: IAction2<React.ChangeEvent<unknown>, number> = (_event, value) => {
-        setState((draft) => {
-            draft.page = value;
-        })
+        onChangePage(value)
     }
 
     if (loading) {

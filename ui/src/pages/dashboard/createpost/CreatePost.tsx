@@ -7,7 +7,7 @@ import { Autocomplete, Chip, FormHelperText, Grid, ListItem, Paper, Stack, TextF
 import { useImmerState } from "../../../hook/useImmerState";
 import { IPostCategoryValue } from "./util";
 import "react-quill/dist/quill.snow.css";
-import Editor from "../../../components/posteditor/Editor";
+import Editor, { EditorProps } from "../../../components/posteditor/Editor";
 import { DefaultButton } from "../../../components/common/button/defaultbutton/DefaultButton";
 import { PostService } from "../../../services/posts/PostService";
 import { IRequestStatus } from "../../../types/IResponse";
@@ -149,29 +149,29 @@ const CreatePost: React.FunctionComponent<ICreatePostOwnProps> = (props) => {
 		let contentError = "";
 
 		if (!postTitle?.trim()) {
-			titleError = t("Required.Post.Title");
+			titleError = "Required.Post.Title";
 			setState({ titleError: titleError });
 			isValid = false;
 		}
 
 		if (!categoryName?.trim()) {
-			categoryError = t("Required.Post.Category");
+			categoryError = "Required.Post.Category";
 			setState({ categoryError: categoryError });
 			isValid = false;
 		} else if (!PostCategoryList.includes(categoryName!)) {
-			categoryError = t("Invalid.Post.Category");
+			categoryError = "Invalid.Post.Category";
 			setState({ categoryError: categoryError });
 			isValid = false;
 		}
 
 		if (tags.length === 0) {
-			tagError = t("Required.Post.Tag");
+			tagError = "Required.Post.Tag";
 			setState({ tagError: tagError });
 			isValid = false;
 		}
 
 		if (!htmlToMarkdown(postContent).trim()) {
-			contentError = t("Required.Post.Content");
+			contentError = "Required.Post.Content";
 			setState({ contentError: contentError });
 			isValid = false;
 		}
@@ -224,6 +224,11 @@ const CreatePost: React.FunctionComponent<ICreatePostOwnProps> = (props) => {
 		}
 	}
 
+
+	const handleEditorChange: EditorProps["onChange"] = (e) => {
+        setState({ postContent: e.html, contentError: "" })
+    }
+
 	return (
 		<DashboardLayout title={t("CreatePost.Title")}>
 			<div className="g-dashboard-content-section">
@@ -235,7 +240,7 @@ const CreatePost: React.FunctionComponent<ICreatePostOwnProps> = (props) => {
 					/>
 				</Stack>
 				<Grid container spacing={2}>
-					<Grid className="g-create-post-section-basic-info" item sm={4} xs={12} md={4}>
+					<Grid className="g-create-post-section-basic-info" item sm={5} xs={12} md={5}>
 						<Label
 							className="g-create-post-info-title"
 							title={t("Common.Category")}
@@ -268,21 +273,21 @@ const CreatePost: React.FunctionComponent<ICreatePostOwnProps> = (props) => {
 								<TextField
 									error={!!categoryError}
 									inputRef={categoryRef}
-									helperText={categoryError}
+									helperText={t(categoryError ?? "")}
 									variant="standard"
 									{...params}
 								/>
 							}
 						/>
 					</Grid>
-					<Grid className="g-create-post-section-basic-info" item sm={8} xs={12} md={8}>
+					<Grid className="g-create-post-section-basic-info" item sm={7} xs={12} md={7}>
 						<Label
 							className="g-create-post-info-title"
 							title={t("Post.Create.Name")}
 						/>
 						<TextField
 							error={!!titleError}
-							helperText={titleError}
+							helperText={t(titleError ?? "")}
 							variant="standard"
 							value={postTitle}
 							inputRef={titleRef}
@@ -292,7 +297,7 @@ const CreatePost: React.FunctionComponent<ICreatePostOwnProps> = (props) => {
 						/>
 					</Grid>
 
-					<Grid className="g-create-post-section-basic-info" item sm={4} xs={12} md={4}>
+					<Grid className="g-create-post-section-basic-info" item sm={5} xs={12} md={5}>
 						<Label
 							className="g-create-post-info-title"
 							title={t("Post.Create.TagName")}
@@ -306,11 +311,11 @@ const CreatePost: React.FunctionComponent<ICreatePostOwnProps> = (props) => {
 							inputRef={tagRef}
 							error={!!tagError}
 							id="standard-error-helper-text"
-							helperText={tagError}
+							helperText={t(tagError ?? "")}
 							variant="standard"
 						/>
 					</Grid>
-					<Grid className="g-create-post-section-basic-info" item sm={8} xs={12} md={8}>
+					<Grid className="g-create-post-section-basic-info" item sm={7} xs={12} md={7}>
 						<Label className="g-create-post-info-title" title={t("Post.Create.TagList")} />
 						<Paper
 							component="ul"
@@ -334,8 +339,8 @@ const CreatePost: React.FunctionComponent<ICreatePostOwnProps> = (props) => {
 						</form>
 					</Grid>
 					<Grid className="g-create-post-section-content" item sm={12} xs={12} md={12}>
-						<Editor value={postContent} onChange={(e) => setState({ postContent: e.html, contentError: "" })} />
-						<FormHelperText error={!!contentError} id="post-content-error">{contentError}</FormHelperText>
+						<Editor value={postContent} onChange={handleEditorChange} />
+						<FormHelperText error={!!contentError} id="post-content-error">{t(contentError ?? "")}</FormHelperText>
 					</Grid>
 					<Grid className="g-create-post-section-action-button" item sm={12} xs={12} md={12}>
 						<DefaultButton

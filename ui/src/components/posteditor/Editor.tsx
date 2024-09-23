@@ -1,10 +1,11 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import { htmlToMarkdown, markdownToHtml } from "../../pages/dashboard/createpost/Parse";
+import { htmlToMarkdown } from "../../pages/dashboard/createpost/Parse";
 import uploadToCloudinary from "../../services/helpers/upload";
 import "./index.scss";
 import { useTranslation } from "react-i18next";
+import { useControllableState } from "@chakra-ui/react-use-controllable-state"
 
 export interface EditorContentChanged {
 	html: string;
@@ -18,11 +19,16 @@ export interface EditorProps {
 
 export default function Editor(props: EditorProps) {
 	const { onChange, value } = props
-	const [editorValue, setEditorValue] = useState<string>(markdownToHtml(value || ""));
+	const [editorValue, setEditorValue] = useControllableState<string>({
+		value: value || "",
+		onChange: (value: string) => {
+			onChangeEditor(value)
+		}
+	});
 	const reactQuillRef = useRef<ReactQuill>(null);
 	const { t } = useTranslation()
+	
 	const onChangeEditor = (content: string) => {
-		setEditorValue(content);
 
 		if (onChange) {
 			onChange({
@@ -76,7 +82,8 @@ export default function Editor(props: EditorProps) {
 			}}
 			formats={["header", "font", "size", "bold", "italic", "underline", "strike", "blockquote", "list", "bullet", "indent", "link", "image", "code-block"]}
 			value={editorValue}
-			onChange={onChangeEditor}
+			onChange={setEditorValue}
 		/>
 	);
 }
+
