@@ -1,4 +1,4 @@
-import React, { Suspense } from "react";
+import React from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { useAppSelector } from "./redux/store/store";
 import { userState } from "./redux/reducers/users/UserSlice";
@@ -40,34 +40,32 @@ function App() {
 	return (
 		<React.Fragment>
 			<BrowserRouter>
-				<Suspense fallback={<div>Loading...</div>}>
-					<Routes>
-						<Route key={"blog-home"} path="/" element={<Home />} />
-						<Route key={"blog-login"} path="/login" element={user ? <Navigate to={"/"} /> : <Login />} />
-						<Route key={"blog-register"} path="/register" element={user ? <Navigate to={"/"} /> : <SignUp />} />
-						<Route key={"blog-search"} path="/search/:searchText" element={<SearchPage />} />
-						<Route key={"blog-post"} path="/post/:postId" element={<PostPage />} />
-						<Route element={<CommonRoute />}>
-							<Route key={"blog-user-profile"} path="/profile" element={<Profile />} />
-						</Route>
-						<Route path="/admin-dashboard" element={<AdminRoute />}>
-							<Route key={"admin-overview"} path="overview" element={<Overview />} />
-							<Route key={"admin-create-post"} path="create-post" element={<CreatePost />} />
-							<Route key={"admin-edit-post"} path="edit-post/:postId" element={<EditPost />} />
-							<Route key={"admin-post-management"} path="post-management" element={<UserPostManagement />} />
-							<Route key={"admin-user-management"} path="user-management" element={<UserManagement />} />
-							<Route key={"admin-favorite-management"} path="favourite-management" element={<FavouritePost />} />
-						</Route>
-						<Route path="/user-dashboard" element={<UserRoute />}>
-							<Route key={"user-overview"} path="overview" element={<Overview />} />
-							<Route key={"user-create-post"} path="create-post" element={<CreatePost />} />
-							<Route key={"user-edit-post"} path="edit-post/:postId" element={<EditPost />} />
-							<Route key={"user-post-management"} path="post-management" element={<UserPostManagement />} />
-							<Route key={"user-favorite-management"} path="favourite-management" element={<FavouritePost />} />
-						</Route>
-						<Route path="*" element={<NotFound />} />
-					</Routes>
-				</Suspense>
+				<Routes>
+					<Route key={"blog-home"} path="/" element={<Home />} />
+					<Route key={"blog-login"} path="/login" element={user ? <Navigate to={"/"} /> : <Login />} />
+					<Route key={"blog-register"} path="/register" element={user ? <Navigate to={"/"} /> : <SignUp />} />
+					<Route key={"blog-search"} path="/search/:searchText" element={<SearchPage />} />
+					<Route key={"blog-post"} path="/post/:postId" element={<PostPage />} />
+					<Route element={<CommonRoute />}>
+						<Route key={"blog-user-profile"} path="/profile" element={<Profile />} />
+					</Route>
+					<Route path="/admin-dashboard" element={<AdminRoute />}>
+						<Route key={"admin-overview"} path="overview" element={<Overview />} />
+						<Route key={"admin-create-post"} path="create-post" element={<CreatePost />} />
+						<Route key={"admin-edit-post"} path="edit-post/:postId" element={<EditPost />} />
+						<Route key={"admin-post-management"} path="post-management" element={<UserPostManagement />} />
+						<Route key={"admin-user-management"} path="user-management" element={<UserManagement />} />
+						<Route key={"admin-favorite-management"} path="favourite-management" element={<FavouritePost />} />
+					</Route>
+					<Route path="/user-dashboard" element={<UserRoute />}>
+						<Route key={"user-overview"} path="overview" element={<Overview />} />
+						<Route key={"user-create-post"} path="create-post" element={<CreatePost />} />
+						<Route key={"user-edit-post"} path="edit-post/:postId" element={<EditPost />} />
+						<Route key={"user-post-management"} path="post-management" element={<UserPostManagement />} />
+						<Route key={"user-favorite-management"} path="favourite-management" element={<FavouritePost />} />
+					</Route>
+					<Route path="*" element={<NotFound />} />
+				</Routes>
 			</BrowserRouter>
 		</React.Fragment>
 	);
