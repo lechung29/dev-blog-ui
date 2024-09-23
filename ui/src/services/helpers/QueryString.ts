@@ -1,5 +1,5 @@
 // Common
-const root = "http://localhost:8080";
+const root = "https://dev-blog-api-c827.onrender.com";
 const v1 = "api/v1";
 
 //Post
