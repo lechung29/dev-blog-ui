@@ -19,6 +19,12 @@ const DashboardLayout: React.FunctionComponent<IDashboardLayoutProps> = (props) 
 			<Helmet>
 				<meta charSet="utf-8" />
 				<title>{title}</title>
+				<link 
+                    rel="icon" 
+                    type="image/png" 
+                    href="/assets/devblog-logo.png" 
+                    sizes="300x300" 
+                />
 			</Helmet>
 			<div className="g-dashboard-layout-container">
 				<div className="g-dashboard-main">
