@@ -25,7 +25,7 @@ export interface IForgotPasswordProps {
 export interface IForgotPasswordStep {
     label: string;
     buttonTitle: string;
-    onNextStep?: IFunc<Promise<void> | void>
+    onNextStep: IFunc<Promise<void> | void>
     renderContent: () => React.ReactNode
 }
 
@@ -277,7 +277,7 @@ const ForgotPassword: React.FunctionComponent<IForgotPasswordProps> = (props) =>
                     onKeyDown={(e) => {
                         if (e.key === 'Enter') {
                             e.preventDefault();
-                            this.onNextStep?.();
+                            this.onNextStep();
                         }
                     }}
                     label={t("Email.Address")}
@@ -327,6 +327,12 @@ const ForgotPassword: React.FunctionComponent<IForgotPasswordProps> = (props) =>
                         type={showPassword ? 'text' : 'password'}
                         value={password}
                         onChange={onChangePassword}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                e.preventDefault();
+                                this.onNextStep();
+                            }
+                        }}
                         endAdornment={
                             <InputAdornment position="end">
                                 <BaseIconButton
