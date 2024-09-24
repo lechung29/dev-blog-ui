@@ -221,5 +221,15 @@
     "Services.Help": "Help",
     "Error.Page.Not.Found": "Page Not Found",
     "Error.Page.Post.Not.Exists": "Post Not Exists",
-    "Error.Page.Post.Cannot.Access": "The post has been hidden by the administrator and cannot be accessed"
+    "Error.Page.Post.Cannot.Access": "The post has been hidden by the administrator and cannot be accessed",
+    "Verify.Otp.Successful": "Verify OTP Successfully",
+    "Verify.Otp.Fails": "OTP code is incorrect, please try again",
+    "Expired.Otp": "OTP code has expired, please create a new",
+    "Send.Otp.Successful": "Send OTP Successfully",
+    "Label.Send.OTP": "Send OTP Code",
+    "Label.Send": "Send",
+    "Label.Verify.OTP": "Verify OTP Code",
+    "Label.Verify": "Verify",
+    "Confirm.Password.And.Finish": "Confirm and finish",
+    "Button.Resend.OTP": "Resend OTP code?"
 }

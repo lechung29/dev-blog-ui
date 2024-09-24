@@ -221,5 +221,15 @@
     "Services.Help": "Hỗ trợ",
     "Error.Page.Not.Found": "Trang không tìm thấy",
     "Error.Page.Post.Not.Exists": "Bài viết không tồn tại",
-    "Error.Page.Post.Cannot.Access": "Bài viết bị ẩn bởi quản trị viên, không thể truy cập"
+    "Error.Page.Post.Cannot.Access": "Bài viết bị ẩn bởi quản trị viên, không thể truy cập",
+    "Verify.Otp.Successful": "Xác thực mã OTP thành công",
+    "Verify.Otp.Fails": "Mã OTP không đúng, vui lòng nhập lại",
+    "Expired.Otp": "Mã OTP đã hết hạn, vui lòng tạo lại",
+    "Send.Otp.Successful": "Gửi mã OTP thành công",
+    "Label.Send.OTP": "Gửi mã OTP",
+    "Label.Send": "Gửi",
+    "Label.Verify.OTP": "Xác thực mã OTP",
+    "Label.Verify": "Xác thực",
+    "Confirm.Password.And.Finish": "Xác nhận và hoàn tất",
+    "Button.Resend.OTP": "Gửi lại mã?"
 }

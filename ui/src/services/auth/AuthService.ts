@@ -31,6 +31,22 @@ class AuthService {
     public static updateUserStatus(userId: string, status: userStatus): Promise<IResponseDefault> {
         return FetchApi(`${root}/${v1}/user/${updateUserStatus}/${userId}`, FetchMethod.PUT, { status: status });
     }
+
+    public static sendOtp(email: string): Promise<IResponseDefault> {
+        return FetchApi(`${root}/${v1}/auth/send-otp`, FetchMethod.POST, { email });
+    }
+
+    public static resendOtp(email: string): Promise<IResponseDefault> {
+        return FetchApi(`${root}/${v1}/auth/resend-otp`, FetchMethod.POST, { email });
+    }
+
+    public static verifyOtp(email: string, otp: string): Promise<IResponseDefault> {
+        return FetchApi(`${root}/${v1}/auth/verify-otp`, FetchMethod.POST, { email, otp });
+    }
+
+    public static resetPassword(email: string, password: string): Promise<IResponseDefault> {
+        return FetchApi(`${root}/${v1}/auth/reset-password`, FetchMethod.PUT, { email, password });
+    }
 }
 
 export { AuthService };

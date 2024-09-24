@@ -134,6 +134,17 @@
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
+
+                .g-forgot-password-action {
+                    font-size: 12.8px;
+                    cursor: pointer;
+                    color: #5488c7;
+
+                    &:hover {
+                        text-decoration: underline;
+                        color: #409eff;
+                    }
+                }
             }
         }
 
