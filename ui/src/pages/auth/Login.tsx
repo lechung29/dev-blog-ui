@@ -20,6 +20,7 @@ import { login } from "../../redux/reducers/users/UserSlice";
 import { delay } from "../../utils/helper";
 import { IRequestStatus } from "../../types/IResponse";
 import { useTranslation } from "react-i18next";
+import ForgotPassword from "../../components/forgotPassword/ForgotPassword";
 
 interface ILoginOwnProps { }
 
@@ -30,6 +31,7 @@ interface ILoginFormState {
     passwordError: string;
     showPassword: boolean;
     isLoading?: boolean;
+    isOpenForgotPasswordDialog: boolean;
 }
 
 const inititalState: ILoginFormState = {
@@ -39,6 +41,7 @@ const inititalState: ILoginFormState = {
     passwordError: "",
     showPassword: false,
     isLoading: false,
+    isOpenForgotPasswordDialog: false,
 };
 
 const Login: React.FunctionComponent<ILoginOwnProps> = (_props) => {
@@ -48,7 +51,7 @@ const Login: React.FunctionComponent<ILoginOwnProps> = (_props) => {
     const dispatch = useDispatch()
     const { t } = useTranslation()
     const [state, setState] = useImmerState<ILoginFormState>(inititalState);
-    const { email, password, emailError, passwordError, showPassword, isLoading } = state;
+    const { email, password, emailError, passwordError, showPassword, isLoading, isOpenForgotPasswordDialog } = state;
     const emailRef = useRef<HTMLInputElement>();
     const passwordRef = useRef<HTMLInputElement>();
 
@@ -84,7 +87,7 @@ const Login: React.FunctionComponent<ILoginOwnProps> = (_props) => {
         }
 
         if (!password?.trim()) {
-            passwordError =t("Error.Required.Password");
+            passwordError = t("Error.Required.Password");
             setState({ passwordError: passwordError });
             isValid = false;
         }
@@ -232,14 +235,12 @@ const Login: React.FunctionComponent<ILoginOwnProps> = (_props) => {
                             />
                         </Box>
                         <div className="g-login-section-form-action">
-                            <Link
-                                style={{ fontSize: 12.8 }}
-                                underline="hover"
-                                href="/"
-                                variant="body2"
+                            <div
+                                className="g-forgot-password-action"
+                                onClick={() => setState({ isOpenForgotPasswordDialog: true })}
                             >
                                 {t("Common.Forgot.Password")}
-                            </Link>
+                            </div>
                             <Link
                                 style={{ fontSize: 12.8 }}
                                 underline="hover"
@@ -256,6 +257,10 @@ const Login: React.FunctionComponent<ILoginOwnProps> = (_props) => {
                             margin="16px 0"
                         />
                         <GoogleAuth />
+                        {isOpenForgotPasswordDialog && <ForgotPassword 
+                            open={isOpenForgotPasswordDialog}
+                            onClose={() => setState({ isOpenForgotPasswordDialog: false })}
+                        />}
                     </div>
                 </div>
             </section>

@@ -1,10 +1,8 @@
 .MuiDialog-container {
     .MuiDialog-paper {
         height: auto;
-        max-height: 18rem;
         display: flex;
         flex-direction: column;
-        max-width: 500px;
         width: 100%;
         .MuiDialogContent-root {
             padding: 0 24px;
