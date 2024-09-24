@@ -133,21 +133,14 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
         try {
             setState({ disableLike: true })
             const res = await PostService.likePost(postId!)
-            if (res.requestStatus === IRequestStatus.Error) {
-                setState((draft) => {
-                    draft.alertMessage = t(res.message);
-                    draft.alertType = ISeverity.error
-                    draft.isAlertOpen = true
-                })
-                await getPostDetails()
-                setState({ disableLike: false })
-            } else {
-                console.log(res.message)
+            if (res.requestStatus === IRequestStatus.Success) {
                 setState((draft) => {
                     draft.alertMessage = t(res.message);
                     draft.alertType = ISeverity.success
                     draft.isAlertOpen = true
                 })
+                await getPostDetails()
+                setState({ disableLike: false })
             }
         } catch (error) {
             console.log(error)
