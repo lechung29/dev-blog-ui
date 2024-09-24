@@ -366,7 +366,7 @@ const PostPage: React.FunctionComponent<IPostPageProps> = (props) => {
                 <Stack className='g-post-page-content-tags'>
                     {tagsList}
                 </Stack>
-                {post?.thumbnail && <Stack className='g-post-page-content-thumbnail'>
+                {!isLoading && post?.thumbnail && <Stack className='g-post-page-content-thumbnail'>
                     {postThumbnail}
                 </Stack>}
                 <Stack className='g-post-page-content-data'>
