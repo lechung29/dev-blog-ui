@@ -22,6 +22,12 @@ const AppLayout: React.FunctionComponent<ILayoutProps> = (props) => {
             <Helmet>
                 <meta charSet="utf-8" />
                 <title>{title}</title>
+                <link 
+                    rel="icon" 
+                    type="image/png" 
+                    href="/assets/devblog-logo.png" 
+                    sizes="300x300" 
+                />
             </Helmet>
             <div className="g-app-layout-container">
                 {!authRoute.has(location.pathname) ? <Header /> : <React.Fragment />}
