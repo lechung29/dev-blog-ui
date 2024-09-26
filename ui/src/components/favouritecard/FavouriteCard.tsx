@@ -27,6 +27,20 @@ const FavouriteCard: React.FunctionComponent<IFavouriteCardProps> = (props) => {
             }} />
             : <FavoriteBorderIcon />
     }, [item.isFavorite])
+
+    const getCategoryName = (categoryValue) => {
+        switch (categoryValue) {
+            case "post":
+                return t("Category.Post")
+            case "question":
+                return t("Category.Question")
+            case "discussion":
+                return t("Category.Discussion")
+            default:
+                return ""
+        }
+    }
+
     return (
         <Card className="g-favorite-card">
             <CardActionArea className="g-card-action-area">
@@ -49,7 +63,7 @@ const FavouriteCard: React.FunctionComponent<IFavouriteCardProps> = (props) => {
                         {t("Common.Author")} {item.author.displayName}
                     </Typography>
                     <Typography className="g-card-sub-title">
-                        {t("Common.Category")} {item.category}
+                        {t("Common.Category")} {getCategoryName(item.category)}
                     </Typography>
                 </CardContent>
             </CardActionArea>
