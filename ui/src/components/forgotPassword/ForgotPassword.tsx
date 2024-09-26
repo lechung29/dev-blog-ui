@@ -161,7 +161,7 @@ const ForgotPassword: React.FunctionComponent<IForgotPasswordProps> = (props) =>
                 setState((draft) => {
                     draft.isDisabledResendOtp = false
                     draft.message = data.message
-                    draft.alertType = ISeverity.success
+                    draft.alertType = data.requestStatus === IRequestStatus.Success ? ISeverity.success : ISeverity.error
                     draft.isAlertOpen = true
                 })
             })
