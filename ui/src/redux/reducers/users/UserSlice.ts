@@ -20,11 +20,11 @@ const userSlice = createSlice({
     reducers: {
         login: (state, action) => {
             state.user = action.payload;
-            localStorage.setItem("access_token", action.payload.accessToken)
+            localStorage.setItem("accessToken", action.payload.accessToken)
         },
         logout: (state) => {
             state.user = null;
-            localStorage.removeItem("access_token");
+            window.localStorage.removeItem("accessToken");
         },
         updateUser: (state, action) => {
             state.user = action.payload;

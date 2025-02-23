@@ -10,6 +10,8 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { login } from "../../redux/reducers/users/UserSlice";
 import { IFunc } from "../../types/Function";
+import { store } from "../../redux/store/store";
+import { handleUnauthorized } from "../../redux/reducers/auth/AuthSlice";
 
 const GoogleAuth: React.FunctionComponent = () => {
     const auth = getAuth(firebaseApp)
@@ -19,20 +21,17 @@ const GoogleAuth: React.FunctionComponent = () => {
     const handleGoogleLogin: IFunc<Promise<void>> = async () => {
         const googleProvider = new GoogleAuthProvider()
         googleProvider.setCustomParameters({ prompt: "select_account" })
-        try {
-            const result = await signInWithPopup(auth, googleProvider)
-            const data = await AuthService.googleLogin({
-                displayName: result.user.displayName!,
-                email: result.user.email!,
-                avatar: result.user.photoURL!,
-            })
-            if (data.requestStatus === IRequestStatus.Success) {
-                dispatch(login(data.data))
-                navigate("/")
-            }
-
-        } catch (error) {
-            console.log(error)
+        const result = await signInWithPopup(auth, googleProvider)
+        const data = await AuthService.googleLogin({
+            displayName: result.user.displayName!,
+            email: result.user.email!,
+            avatar: result.user.photoURL!,
+        })
+        if (data.requestStatus === IRequestStatus.Success) {
+            dispatch(login(data.data))
+            navigate("/")
+        } else {
+            store.dispatch(handleUnauthorized(data.message))
         }
     }
     return <Fragment>

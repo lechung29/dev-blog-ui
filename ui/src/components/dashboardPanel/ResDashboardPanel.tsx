@@ -74,7 +74,7 @@ const ResDashboardPanel: React.FunctionComponent<IDashboardPanelOwnProps> = (pro
                                 <NavLink
                                     className={"g-dashboard-list-item"}
                                     key={index}
-                                    to={item.route}
+                                    to={item.route!}
                                 >
                                     <ListItemIcon className="g-dashboard-item-icon">
                                         {item.icon}

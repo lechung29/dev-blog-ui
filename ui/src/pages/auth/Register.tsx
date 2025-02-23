@@ -205,32 +205,27 @@ const SignUpView: React.FunctionComponent<ISignUpOwnProps> = (props) => {
             setState({ isLoading: false });
             return;
         }
-
-        try {
-            const data = await AuthService.registerUser({ email, displayName, password });
-            setState({ isLoading: false });
-            if (data.requestStatus === IRequestStatus.Error) {
-                switch (data.fieldError) {
-                    case "email":
-                        setState({ emailError: t(data.message), passwordError: "", displayNameError: "", isLoading: false });
-                        emailRef.current?.focus();
-                        break;
-                    case "displayName":
-                        setState({ displayNameError: t(data.message), emailError: "", passwordError: "", isLoading: false });
-                        displayNameRef.current?.focus();
-                        break;
-                    case "password":
-                        setState({ passwordError: t(data.message), emailError: "", displayNameError: "", isLoading: false });
-                        passwordRef.current?.focus();
-                        break;
-                    default:
-                        break;
-                }
-            } else {
-                await delay(2000).then(() => navigate("/login"))
+        const data = await AuthService.registerUser({ email, displayName, password });
+        setState({ isLoading: false });
+        if (data.requestStatus === IRequestStatus.Error) {
+            switch (data.fieldError) {
+                case "email":
+                    setState({ emailError: t(data.message), passwordError: "", displayNameError: "", isLoading: false });
+                    emailRef.current?.focus();
+                    break;
+                case "displayName":
+                    setState({ displayNameError: t(data.message), emailError: "", passwordError: "", isLoading: false });
+                    displayNameRef.current?.focus();
+                    break;
+                case "password":
+                    setState({ passwordError: t(data.message), emailError: "", displayNameError: "", isLoading: false });
+                    passwordRef.current?.focus();
+                    break;
+                default:
+                    break;
             }
-        } catch (error) {
-            console.log(error)
+        } else {
+            await delay(2000).then(() => navigate("/login"))
         }
     };
 

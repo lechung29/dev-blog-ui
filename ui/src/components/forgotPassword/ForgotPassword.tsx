@@ -138,7 +138,7 @@ const ForgotPassword: React.FunctionComponent<IForgotPasswordProps> = (props) =>
                     })
                     emailRef.current?.focus()
                 }
-            }).catch((error) => console.log(error))
+            })
     }
 
     //#endregion send otp
@@ -187,7 +187,7 @@ const ForgotPassword: React.FunctionComponent<IForgotPasswordProps> = (props) =>
                         draft.isDisabledOTP = false
                     })
                 }
-            }).catch((error) => console.log(error))
+            })
     }
 
     //#endregion verify otp
@@ -243,7 +243,7 @@ const ForgotPassword: React.FunctionComponent<IForgotPasswordProps> = (props) =>
                     })
                     passwordRef.current?.focus()
                 }
-            }).catch((error) => console.log(error))
+            })
     }
 
 

@@ -131,49 +131,44 @@ const Profile: React.FunctionComponent<IProfilePageOwnProps> = (_props) => {
             setState({ isUpdating: false })
             return;
         }
-
-        try {
-            const updatedUser = await AuthService.updateUserInfo(user?._id!, {
-                avatar: imageFileUrl,
-                displayName: displayName,
-                email: email
-            })
-
-            if (updatedUser.requestStatus === IRequestStatus.Error) {
-                switch (updatedUser.fieldError) {
-                    case "email":
-                        setState((draft) => {
-                            draft.emailError = t(updatedUser.message)
-                            draft.isUpdating = false
-                        });
-                        emailRef.current?.focus();
-                        break;
-                    case "displayName":
-                        setState((draft) => {
-                            draft.displayNameError = t(updatedUser.message)
-                            draft.isUpdating = false
-                        });
-                        displayNameRef.current?.focus();
-                        break;
-                    default:
-                        break;
-                }
-            } else {
-                dispatch(updateUser(updatedUser.data));
-                await delay(1000).then(() => {
+        const updatedUser = await AuthService.updateUserInfo(user?._id!, {
+            avatar: imageFileUrl,
+            displayName: displayName,
+            email: email
+        })
+        if (updatedUser.requestStatus === IRequestStatus.Error) {
+            switch (updatedUser.fieldError) {
+                case "email":
                     setState((draft) => {
-                        draft.isUpdating = false;
-                        draft.isOpenAlert = true;
-                        draft.message = t(updatedUser.message)
+                        draft.emailError = t(updatedUser.message)
+                        draft.isUpdating = false
                     });
-                })
-                await delay(2000).then(() => {
-                    navigate("/")
-                })
+                    emailRef.current?.focus();
+                    break;
+                case "displayName":
+                    setState((draft) => {
+                        draft.displayNameError = t(updatedUser.message)
+                        draft.isUpdating = false
+                    });
+                    displayNameRef.current?.focus();
+                    break;
+                default:
+                    break;
             }
-        } catch (error) {
-            console.log(error)
+        } else {
+            dispatch(updateUser(updatedUser.data));
+            await delay(1000).then(() => {
+                setState((draft) => {
+                    draft.isUpdating = false;
+                    draft.isOpenAlert = true;
+                    draft.message = t(updatedUser.message)
+                });
+            })
+            await delay(2000).then(() => {
+                navigate("/")
+            })
         }
+
     }
 
     return (

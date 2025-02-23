@@ -32,6 +32,7 @@
         "Token.Expired": "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại để tiếp tục",
         "Not.Have.Permission": "Bạn không có quyền thực hiện chức năng này",
         "Account.Locked": "Tài khoản của bạn đã bị khóa",
+        "Account.Locked.Expired": "Tài khoản của bạn đã bị khóa. Vui lòng thử dăng nhập lại",
         "Required": {
             "Email": "Tài khoản email là bắt buộc",
             "Password": "Mật khẩu là bắt buộc",

@@ -18,6 +18,7 @@ import Search from "../common/searchbox/Search";
 import { useMiniMobile, useMobile, useTablet } from "../../utils/Responsive";
 import LanguageIcon from '@mui/icons-material/Language';
 import ChangeLanguage from "../changeLanguage/ChangeLanguage";
+import { AuthService } from "../../services/auth/AuthService";
 
 interface INavigatePanelOwnProps {
     placement: Anchor;
@@ -28,7 +29,7 @@ interface INavigatePanelOwnProps {
 
 export interface IPageRoute {
     title: string;
-    route: string;
+    route?: string;
     icon: JSX.Element;
     onClick?: () => void;
 }
@@ -60,10 +61,11 @@ const NavigationPanel: React.FunctionComponent<INavigatePanelOwnProps> = (props)
         },
         {
             title: t("Common.Logout"),
-            route: "/login",
             icon: <LogoutIcon style={{ color: "#5488c7" }} />,
-            onClick: () => {
+            onClick: async () => {
+                await AuthService.logoutUser(user!._id)
                 dispatch(logout())
+                navigate("/login")
             }
         }
     ]
@@ -175,13 +177,21 @@ const NavigationPanel: React.FunctionComponent<INavigatePanelOwnProps> = (props)
                         className="g-navigate-content-row"
                     >
                         {page.icon}
-                        <Link
-                            to={page.route}
-                            onClick={page.onClick}
-                            className="g-panel-navigate-link"
-                        >
-                            {page.title}
-                        </Link>
+                        {!page.route
+                            ? <div
+                                style={{ cursor: "pointer" }}
+                                onClick={page?.onClick}
+                                className="g-panel-navigate-link"
+                            >
+                                {page.title}
+                            </div>
+                            : <Link
+                                to={page.route}
+                                className="g-panel-navigate-link"
+                            >
+                                {page.title}
+                            </Link>
+                        }
                     </Stack>
                 ))}
             </Box>

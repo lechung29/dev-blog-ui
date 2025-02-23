@@ -1,7 +1,7 @@
 import { IResponseDefault, IResponseType } from "../../types/IResponse";
 import { ICreatePost, IOverViewProps, IPostDataProps, IPostStatus } from "../../types/Post";
 import { IQueryGetMaxPage, IQueryObject, ObjectToQuery } from "../../utils/helper";
-import { FetchApi, FetchMethod } from "../helpers/FetchApi";
+import instance from "../config/axios";
 import {
     addFavorite,
     createPost,
@@ -22,49 +22,49 @@ import {
 
 class PostService {
     public static createPost(data: ICreatePost): Promise<IResponseType<ICreatePost>> {
-        return FetchApi(`${root}/${v1}/post/${createPost}`, FetchMethod.POST, data);
+        return instance.post(`${root}/${v1}/post/${createPost}`, data);
     }
 
     public static updatePost(data: ICreatePost, postId: string, userId: string): Promise<IResponseType<ICreatePost>> {
-        return FetchApi(`${root}/${v1}/post/${updatePost}/${postId}/${userId}`, FetchMethod.PUT, data )
+        return instance.put(`${root}/${v1}/post/${updatePost}/${postId}/${userId}`, data )
     }
 
     public static getAllPosts(): Promise<IResponseType<IPostDataProps[]>> {
-        return FetchApi(`${root}/${v1}/post/${getAllPost}`, FetchMethod.GET);
+        return instance.get(`${root}/${v1}/post/${getAllPost}`);
     }
 
     public static getFilterPosts(selector: IQueryObject): Promise<IResponseType<IPostDataProps[]>> {
         const query: string = ObjectToQuery(selector);
-        return FetchApi(`${root}/${v1}/post/${getFilterPosts}${query}`, FetchMethod.GET);
+        return instance.get(`${root}/${v1}/post/${getFilterPosts}${query}`);
     }
 
     public static getSinglePost(postId: string, userId?: string): Promise<IResponseType<IPostDataProps>> {
-        return FetchApi(`${root}/${v1}/post/${getSinglePost}/${postId}/${userId ?? guestUser}`, FetchMethod.GET);
+        return instance.get(`${root}/${v1}/post/${getSinglePost}/${postId}/${userId ?? guestUser}`);
     }
 
     public static getMaxPages(selector: IQueryGetMaxPage): Promise<IResponseType<number>> {
         const query: string = ObjectToQuery(selector);
-        return FetchApi(`${root}/${v1}/post/${getMaxPages}${query}`, FetchMethod.GET);
+        return instance.get(`${root}/${v1}/post/${getMaxPages}${query}`);
     }
 
     public static likePost(postId: string): Promise<IResponseType<IPostDataProps>> {
-        return FetchApi(`${root}/${v1}/post/${likePost}/${postId}`, FetchMethod.PUT);
+        return instance.put(`${root}/${v1}/post/${likePost}/${postId}`);
     }
 
     public static adminUpdatePostStatus(status: IPostStatus, postId: string): Promise<IResponseType<IPostDataProps[]>> {
-        return FetchApi(`${root}/${v1}/post/${updatePost}/${postId}/`, FetchMethod.PUT, { status: status });
+        return instance.put(`${root}/${v1}/post/${updatePost}/${postId}/`, { status: status });
     }
 
     public static deleteMultiPost(postIds: string[]): Promise<IResponseType<IPostDataProps[]>> {
-        return FetchApi(`${root}/${v1}/post/${multiDeletePosts}`, FetchMethod.DELETE, { postIds: postIds });
+        return instance.post(`${root}/${v1}/post/${multiDeletePosts}`, { postIds: postIds });
     }
 
     public static getAllTags(): Promise<IResponseType<string[]>> {
-        return FetchApi(`${root}/${v1}/post/${getAllTags}`, FetchMethod.GET);
+        return instance.get(`${root}/${v1}/post/${getAllTags}`);
     }
 
     public static addOrRemoveFavorites(userId: string, postId: string, isAddFavorite: boolean): Promise<IResponseDefault> {
-        return FetchApi(`${root}/${v1}/favorite/${addFavorite}`, FetchMethod.POST, {
+        return instance.post(`${root}/${v1}/favorite/${addFavorite}`, {
             userId: userId,
             postId: postId,
             isAddFavorite: isAddFavorite,
@@ -72,11 +72,11 @@ class PostService {
     }
 
     public static getFavoritePostByUserId(userId: string): Promise<IResponseType<IPostDataProps[]>> {
-        return FetchApi(`${root}/${v1}/favorite/${getFavorite}/${userId}`, FetchMethod.GET);
+        return instance.get(`${root}/${v1}/favorite/${getFavorite}/${userId}`);
     }
 
     public static getUserOverview(userId: string): Promise<IResponseType<IOverViewProps>> {
-        return FetchApi(`${root}/${v1}/post/${getOverview}/${userId}`, FetchMethod.GET);
+        return instance.get(`${root}/${v1}/post/${getOverview}/${userId}`);
     }
 }
 

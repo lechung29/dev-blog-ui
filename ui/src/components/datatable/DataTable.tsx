@@ -6,7 +6,7 @@ export interface IDataTableRef {
 	reload: () => void;
 }
 
-interface IDataTabelProps {
+interface IDataTableProps {
 	columns: GridColDef[];
 	items: any[];
 	tableWidth: number | string;
@@ -18,7 +18,7 @@ interface IDataTabelProps {
 	selectionItems: string[]
 }
 
-const DataTable = React.forwardRef((props: IDataTabelProps, ref) => {
+const DataTable = React.forwardRef((props: IDataTableProps, ref) => {
 	const { columns, items, getData, onSelection, isLoading, tableHeight, tableWidth } = props;
 
 	React.useEffect(() => {

@@ -21,20 +21,6 @@ import NotFound from "./pages/pageNotFound/PageNotFound";
 import EditPost from "./pages/dashboard/editpost/EditPost";
 
 
-// const NotFound = React.lazy(() => import("./pages/pageNotFound/PageNotFound"))
-// const EditPost = React.lazy(() => import("./pages/dashboard/editpost/EditPost"))
-// const Home = React.lazy(() => import("./pages/home/Home"));
-// const Login = React.lazy(() => import("./pages/auth/Login"));
-// const SignUp = React.lazy(() => import("./pages/auth/Register").then(module => ({ default: module.SignUp })));
-// const Profile = React.lazy(() => import("./pages/profile/Profile"));
-// const CreatePost = React.lazy(() => import("./pages/dashboard/createpost/CreatePost"));
-// const UserPostManagement = React.lazy(() => import("./pages/dashboard/postmanagement/user/UserPostManagement"));
-// const FavouritePost = React.lazy(() => import("./pages/dashboard/favouritepost/FavouritePost"));
-// const Overview = React.lazy(() => import("./pages/dashboard/overview/Overview"));
-// const SearchPage = React.lazy(() => import("./pages/search/SearchPage"));
-// const PostPage = React.lazy(() => import("./pages/post/PostPage"));
-// const UserManagement = React.lazy(() => import("./pages/dashboard/usermanagement/UserManagement"));
-
 function App() {
 	const { user } = useAppSelector(userState)
 	return (

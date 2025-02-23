@@ -32,6 +32,7 @@
         "Token.Expired": "Your session has expired. Please log in again to continue",
         "Not.Have.Permission": "You do not have permission to perform this function",
         "Account.Locked": "Your account has been locked",
+        "Account.Locked.Expired": "Your account has been locked. Please log in again to continue",
         "Required": {
             "Email": "Email is required",
             "Password": "Password is required",

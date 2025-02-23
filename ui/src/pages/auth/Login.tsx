@@ -34,7 +34,7 @@ interface ILoginFormState {
     isOpenForgotPasswordDialog: boolean;
 }
 
-const inititalState: ILoginFormState = {
+const initialState: ILoginFormState = {
     email: "",
     password: "",
     emailError: "",
@@ -50,7 +50,7 @@ const Login: React.FunctionComponent<ILoginOwnProps> = (_props) => {
     const navigate = useNavigate();
     const dispatch = useDispatch()
     const { t } = useTranslation()
-    const [state, setState] = useImmerState<ILoginFormState>(inititalState);
+    const [state, setState] = useImmerState<ILoginFormState>(initialState);
     const { email, password, emailError, passwordError, showPassword, isLoading, isOpenForgotPasswordDialog } = state;
     const emailRef = useRef<HTMLInputElement>();
     const passwordRef = useRef<HTMLInputElement>();
@@ -117,31 +117,26 @@ const Login: React.FunctionComponent<ILoginOwnProps> = (_props) => {
             setState({ isLoading: false });
             return Promise.resolve()
         }
-
-        try {
-            const response = await AuthService.loginUser({ email, password });
-            setState({ isLoading: false });
-            if (response.requestStatus === IRequestStatus.Error) {
-                switch (response.fieldError) {
-                    case "email":
-                        setState({ emailError: t(response.message), passwordError: "", isLoading: false });
-                        emailRef.current?.focus();
-                        break;
-                    case "password":
-                        setState({ passwordError: t(response.message), emailError: "", isLoading: false });
-                        passwordRef.current?.focus();
-                        break;
-                    default:
-                        break;
-                }
-            } else {
-                await delay(1000).then(() => {
-                    dispatch(login(response.data!))
-                    navigate("/");
-                })
+        const response = await AuthService.loginUser({ email, password });
+        setState({ isLoading: false });
+        if (response.requestStatus === IRequestStatus.Error) {
+            switch (response.fieldError) {
+                case "email":
+                    setState({ emailError: t(response.message), passwordError: "", isLoading: false });
+                    emailRef.current?.focus();
+                    break;
+                case "password":
+                    setState({ passwordError: t(response.message), emailError: "", isLoading: false });
+                    passwordRef.current?.focus();
+                    break;
+                default:
+                    break;
             }
-        } catch (error: any) {
-            console.log(error)
+        } else {
+            await delay(1000).then(() => {
+                dispatch(login(response.data!))
+                navigate("/");
+            })
         }
     };
 
@@ -233,6 +228,7 @@ const Login: React.FunctionComponent<ILoginOwnProps> = (_props) => {
                                 isLoading={isLoading}
                                 title={t("Common.Login")}
                             />
+                            
                         </Box>
                         <div className="g-login-section-form-action">
                             <div

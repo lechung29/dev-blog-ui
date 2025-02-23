@@ -1,6 +1,6 @@
 // Common
-const root = "https://dev-blog-api-c827.onrender.com";
-// const root = "http://localhost:8080";
+// const root = "https://dev-blog-api-c827.onrender.com";
+const root = "http://localhost:8080";
 const v1 = "api/v1";
 
 //Post
@@ -17,7 +17,7 @@ const likePost = "like-post";
 const getAllTags = "get-all-tags";
 const addFavorite = "add-favorite";
 const getFavorite = "get-favorite";
-const getOverview = "get-overview"
+const getOverview = "get-overview";
 
 //Auth
 const login = "login";
@@ -26,8 +26,10 @@ const googleLogin = "google";
 const updateUser = "update";
 const updatePassword = "update-password";
 const allUser = "all-users";
-const multiDelete = "multi-delete"
-const updateUserStatus = "update-status"
+const multiDelete = "multi-delete";
+const updateUserStatus = "update-status";
+const refreshToken = "refresh-token";
+const logout = "logout";
 
 //Comment
 const createComment = "create-comment";
@@ -38,33 +40,35 @@ const deleteComment = "delete-comment";
 // data
 const guestUser = "0000-0000-00000000-0000-000000000000";
 export {
-    root,
-    v1,
-    getAllPost,
-    createPost,
-    login,
-    register,
-    googleLogin,
-    updateUser,
-    updatePassword,
-    deletePost,
-    multiDeletePosts,
-    updatePost,
-    getFilterPosts,
-    getPublicPosts,
-    getMaxPages,
-    getSinglePost,
-    createComment,
-    likeComment,
-    guestUser,
-    likePost,
-    updateComment,
-    deleteComment,
-    getAllTags,
-    allUser,
-    multiDelete,
-    updateUserStatus,
-    addFavorite,
-    getFavorite,
-    getOverview
-}
+  root,
+  v1,
+  getAllPost,
+  createPost,
+  login,
+  register,
+  googleLogin,
+  updateUser,
+  updatePassword,
+  deletePost,
+  multiDeletePosts,
+  updatePost,
+  getFilterPosts,
+  getPublicPosts,
+  getMaxPages,
+  getSinglePost,
+  createComment,
+  likeComment,
+  guestUser,
+  likePost,
+  updateComment,
+  deleteComment,
+  getAllTags,
+  allUser,
+  multiDelete,
+  updateUserStatus,
+  addFavorite,
+  getFavorite,
+  getOverview,
+  refreshToken,
+  logout
+};
